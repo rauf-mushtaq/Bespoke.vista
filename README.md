@@ -10,7 +10,7 @@ Pages: Home, About, Services (with packaged engagements), Case Studies, Insights
 index.html, about.html, services.html, case-studies.html, insights.html, contact.html
 assets/css/styles.css   all styling (brand colours are CSS variables at the top)
 assets/js/main.js       mobile menu, scroll reveal, contact form
-assets/img/logo-mark.svg  BV monogram in a viewpoint/window frame (also the favicon)
+assets/img/logo.png      the Bespoke Vista logo (logo@2x.png for sharp screens, plus favicon.png / apple-touch-icon.png)
 build.py                generates the HTML pages
 ```
 
@@ -26,15 +26,24 @@ No build step is needed to host the site: upload the folder to any static host
 
 ## Brand
 
-| Token | Colour |
-|---|---|
-| Deep Navy | `#0F172A` |
-| Silver/Grey | `#94A3B8` |
-| Electric Blue | `#2563EB` |
+| Token | Colour | Use |
+|---|---|---|
+| Deep Navy | `#0F172A` | header, footer, dark sections |
+| Silver/Grey | `#94A3B8` | secondary text on dark |
+| Logo orange to red | `#F7941D` to `#EE2A24` | logo, gradient rule under the header |
+| Accent (burnt orange) | `#C2410C` | buttons and links (darker so white text stays readable) |
 
 Fonts: Source Serif 4 (headings) and Inter (body), from Google Fonts.
 
+## Navigation
+
+- Main menu: Services, Case Studies, About, Insights, plus a Contact button. The logo returns to Home.
+- On phones the menu folds into a button and closes after you tap a link.
+- The Services page has a sticky "jump to" bar for each service and for packages and pricing.
+
 ## Before going live
+
+- **Logo**: the site uses a PNG made from the supplied image. If you have the original vector file (SVG, AI or EPS), use it instead for the sharpest result.
 
 - **Email address**: `hello@bespokevista.co.uk` is a placeholder. Set `CONTACT_EMAIL` in `build.py` and rebuild.
 - **Contact form**: without configuration it opens the visitor's email client with the message filled in.

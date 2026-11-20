@@ -8,6 +8,29 @@
       var open = links.classList.toggle('open');
       toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
+    var close = function () { links.classList.remove('open'); toggle.setAttribute('aria-expanded', 'false'); };
+    links.addEventListener('click', function (e) { if (e.target.closest('a')) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  }
+
+  // Services page: highlight the section currently in view in the "jump to" bar
+  var subLinks = document.querySelectorAll('.subnav a');
+  if (subLinks.length && 'IntersectionObserver' in window) {
+    var byId = {};
+    subLinks.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        subLinks.forEach(function (a) { a.classList.remove('active'); });
+        var link = byId[e.target.id];
+        if (link) {
+          link.classList.add('active');
+          var bar = link.closest('ul');
+          bar.scrollLeft = link.offsetLeft - (bar.clientWidth - link.offsetWidth) / 2;
+        }
+      });
+    }, { rootMargin: '-40% 0px -55% 0px' });
+    Object.keys(byId).forEach(function (id) { var el = document.getElementById(id); if (el) spy.observe(el); });
   }
 
   // Footer year

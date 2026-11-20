@@ -13,13 +13,16 @@ SITE = "Bespoke Vista"
 TAGLINE = "Bridging Strategy and Execution"
 CONTACT_EMAIL = "hello@bespokevista.co.uk"  # TODO: confirm the business email address
 
+# Logo links to Home, so the menu stays short: four links plus a Contact button.
 NAV = [
-    ("index.html", "Home"),
-    ("about.html", "About"),
     ("services.html", "Services"),
     ("case-studies.html", "Case Studies"),
+    ("about.html", "About"),
     ("insights.html", "Insights"),
 ]
+
+LOGO = ('<img src="assets/img/logo.png" srcset="assets/img/logo.png 1x, assets/img/logo@2x.png 2x" '
+        'alt="" width="58" height="40">')
 
 # Simple stroke icons (24x24)
 I = {
@@ -53,15 +56,15 @@ def header(active):
   <header class="site-header">
     <nav class="container nav" aria-label="Main">
       <a class="brand" href="index.html" aria-label="{SITE} home">
-        <img src="assets/img/logo-mark.svg" alt="" width="40" height="40">
+        {LOGO}
         <span class="brand-text"><span class="brand-name">{SITE}</span><span class="brand-tag">{TAGLINE}</span></span>
       </a>
-      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links" aria-label="Menu">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
       <ul class="nav-links" id="nav-links">
 {items}
-        <li><a class="btn btn-primary btn-sm" href="contact.html"{" aria-current=\"page\"" if active == "contact.html" else ""}>Contact</a></li>
+        <li><a class="btn btn-primary btn-sm nav-cta" href="contact.html"{" aria-current=\"page\"" if active == "contact.html" else ""}>Contact</a></li>
       </ul>
     </nav>
   </header>"""
@@ -72,7 +75,7 @@ FOOTER = f"""  <footer class="site-footer">
       <div class="footer-grid">
         <div>
           <a class="brand" href="index.html" aria-label="{SITE} home">
-            <img src="assets/img/logo-mark.svg" alt="" width="40" height="40">
+            {LOGO}
             <span class="brand-text"><span class="brand-name">{SITE}</span></span>
           </a>
           <p class="footer-tagline">{TAGLINE}.</p>
@@ -91,6 +94,7 @@ FOOTER = f"""  <footer class="site-footer">
         <div>
           <h4>Company</h4>
           <ul>
+            <li><a href="index.html">Home</a></li>
             <li><a href="about.html">About</a></li>
             <li><a href="case-studies.html">Case Studies</a></li>
             <li><a href="insights.html">Insights</a></li>
@@ -127,7 +131,8 @@ def page(filename, title, description, body):
   <meta property="og:description" content="{description}">
   <meta property="og:type" content="website">
   <meta name="theme-color" content="#0F172A">
-  <link rel="icon" href="assets/img/logo-mark.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/img/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap" rel="stylesheet">
@@ -240,7 +245,7 @@ home = f"""    <section class="hero">
           <a class="card reveal" href="services.html#packages" style="color:inherit;text-decoration:none;background:var(--navy);border-color:var(--navy)">
             <h3 style="color:#fff">Fixed-scope engagements</h3>
             <p style="color:var(--silver)">AI Readiness Assessments, Copilot adoption, Transformation Health Checks and fractional leadership, with clear scope and pricing.</p>
-            <span class="card-link" style="color:#93B4FF">View packages &rarr;</span>
+            <span class="card-link" style="color:var(--accent-light)">View packages &rarr;</span>
           </a>
         </div>
       </div>
@@ -249,7 +254,7 @@ home = f"""    <section class="hero">
     <section class="section-dark">
       <div class="container">
         <div class="section-head">
-          <span class="eyebrow" style="color:#93B4FF">How we work</span>
+          <span class="eyebrow" style="color:var(--accent-light)">How we work</span>
           <h2>A simple, practical method</h2>
         </div>
         <div class="approach">
@@ -280,7 +285,7 @@ home = f"""    <section class="hero">
         </div>
         <div class="grid grid-3">
 {why_cards}
-          <div class="card reveal" style="background:var(--blue-soft);border-color:#C7D6F8;box-shadow:none">
+          <div class="card reveal" style="background:var(--accent-soft);border-color:var(--accent-border);box-shadow:none">
             <h3>Industries we know</h3>
             <ul class="chips" style="margin-top:6px">
 {industry_chips}
@@ -441,6 +446,11 @@ package_cards = "\n".join(f"""          <div class="card offer reveal{' featured
             <a class="card-link" href="contact.html?topic={topic}">Enquire &rarr;</a>
           </div>""" for name, price, desc, topic, feat in PACKAGES)
 
+SUBNAV = [("digital-transformation", "Digital Transformation"), ("business-analysis", "Business Analysis"),
+          ("cyber-security", "Cyber Security"), ("ai-adoption", "AI &amp; Automation"),
+          ("delivery", "Programme Delivery"), ("packages", "Packages &amp; Pricing")]
+subnav_links = "\n".join(f'          <li><a href="#{a}">{l}</a></li>' for a, l in SUBNAV)
+
 services = f"""    <section class="page-hero">
       <div class="container">
         <span class="eyebrow">Services</span>
@@ -448,6 +458,14 @@ services = f"""    <section class="page-hero">
         <p>Engage us for a defined package, a consultancy assignment or hands-on delivery leadership. Every engagement is shaped around the outcome you need.</p>
       </div>
     </section>
+
+    <nav class="subnav" aria-label="Jump to a service">
+      <div class="container">
+        <ul>
+{subnav_links}
+        </ul>
+      </div>
+    </nav>
 
     <section>
       <div class="container">
