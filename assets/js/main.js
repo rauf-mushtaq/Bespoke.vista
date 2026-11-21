@@ -75,6 +75,18 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && links.classList.contains('open')) { close(); toggle.focus(); } });
   }
 
+  /* ---------- Sticky call to action on phones: shown after the hero, hidden near the footer ---------- */
+  var sticky = $('.sticky-cta'), footer = $('.site-footer');
+  if (sticky) {
+    var onScroll = function () {
+      var nearFooter = footer && footer.getBoundingClientRect().top < window.innerHeight;
+      var consentOpen = banner && !banner.hidden;
+      sticky.classList.toggle('show', window.scrollY > 600 && !nearFooter && !consentOpen);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
   var year = $('#year');
   if (year) year.textContent = new Date().getFullYear();
 

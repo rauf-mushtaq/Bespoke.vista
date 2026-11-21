@@ -1,6 +1,8 @@
 # Bespoke Vista — website
 
-Static website for Bespoke Vista Ltd. *Bridging Strategy and Execution.*
+Static website for Bespoke Vista Ltd. **We lead the change. Our team keeps it running.**
+
+Proposition and growth recommendations: `docs/USP-AND-GROWTH.md`.
 
 Positions Bespoke Vista as a hybrid business: senior UK consulting, AI services,
 subscriptions, UK-led managed teams in Lahore, training, and the DojoOS product.

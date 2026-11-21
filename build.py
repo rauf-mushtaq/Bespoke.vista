@@ -53,7 +53,10 @@ PRIVACY_UPDATED = "21 November 2026"
 ASSESS_HREF = BOOKING_URL or "contact.html?topic=assessment"
 # TODO: optional separate Microsoft Bookings page for transformation discovery calls (logistics page).
 DISCOVERY_BOOKING_URL = ""
-DISCOVERY_HREF = DISCOVERY_BOOKING_URL or "contact.html?topic=transformation-discovery"
+DISCOVERY_HREF = DISCOVERY_BOOKING_URL or "contact.html?topic=discovery-call"
+
+# The core proposition, used across the site.
+USP = "We lead the change. Our team keeps it running."
 ARR = '<span class="arr" aria-hidden="true">→</span>'
 
 NAV = [
@@ -116,7 +119,7 @@ def header(active):
     <nav class="container nav" aria-label="Main">
       <a class="brand" href="index.html" aria-label="{SITE} home">
         {LOGO}
-        <span><span class="brand-name">{SITE}</span><span class="brand-tag">UK-managed · Lahore-delivered</span></span>
+        <span><span class="brand-name">{SITE}</span><span class="brand-tag">Lead the change · Keep it running</span></span>
       </a>
       <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu
@@ -125,7 +128,7 @@ def header(active):
 {items}
         <li class="nav-btns">
           <a class="btn btn-line btn-sm" href="scorecard.html"{cur("scorecard.html")} data-track="scorecard_cta">Free Scorecard</a>
-          <a class="btn btn-primary btn-sm" href="{ASSESS_HREF}" data-track="{track_for(ASSESS_HREF)}">Book an Assessment</a>
+          <a class="btn btn-primary btn-sm" href="{DISCOVERY_HREF}" data-track="{track_for(DISCOVERY_HREF)}">Book a Discovery Call</a>
         </li>
       </ul>
     </nav>
@@ -147,7 +150,7 @@ FOOTER = f"""  <footer class="site-footer">
       <div class="footer-grid">
         <div>
           <div class="footer-brand">{LOGO_LAZY}<span>{SITE}</span></div>
-          <p>UK-led business analysis, PMO, process documentation and AI-enabled operational services, delivered by managed teams in Lahore.</p>
+          <p><strong style="color:var(--paper)">{USP}</strong> Senior UK transformation leadership, with a managed delivery team in Lahore.</p>
           <p class="clocks" style="margin-top:8px"><span><span class="dot"></span><span data-status="lahore">Lahore office</span></span><span><b>LDN</b><span data-clock="london">--:--</span></span><span><b>LHE</b><span data-clock="lahore">--:--</span></span></p>
         </div>
         <div>
@@ -262,6 +265,7 @@ def page(filename, title, description, body, schema=None, full_title=None):
 {body}
   </main>
 {FOOTER}
+{'' if filename == 'contact.html' else f'  <a class="sticky-cta" href="{DISCOVERY_HREF}" data-track="{track_for(DISCOVERY_HREF)}">Book a Discovery Call {ARR}</a>'}
 {CONSENT_BANNER if (GA4_ID or CLARITY_ID) else ''}
   <script src="assets/js/main.js" defer></script>
 </body>
@@ -278,9 +282,9 @@ def page(filename, title, description, body, schema=None, full_title=None):
     print("wrote", filename)
 
 
-def cta(title="Start with a £495 Managed Operations Assessment.",
-        text="A 60-minute discovery workshop, a written view of what could be handed over safely, and a recommended pilot. The fee is credited against a qualifying pilot commissioned within 30 days.",
-        primary=("Book a Managed Operations Assessment", ASSESS_HREF),
+def cta(title="Tell us what needs to change.",
+        text="A free 30-minute discovery call with Azeem. We'll talk through your priorities and suggest the right first step: a fixed-price Transformation Discovery, a £495 Managed Operations Assessment, or neither if we're not the right fit.",
+        primary=("Book a Discovery Call", DISCOVERY_HREF),
         secondary=("Take the Free Readiness Scorecard", "scorecard.html")):
     return f"""    <section class="sec-tight">
       <div class="container">
@@ -364,14 +368,6 @@ SUBSCRIPTIONS = [
        ["5 hours of advisory a month", "Quarterly AI roadmap refresh", "AI usage policy and governance set-up", "One team workshop each quarter", "Next-working-day response"]),
       ("Partner", "An AI lead without the hire.", 1995,
        ["10 hours of advisory a month", "Monthly AI steering meeting", "Use-case pipeline managed for you", "Vendor and licence reviews", "Same-day response"])], 1),
-    ("fractional", "Fractional Business Architect", "For growing firms with change on the agenda",
-     "Senior business architecture and transformation leadership a few days a month.",
-     [("Navigator", "Keep change joined up.", 995,
-       ["1 day a month", "Capability and process map kept current", "Monthly change roadmap review", "Ad-hoc advice by email"]),
-      ("Architect", "Own the target operating model.", 1995,
-       ["2.5 days a month", "Target operating model ownership", "Change portfolio prioritisation", "Supplier and solution design reviews", "Seat at your leadership meeting"]),
-      ("Director", "Fractional transformation director.", 3995,
-       ["5 days a month", "Leads your transformation portfolio", "Programme governance and assurance", "Board reporting", "Backed by the Lahore delivery centre"])], 1),
 ]
 
 # The three primary managed services. Tier tuple: (name, short description, price, [inclusions], one-line summary)
@@ -429,9 +425,9 @@ PILOT = ("30-Day Managed Delivery Pilot", "£1,500–£2,500", "fixed fee · ex 
          ["One clearly defined process or workstream", "Named delivery lead", "Agreed inputs and outputs", "Baseline measurements",
           "Weekly progress review", "End-of-pilot results report", "Business case for ongoing delivery"],
          "The final price depends on scope, system access, complexity and data sensitivity, and is confirmed in writing after the assessment.")
-AI_DISCOVERY = ("AI Operations Discovery", "£2,500", "fixed price · ex VAT",
-                ["AI readiness assessment", "Process and data review", "Five prioritised use cases", "Risk and governance review",
-                 "90-day implementation roadmap", "Indicative business case"], "Typically three to four weeks.")
+AI_DISCOVERY = ("Automation and AI Opportunity Assessment", "£2,500–£5,000", "fixed price · ex VAT",
+                ["Review of three to five candidate processes", "Current-process analysis", "Automation suitability", "AI and data considerations",
+                 "Risk and control assessment", "Prioritised use cases", "Indicative benefits", "90-day roadmap"], "Typically two to three weeks.")
 AI_WORKFLOW = ("AI Workflow Implementation", "£5,000–£15,000", "fixed price per scope · ex VAT",
                ["One to three defined workflows", "Microsoft Copilot, SharePoint, Power Automate, Claude or ChatGPT integration where appropriate",
                 "Testing", "User guidance", "Governance documentation", "Handover"],
@@ -510,13 +506,11 @@ TRAINING = [
 PROJECTS = [
     (ASSESSMENT[0], "Discovery workshop, readiness review, process prioritisation, capacity and cost model, recommended pilot and written findings. Credited against a qualifying pilot commissioned within 30 days.", "£495", "1 to 2 weeks"),
     (PILOT[0], "One defined process or workstream, named delivery lead, baseline, weekly reviews, results report and business case.", "£1,500–£2,500", "30 days"),
-    (AI_DISCOVERY[0], "AI readiness, process and data review, five prioritised use cases, risk review, 90-day roadmap and indicative business case.", "£2,500", "3 to 4 weeks"),
     (AI_WORKFLOW[0], "One to three defined workflows with testing, user guidance, governance documentation and handover.", "£5,000–£15,000", "4 to 8 weeks"),
     ("Microsoft Copilot Adoption Programme", "Readiness, permissions clean-up, governance, champions, training and rollout.", "£5,000–£25,000", "6 to 12 weeks"),
     ("AI Governance Pack", "Usage policy, risk register, data rules, DPIA template and an approval process for new use cases.", "£2,500–£6,000", "3 to 4 weeks"),
     ("AI Optimisation Review", "Already paying for Copilot or ChatGPT but not seeing the value? We find out why and fix it.", "£1,950", "2 weeks"),
     ("Transformation Health Check", "Independent executive review of a struggling programme, with a practical recovery plan.", "£4,950", "2 weeks"),
-    ("Target Operating Model Design", "People, process, technology and governance designed together, with a roadmap.", "From £12,000", "6 to 10 weeks"),
     ("Cyber Security Business Analysis", "Requirements, process design and change support for security programmes.", "Fixed scope or day rate", "By agreement"),
 ]
 
@@ -528,7 +522,7 @@ DOJOOS = ("dojoos", "DojoOS", "For martial arts schools and wellness studios",
 
 # Secondary managed services: offered after an assessment, not priced publicly.
 SECONDARY = [
-    ("AI Operations Team", "Managed AI-assisted workflows with human review and monthly improvement.", "Scoped after an AI Operations Discovery"),
+    ("AI Operations Team", "Managed AI-assisted workflows with human review and monthly improvement.", "Scoped after an Automation and AI Opportunity Assessment"),
     ("Managed Back Office", "Admin, data upkeep and operational reporting to an agreed service level.", "Scoped after a Managed Operations Assessment"),
     ("Knowledge Management Service", "A SharePoint knowledge base kept current and ready for Copilot.", "Usually follows a Documentation Factory project"),
     ("Transformation Support Office", "Change plans, communications, training logistics and benefits tracking.", "Scoped after a Managed Operations Assessment"),
@@ -612,6 +606,132 @@ def offer_card(o, cta_text, cta_href, flag=None, cls=""):
           </div>"""
 
 
+# ============================================================== TRANSFORMATION CATALOGUE
+# (id, label, heading, intro, [scope], extra paragraph, tools, (cta text, cta href))
+LT_SERVICES = [
+    ("automation", "Process automation", "Automate repetitive work and remove unnecessary complexity",
+     "We find the manual, repetitive work that slows teams down, simplify the process first, then automate what's worth automating, with human approval where it matters.",
+     ["Identify manual and repetitive processes", "Map current workflows", "Find delays, duplication and control weaknesses",
+      "Prioritise automation opportunities", "Redesign processes before automating them", "Implement workflow automation",
+      "Improve management information", "Introduce appropriate human approval points", "Measure time, cost and quality improvements"],
+     "We recommend a platform only when it suits your systems, licences and skills.",
+     "Microsoft Power Automate, Microsoft 365, SharePoint, Microsoft Teams, Power Apps, approved AI platforms, and your existing systems and APIs.",
+     ("Book an Automation Discovery Session", "contact.html?topic=automation")),
+    ("ai", "AI adoption and implementation", "Turn AI interest into controlled, practical implementation",
+     "Implementation-led AI adoption using established tools such as Microsoft Copilot and approved AI platforms, with the governance, data and training that make it safe and useful.",
+     ["AI readiness assessments", "Identification of viable business use cases", "Process and data suitability", "AI risk assessment",
+      "Governance and acceptable-use controls", "Proofs of concept", "Microsoft Copilot adoption", "AI-enabled knowledge management",
+      "Document and information workflows", "User training", "Implementation roadmaps", "Adoption and benefits measurement"],
+     "We help you adopt and implement existing AI platforms. We don't build proprietary machine-learning models.",
+     "", ("Assess Your AI Readiness", "ai-scorecard.html")),
+    ("cyber", "Cybersecurity implementation", "Translate cybersecurity requirements into delivered change",
+     "We lead the business and delivery side of cybersecurity improvement: turning requirements and risk findings into controls, processes and behaviours that are actually in place.",
+     ["Cybersecurity transformation programmes", "Control implementation", "Identity and access-management change",
+      "Security-process design", "Governance and accountability", "Supplier coordination", "Risk remediation programmes",
+      "Security requirements", "Business engagement", "Migration and implementation planning", "User adoption",
+      "Programme reporting", "Operational handover"],
+     "We provide strategy support, implementation leadership and programme delivery. We are not a penetration-testing company, security operations centre or managed detection provider: specialist technical testing is carried out by your internal teams or specialist partners.",
+     "", ("Discuss a Cybersecurity Change Programme", "contact.html?topic=cyber-change")),
+    ("migration", "Technology and data migration", "Move systems, data and users without losing operational control",
+     "We lead the business change, governance and delivery of migrations, coordinating your internal teams and specialist technology partners so operations keep running.",
+     ["Business and technical requirements", "Current-state analysis", "Migration strategy", "Impact assessment",
+      "Stakeholder coordination", "Data and system dependencies", "Cutover planning", "Business readiness", "Testing governance",
+      "Communications", "Training", "Hypercare", "Benefits tracking", "Decommissioning planning"],
+     "Specialist technical migration work, such as data transformation scripts or platform configuration, is carried out by your teams or technology partners under our coordination.",
+     "Microsoft 365 migration, SharePoint migration, collaboration-platform migration, application replacement, cloud adoption, data migration and workplace technology change.",
+     ("Plan Your Migration", "contact.html?topic=migration")),
+    ("tom", "Target operating-model design", "Design how the future organisation will actually operate",
+     "A target operating model describes how your organisation will work in future: who does what, through which processes, with what information and technology. We design it so it can be implemented, not just presented.",
+     ["Current-state assessment", "Target operating-model blueprint", "Business capability map", "Process architecture",
+      "Organisation and responsibility design", "Governance model", "Technology implications", "Transition roadmap",
+      "Implementation work packages", "Benefits and KPI framework"],
+     "The model connects customer needs, capabilities, structure, roles, processes, governance, decision rights, data, technology, controls, performance measures, and sourcing and delivery locations, with a practical route from today's operation to the future one.",
+     "", ("Design Your Future Operating Model", "contact.html?topic=tom")),
+    ("simplify", "Process simplification and cost reduction", "Reduce operating cost by fixing complexity at its source",
+     "Much avoidable cost comes from complexity: repeated entry, unclear handoffs, rework and technology that isn't used. We find it, remove it and measure the difference.",
+     ["Repeated manual entry", "Duplicate systems", "Unclear handoffs", "Unnecessary approvals", "Process delays", "Rework",
+      "Poor information quality", "Weak ownership", "Unused technology", "Fragmented reporting", "Activities that don't add enough value"],
+     "Our method: map the current process; establish the baseline; identify delay, duplication and failure demand; simplify; assess automation; define the future process; build the business case; implement and measure. We measure cycle time, cost per transaction, manual touches, error and rework rates, service response time, system usage and staff capacity released. We don't promise a percentage saving before an assessment.",
+     "", ("Request a Process Review", "contact.html?topic=process-review")),
+    ("change", "Complex change and programme delivery", "Bring structure, governance and momentum to complex change",
+     "The value is in connecting strategy, business operations and technical delivery, so decisions are made on time and change lands in the operation.",
+     ["Programme mobilisation", "Recovery of struggling programmes", "Delivery governance", "Workstream coordination",
+      "Business architecture", "Business analysis", "RAID management", "Dependency management", "Stakeholder engagement",
+      "Supplier coordination", "Executive reporting", "Decision management", "Business readiness", "Transition planning",
+      "Benefits realisation", "Operational handover"],
+     "", "", ("Discuss Your Change Programme", "contact.html?topic=change-programme")),
+    ("workplace", "Remote and hybrid working enablement", "Enable secure and effective work across locations",
+     "Distributed work is not just installing Microsoft Teams. It changes ways of working, processes, controls, management practices, information access, security and user behaviour, and each needs designing.",
+     ["Microsoft 365, Teams and SharePoint", "Collaboration practices", "Document management", "Remote access", "Identity and access",
+      "Information security", "Employee onboarding", "Digital approval processes", "Knowledge sharing", "Governance", "Adoption and training"],
+     "", "", ("Review Your Digital Workplace", "contact.html?topic=digital-workplace")),
+]
+
+
+def lt_service(sid, lbl, heading, intro, scope, note, tools, cta_):
+    visible, more = scope[:5], scope[5:]
+    more_html = ""
+    if more or note or tools:
+        more_html = f"""<details class="more-scope"><summary>Full scope</summary>
+              {'<ul class="ticks compact">' + ''.join(f'<li>{x}</li>' for x in more) + '</ul>' if more else ''}
+              {f'<p class="small"><strong>Typical technologies:</strong> {tools}</p>' if tools else ''}
+              {f'<p class="small">{note}</p>' if note else ''}
+            </details>"""
+    return f"""          <article class="svc-card reveal" id="svc-{sid}">
+            <span class="label">{lbl}</span>
+            <h3>{heading}</h3>
+            <p>{intro}</p>
+            <ul class="ticks compact">{''.join(f'<li>{x}</li>' for x in visible)}</ul>
+            {more_html}
+            <div class="svc-actions">{btn(cta_[0], cta_[1], 'btn-line btn-sm')}</div>
+          </article>"""
+
+
+lt_services = "\n".join(lt_service(*s) for s in LT_SERVICES)
+
+
+# (name, price, period, [inclusions], note, cta)
+LT_PACKAGES = [
+    ("Transformation Discovery", "£1,500–£3,000", "fixed · ex VAT · about 1–2 weeks",
+     ["Leadership discovery session", "Problem definition", "Current-state review", "Initial stakeholder analysis",
+      "High-level risks and dependencies", "Prioritised opportunities", "Recommended delivery approach", "Written findings", "Next-step roadmap"],
+     "Delivery period depends on access and scope.", ("Book a Transformation Discovery Call", None)),
+    ("Automation and AI Opportunity Assessment", "£2,500–£5,000", "fixed · ex VAT · about 2–3 weeks",
+     ["Review of three to five candidate processes", "Current-process analysis", "Automation suitability", "AI and data considerations",
+      "Risk and control assessment", "Prioritised use cases", "Indicative benefits", "90-day roadmap"],
+     "", ("Request an Automation Assessment", "contact.html?topic=automation")),
+    ("Target Operating-Model Sprint", "£7,500–£15,000", "fixed · ex VAT · about 4–6 weeks",
+     ["Current-state assessment", "Design principles", "Capability assessment", "Target operating-model blueprint",
+      "Roles and responsibilities", "Process and governance implications", "Technology considerations", "Transition roadmap", "Leadership playback"],
+     "", ("Review Your Operating Model", "contact.html?topic=tom")),
+    ("Change Delivery Leadership", "From £7,500", "per month · ex VAT",
+     ["Senior transformation leadership", "Programme mobilisation", "Governance", "Dependency and risk management",
+      "Stakeholder coordination", "Supplier coordination", "Executive reporting", "Delivery assurance"],
+     "Monthly capacity is defined in the proposal. This is not an unlimited service.", ("Discuss a Complex Change Programme", "contact.html?topic=change-programme")),
+    ("Fractional Transformation Adviser", "£1,950–£4,500", "per month · ex VAT",
+     ["Two to four advisory sessions each month", "Programme and roadmap review", "Architecture and operating-model guidance",
+      "Independent challenge", "Risk and dependency review", "Leadership decision support", "Written monthly recommendations"],
+     "Delivery management and detailed documentation are scoped separately.", ("Discuss a Fractional Adviser Arrangement", "contact.html?topic=fractional-adviser")),
+]
+
+
+def lt_package(i, p):
+    name, price, per, items, note, (ctext, chref) = p
+    href = chref or DISCOVERY_HREF
+    feat = i == 0
+    return f"""          <div class="plan{' featured' if feat else ''} reveal">
+            {'<span class="flag">Start here</span>' if feat else ''}
+            <h3>{name}</h3>
+            <div class="amount">{price}</div><div class="per">{per}</div>
+            <ul>{''.join(f'<li>{x}</li>' for x in items)}</ul>
+            {f'<p class="small" style="margin:0 0 20px">{note}</p>' if note else ''}
+            {btn(ctext, href, 'btn-ember' if feat else 'btn-primary')}
+          </div>"""
+
+
+lt_packages = "\n".join(lt_package(i, p) for i, p in enumerate(LT_PACKAGES))
+
+
 # ============================================================== HOME
 FAQ = [
     ("Where is the work delivered?", "Delivery takes place in our office in Lahore, Pakistan. Commercial ownership, service management and senior oversight remain in the UK with Bespoke Vista Ltd. Workshops and governance meetings can be led by our UK lead."),
@@ -651,9 +771,16 @@ PROBLEMS = [
     ("“Requirements depend on whoever has time.”", "Managed Business Analysis", "#ba-card"),
     ("“We keep reworking things we thought were agreed.”", "Managed Business Analysis", "#ba-card"),
     ("“Our processes live in people’s heads.”", "Documentation Factory", "#documentation-card"),
-    ("“We want AI to help, but our processes aren’t ready for it.”", "Documentation Factory, then AI Operations Discovery", "#ai"),
+    ("“We want AI to help, but our processes aren’t ready for it.”", "Documentation Factory, then an Automation and AI Opportunity Assessment", "#ai"),
 ]
-PROBLEMS = [PROBLEMS[i] for i in (0, 1, 4, 5, 2, 3)]
+PROBLEMS = [
+    ("“Our core system is ageing, and replacing it touches every team.”", "Migrate &amp; Run", "#journeys"),
+    ("“We want automation and AI, but don't know where to start safely.”", "Automate &amp; Run", "#journeys"),
+    ("“We've designed the change. Now we lack the people to deliver it.”", "Change leadership plus managed services", "#model"),
+    ("“Nobody has a single, current view of our projects.”", "PMO-in-a-Box", "#pmo-card"),
+    ("“Our processes live in people’s heads.”", "Documentation Factory", "#documentation-card"),
+    ("“Requirements depend on whoever has time.”", "Managed Business Analysis", "#ba-card"),
+]
 problems_html = "\n".join(f"""          <div class="problem reveal"><p class="pq">{q}</p><a href="{h}" class="fix"><span>Addressed by</span>{s} →</a></div>""" for q, s, h in PROBLEMS)
 
 SERVICE_CTA = {
@@ -792,30 +919,141 @@ FOUNDING_BOX = f"""<div class="founding reveal">
             {btn("Ask about founding-client terms", "contact.html?topic=founding", "btn-primary btn-sm")}
           </div>"""
 
+LEAD_ITEMS = ["Transformation discovery and roadmaps", "Target operating-model design", "Process automation and practical AI adoption",
+              "Cybersecurity implementation", "Technology and data migration", "Complex programme leadership and recovery"]
+RUN_ITEMS = ["PMO-in-a-Box: governance, RAID and reporting", "Managed business analysis", "Documentation Factory: process maps and SOPs",
+             "Automation and AI workflow upkeep", "Management reporting and governance packs"]
+lead_prices = "".join(f'<li><span>{p[0]}</span><b>{p[1]}{"/month" if "month" in p[2] else ""}</b></li>' for p in LT_PACKAGES)
+run_prices = ('<li><span>Managed Operations Assessment</span><b>£495</b></li><li><span>30-day pilot</span><b>£1,500–£2,500</b></li>'
+              '<li><span>PMO-in-a-Box</span><b>from £1,950/month</b></li><li><span>Managed Business Analysis</span><b>from £2,250/month</b></li>'
+              '<li><span>Documentation Factory</span><b>from £2,950</b></li>')
+
+COMPARE4 = [
+    ("Who designs and leads the change", "Senior partners, mainly at the start", "A senior individual", "Usually technical leads", "A senior UK transformation lead, throughout"),
+    ("Who does the follow-through work", "Junior consultant teams", "Nobody: capacity runs out", "Staff you have to manage", "Our managed team in Lahore, run by us"),
+    ("Business and technology together", "Often separate teams", "Depends on the individual", "Mostly technology", "Core to how we work"),
+    ("Typical first commitment", "A large programme", "An open-ended day rate", "A headcount contract", "Fixed-price discovery from £1,500, or a £495 assessment"),
+    ("Accountability", "Firm-level", "Individual", "Split between you and the supplier", "One UK contract, one accountable lead"),
+    ("After go-live", "The team rolls off", "The contract ends", "Continues if you manage it", "Our team keeps it running, if you want it to"),
+]
+compare4_rows = "\n".join(f'              <tr><th scope="row">{r[0]}</th><td>{r[1]}</td><td>{r[2]}</td><td>{r[3]}</td><td class="us">{r[4]}</td></tr>' for r in COMPARE4)
+
+JOURNEYS = [
+    ("Design &amp; Run", "Redesign how the organisation works, then run the transition.",
+     [("Target Operating-Model Sprint", "£7,500–£15,000"), ("PMO-in-a-Box runs the transition", "from £1,950/month"), ("Documentation Factory for the new processes", "from £2,950")],
+     ("Review Your Operating Model", "contact.html?topic=tom")),
+    ("Migrate &amp; Run", "Move systems, data and users, then keep the new environment working.",
+     [("Transformation Discovery", "£1,500–£3,000"), ("Change Delivery Leadership for the migration", "from £7,500/month"), ("Documentation and PMO support through hypercare", "from £1,950/month")],
+     ("Plan Your Migration", "contact.html?topic=migration")),
+    ("Automate &amp; Run", "Find and build the right automations, then keep them working and improving.",
+     [("Automation and AI Opportunity Assessment", "£2,500–£5,000"), ("AI Workflow Implementation", "£5,000–£15,000"), ("Managed upkeep by our AI operations team", "scoped after implementation")],
+     ("Request an Automation Assessment", "contact.html?topic=automation")),
+]
+journeys_html = "\n".join(f"""          <article class="journey reveal">
+            <h3>{n}</h3>
+            <p>{d}</p>
+            <ol>{''.join(f'<li><span>{a}</span><b>{b}</b></li>' for a, b in steps)}</ol>
+            {btn(c[0], c[1], 'btn-line btn-sm')}
+          </article>""" for n, d, steps, c in JOURNEYS)
+
 home = f"""    <section class="hero home-hero">
       <div class="container hero-grid">
         <div>
-          {label("Managed PMO · Process documentation · Business analysis")}
-          <h1>Build the capability you need, <em class="ember">without building another department.</em></h1>
-          <p class="lead">Bespoke Vista provides UK-led business analysis, PMO, process documentation and AI-enabled operational services, delivered by managed teams in our Lahore office.</p>
-          <p class="support">Senior UK oversight. Office-based delivery. Defined outputs, transparent pricing and accountable service management.</p>
+          {label("Business and technology transformation · Managed delivery")}
+          <h1>We lead the change. <em class="ember">Our team keeps it running.</em></h1>
+          <p class="lead">Bespoke Vista combines senior UK transformation leadership with a managed delivery team in Lahore. We design and lead automation, AI, cybersecurity, migration and operating-model change, then provide the PMO, analysis and documentation capacity that makes it stick.</p>
+          <p class="support">One UK contract. One accountable lead. Fixed-price ways to start.</p>
           <div class="hero-actions">
-            {btn("Take the Free Readiness Scorecard", "scorecard.html", "btn-ember")}
-            {btn("Book a Managed Operations Assessment", ASSESS_HREF, "btn-line", arrow=False)}
+            {btn("Book a Discovery Call", DISCOVERY_HREF, "btn-ember")}
+            {btn("Take the Free Readiness Scorecard", "scorecard.html", "btn-line", arrow=False)}
           </div>
-          <p class="tagline-strong">UK-managed. Lahore-delivered. AI-enabled.</p>
+          <p class="tagline-strong">25+ years bridging business, technology and complex change.</p>
         </div>
         <div class="hero-art">
-          {horizon(["ASSESS", "PILOT", "RUN", "SCALE"], "A sun rising over a horizon, marking the route: assess, pilot, run and scale")}
+          {horizon(["DESIGN", "LEAD", "DELIVER", "RUN"], "A sun rising over a horizon, marking design, lead, deliver and run")}
         </div>
       </div>
       <div class="container">
-        <dl class="facts">
-          <div><dt>Start with</dt><dd>£495 assessment</dd></div>
-          <div><dt>Prove it with</dt><dd>30-day pilot from £1,500</dd></div>
-          <div><dt>Run it as</dt><dd>Managed service from £1,950/month</dd></div>
-          <div><dt>Led by</dt><dd>Azeem Mushtaq, 25+ years in transformation</dd></div>
-        </dl>
+        <div class="chooser" role="list" aria-label="Where to start">
+          <a class="choice reveal" role="listitem" href="{DISCOVERY_HREF}" data-track="{track_for(DISCOVERY_HREF)}">
+            <span class="ck">I need change designed and led</span>
+            <span class="cd">Automation, AI, cybersecurity, migration or a new operating model.</span>
+            <span class="cp">Transformation Discovery from £1,500</span>
+            <span class="cl">Book a Discovery Call →</span>
+          </a>
+          <a class="choice reveal" role="listitem" href="{ASSESS_HREF}" data-track="{track_for(ASSESS_HREF)}">
+            <span class="ck">I need delivery capacity</span>
+            <span class="cd">PMO, business analysis or process documentation, run as a managed service.</span>
+            <span class="cp">£495 assessment, then services from £1,950/month</span>
+            <span class="cl">Book a Managed Operations Assessment →</span>
+          </a>
+          <a class="choice reveal" role="listitem" href="scorecard.html" data-track="scorecard_cta">
+            <span class="ck">I'm not sure yet</span>
+            <span class="cd">Thirteen questions and an instant result with a recommended next step.</span>
+            <span class="cp">Free · about 5 minutes</span>
+            <span class="cl">Take the Free Readiness Scorecard →</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec sec-white" id="model">
+      <div class="container">
+        <div class="head">
+          <div>{label("How we're different")}<h2>Most firms either advise or supply people. <em class="ember">We do both, under one contract.</em></h2></div>
+          <p>Change usually stalls after the design: the consultant leaves, and nobody has time to document, report, analyse and keep the new way of working going. Bespoke Vista covers both halves.</p>
+        </div>
+        <div class="leadrun">
+          <div class="lr-panel reveal">
+            <span class="lr-tag">UK · Azeem Mushtaq</span>
+            <h3>We lead the change</h3>
+            <ul class="ticks compact">{''.join(f'<li>{x}</li>' for x in LEAD_ITEMS)}</ul>
+            <ul class="lr-prices">{lead_prices}</ul>
+            <a class="text-link" href="services.html#lead">Transformation services →</a>
+          </div>
+          <div class="lr-join" aria-hidden="true"><span>One contract<br>One accountable lead<br>One plan</span></div>
+          <div class="lr-panel lr-run reveal">
+            <span class="lr-tag">Managed team · Lahore office</span>
+            <h3>Our team keeps it running</h3>
+            <ul class="ticks compact">{''.join(f'<li>{x}</li>' for x in RUN_ITEMS)}</ul>
+            <ul class="lr-prices">{run_prices}</ul>
+            <a class="text-link" href="#services">Managed services →</a>
+          </div>
+        </div>
+        <div class="grid g3" style="margin-top:36px">
+          <div class="reveal"><h3>Change that doesn't stall</h3><p class="muted">The team that documents, reports and maintains the change is part of the plan from day one.</p></div>
+          <div class="reveal"><h3>Senior thinking, mid-market prices</h3><p class="muted">A senior lead where judgement matters; managed capacity where volume matters.</p></div>
+          <div class="reveal"><h3>One relationship, not three suppliers</h3><p class="muted">No hand-offs between a consultancy, a contractor and an outsourcing firm.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec sec-dark" id="compare">
+      <div class="container">
+        <div class="head">
+          <div>{label("The alternatives")}<h2>Where Bespoke Vista <em class="ember">fits.</em></h2></div>
+          <p>A general comparison of typical options, not of any specific firm.</p>
+        </div>
+        <div class="table-wrap reveal">
+          <table class="compare compare4">
+            <thead><tr><th scope="col"><span class="sr-only">Factor</span></th><th scope="col">Large consultancy</th><th scope="col">Independent contractor</th><th scope="col">Offshore IT supplier</th><th scope="col" class="us">Bespoke Vista</th></tr></thead>
+            <tbody>
+{compare4_rows}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="journeys">
+      <div class="container">
+        <div class="head">
+          <div>{label("Ways to work with us")}<h2>Change and capacity, <em class="ember">packaged together.</em></h2></div>
+          <p>Three common routes. Each step is priced and contracted separately, so you can stop after any step.</p>
+        </div>
+        <div class="grid g3">
+{journeys_html}
+        </div>
       </div>
     </section>
 
@@ -823,7 +1061,7 @@ home = f"""    <section class="hero home-hero">
       <div class="container">
         <div class="head">
           <div>{label("Who we work with")}<h2>For UK organisations of 50 to 500 people where the work has <em class="ember">outgrown the team.</em></h2></div>
-          <p>We focus on a small number of situations where managed capacity makes the biggest difference. If yours isn't listed, the scorecard will tell you quickly whether we're a good fit.</p>
+          <p>We focus on situations where senior change leadership and managed delivery capacity make the biggest difference. If yours isn't listed, a discovery call will tell you quickly whether we're a good fit.</p>
         </div>
         <div class="fit-grid">
 {who_html}
@@ -835,8 +1073,8 @@ home = f"""    <section class="hero home-hero">
     <section class="sec">
       <div class="container">
         <div class="head">
-          <div>{label("Common problems")}<h2>Six problems our services are <em class="ember">designed to fix.</em></h2></div>
-          <p>Each one costs senior time every week and gets worse as the organisation grows. Each one has a defined, priced service behind it.</p>
+          <div>{label("Common problems")}<h2>Six problems we're <em class="ember">built to fix.</em></h2></div>
+          <p>Some need change leading. Some need capacity. Most need both, which is why we offer both.</p>
         </div>
         <div class="grid g3">
 {problems_html}
@@ -847,7 +1085,7 @@ home = f"""    <section class="hero home-hero">
     <section class="sec sec-white" id="services">
       <div class="container">
         <div class="head">
-          <div>{label("Managed services")}<h2>Three services. <em class="ember">Clear scope, clear prices.</em></h2></div>
+          <div>{label("Keep it running: managed services")}<h2>Three managed services. <em class="ember">Clear scope, clear prices.</em></h2></div>
           <p>Each runs to defined capacity, outputs and service levels. Monthly services have a three-month initial term, then 30 days' notice. All prices exclude VAT. No package provides unlimited work.</p>
         </div>
         <div class="grid g3 svc-grid">
@@ -951,7 +1189,7 @@ home = f"""    <section class="hero home-hero">
           </div>
         </div>
         <div class="grid g2" style="margin-top:48px">
-{offer_card(AI_DISCOVERY, "Enquire about AI Operations Discovery", "contact.html?topic=ai-discovery")}
+{offer_card(AI_DISCOVERY, "Request an Automation Assessment", "contact.html?topic=automation")}
 {offer_card(AI_WORKFLOW, "Enquire about AI Workflow Implementation", "contact.html?topic=ai-workflow")}
         </div>
       </div>
@@ -992,38 +1230,27 @@ home = f"""    <section class="hero home-hero">
         <div class="reveal">
           {label("Founder")}
           <h2>Senior UK oversight from first conversation <em class="ember">to final delivery.</em></h2>
-          <p>Azeem Mushtaq brings more than 25 years of experience across business architecture, business analysis, transformation, programme delivery, cyber security and operational improvement. He provides UK-based commercial accountability and senior quality assurance across Bespoke Vista engagements.</p>
+          <p>Azeem Mushtaq has more than 25 years of experience working between business and technology teams. His expertise centres on automation, AI adoption, cybersecurity implementation, migration, target operating-model design, process simplification and the delivery of complex change.</p>
+          <p>He leads transformation engagements personally, and provides UK-based commercial accountability and senior quality assurance for the managed team's work.</p>
           <h3>In every engagement, Azeem:</h3>
           <ul class="ticks">
-            <li>Leads the Managed Operations Assessment personally</li>
+            <li>Leads the discovery or assessment personally</li>
             <li>Agrees scope, service levels and success measures with you</li>
             <li>Reviews quality before outputs reach you</li>
             <li>Chairs service reviews and is your escalation point</li>
           </ul>
-          {btn("Book a Managed Operations Assessment", ASSESS_HREF, "btn-primary")}
+          {btn("Book a Discovery Call", DISCOVERY_HREF, "btn-primary")}
         </div>
         <aside class="profile reveal" aria-label="Founder profile">
           {owner("professional photograph of Azeem (replaces the initials below).") if SHOW_OWNER_PLACEHOLDERS else ''}
           <div class="avatar" aria-hidden="true">AM</div>
           <h3>Azeem Mushtaq</h3>
-          <p class="role">Founder and senior UK lead</p>
+          <p class="role">Founder · Transformation lead</p>
           <p style="color:var(--paper);font-weight:600;margin:18px 0 10px">Experience</p>
           <ul class="chips">{''.join(f'<li>{x}</li>' for x in EXPERIENCE)}</ul>
           {f'<p style="margin-top:18px"><a href="{LINKEDIN_URL}" rel="noopener">View LinkedIn profile →</a></p>' if LINKEDIN_URL else owner("LinkedIn profile URL (set LINKEDIN_URL in build.py).")}
           {owner("verified qualifications, certifications, professional memberships, sector experience, major programme examples (no client names without permission) and client recommendations.")}
         </aside>
-      </div>
-    </section>
-
-    <section class="sec">
-      <div class="container">
-        <div class="head">
-          <div>{label("Delivery methodology")}<h2>How every engagement runs.</h2></div>
-          <p>The same five stages apply whether you start with an assessment, a documentation project or a managed service.</p>
-        </div>
-        <div class="steps steps5">
-{method_html}
-        </div>
       </div>
     </section>
 
@@ -1107,8 +1334,10 @@ def svc_schema(name, desc, price):
 HOME_SCHEMA = [
     ORG,
     {"@type": "ProfessionalService", "name": "Bespoke Vista", "url": BASE_URL, "parentOrganization": {"@id": BASE_URL + "#org"},
-     "description": "UK-led managed PMO, business analysis, process documentation and AI-enabled operational services, delivered by office-based teams in Lahore.",
+     "description": "We lead the change. Our team keeps it running. Senior UK transformation leadership for automation, AI, cybersecurity, migration and operating-model change, with a managed delivery team in Lahore.",
      "areaServed": "GB", "priceRange": "£495–£15,000"},
+    svc_schema("Transformation Discovery", "Leadership discovery, current-state review, risks, prioritised opportunities and a next-step roadmap.", "1500"),
+    svc_schema("Automation and AI Opportunity Assessment", "Review of three to five processes for automation and AI suitability, risks and a 90-day roadmap.", "2500"),
     svc_schema("PMO-in-a-Box", PMO[3], "1950"),
     svc_schema("Managed Business Analysis", BA[3], "2250"),
     svc_schema("Documentation Factory", DOCS[3], "2950"),
@@ -1117,9 +1346,9 @@ HOME_SCHEMA = [
 ]
 
 page("index.html", SITE,
-     "UK-led managed PMO, business analysis and process documentation for SMEs and mid-market organisations, delivered by office-based teams in Lahore. Assessments from £495.",
+     "We lead the change, our team keeps it running. Senior UK transformation leadership for automation, AI, cybersecurity and migration, plus managed PMO, analysis and documentation from Lahore.",
      home, schema=HOME_SCHEMA,
-     full_title="Managed PMO, Business Analysis &amp; Process Documentation | Bespoke Vista")
+     full_title="Transformation Leadership with Managed Delivery | Bespoke Vista")
 
 # ============================================================== SERVICES
 def svc(name, one, tag, who, gets, topic):
@@ -1146,16 +1375,16 @@ ADVISE = [
      "Any organisation considering managed delivery.", "Discovery workshop, readiness review, process prioritisation, capacity and cost model, recommended pilot and written findings.", "assessment"),
     ("Transformation Health Check", "An honest, independent view of a programme that's late, over budget or losing confidence.", "£4,950 · 2 weeks",
      "Boards and sponsors of programmes in trouble.", "Independent review, evidence-based RAG assessment, recovery plan and executive briefing.", "health-check"),
-    ("Target Operating Model Design", "Redesign how the business works after growth, a merger or a change in strategy.", "From £12,000",
-     "Growing SMEs and mid-market firms, especially logistics and warehousing.", "Capability map, process and organisation design, technology and governance model, and a phased roadmap.", "tom"),
-    ("Fractional Business Architect", "Senior architecture and transformation leadership, a few days a month.", "£995–£3,995/month",
-     "Firms with change on the agenda but no architect.", "Operating model ownership, roadmap and portfolio prioritisation, design reviews and board reporting.", "fractional"),
+    ("Transformation Discovery", "Define the problem, the options and the right first step.", "£1,500–£3,000 · 1 to 2 weeks",
+     "Leaders facing a change they need to shape before committing budget.", "Leadership discovery session, current-state review, stakeholder analysis, risks and dependencies, prioritised opportunities, recommended approach, written findings and roadmap.", "transformation-discovery"),
+    ("Fractional Transformation Adviser", "Senior independent challenge and guidance, a few sessions a month.", "£1,950–£4,500/month",
+     "Leadership teams running change without a senior transformation lead.", "Two to four advisory sessions a month, programme and roadmap review, architecture and operating-model guidance, risk review and written monthly recommendations.", "fractional-adviser"),
     ("Cyber Security Business Analysis", "Security requirements turned into processes people follow.", "Fixed scope or day rate",
      "Organisations running security, compliance or resilience programmes.", "Requirements, process design, governance and adoption support.", "cyber-ba"),
 ]
 AI = [
-    ("AI Operations Discovery", "Find the five AI use cases worth doing, and the risks.", "£2,500 · 3 to 4 weeks",
-     "Organisations ready to move from AI interest to AI delivery.", "AI readiness assessment, process and data review, five prioritised use cases, risk and governance review, 90-day roadmap and indicative business case.", "ai-discovery"),
+    ("Automation and AI Opportunity Assessment", "Find the automation and AI opportunities worth pursuing, and the risks.", "£2,500–£5,000 · 2 to 3 weeks",
+     "Organisations ready to move from AI interest to delivery.", "Three to five candidate processes reviewed, automation suitability, AI and data considerations, risk and control assessment, prioritised use cases, indicative benefits and a 90-day roadmap.", "automation"),
     ("AI Workflow Implementation", "One to three working AI-assisted workflows.", "£5,000–£15,000",
      "Teams with defined, repetitive processes.", "Workflows using Copilot, SharePoint, Power Automate, Claude or ChatGPT where technically viable, with testing, user guidance, governance documentation and handover.", "ai-workflow"),
     ("AI Governance Pack", "Use AI confidently without putting data or reputation at risk.", "£2,500–£6,000",
@@ -1175,6 +1404,13 @@ LEARN = [
     ("Calm Under Pressure", "Leadership resilience through Tai Chi, martial arts and breath.", "£1,250 · half day",
      "Leadership and high-pressure teams.", "Practical techniques for focus, composure and recovery.", "wellbeing"),
 ]
+
+
+LEAD_TAGS = {"automation": "Assessment from £2,500", "ai": "Assessment from £2,500", "cyber": "Leadership from £7,500/month",
+             "migration": "Leadership from £7,500/month", "tom": "Sprint £7,500–£15,000", "simplify": "Discovery from £1,500",
+             "change": "From £7,500/month", "workplace": "Discovery from £1,500"}
+LEAD = [(lbl, heading, LEAD_TAGS[sid], intro, ", ".join(scope) + ".", cta_[1].split("topic=")[-1] if "topic=" in cta_[1] else "ai-readiness")
+        for sid, lbl, heading, intro, scope, note, tools, cta_ in LT_SERVICES]
 
 
 def svc_block(bid, n, title, intro, rows, extra=""):
@@ -1203,22 +1439,23 @@ def subnav(items):
 services = f"""    <section class="page-hero">
       <div class="container">
         {label("Services")}
-        <h1>Managed services first. <em class="ember">Specialist support when you need it.</em></h1>
-        <p class="lead">Our three core managed services are PMO-in-a-Box, Managed Business Analysis and the Documentation Factory. Assessment, AI and advisory services support them. Tap any service for details.</p>
+        <h1>We lead the change. <em class="ember">Our team keeps it running.</em></h1>
+        <p class="lead">Transformation services led by Azeem Mushtaq in the UK, and managed PMO, analysis and documentation services delivered by our team in Lahore. Use one, or combine them under one contract. Tap any service for details.</p>
       </div>
     </section>
-{subnav([("run", "Managed services"), ("advise", "Assess and advise"), ("ai", "AI services"), ("learn", "Training"), ("industries", "Sectors")])}
+{subnav([("lead", "Lead the change"), ("run", "Keep it running"), ("advise", "Assess and advise"), ("ai", "AI services"), ("learn", "Training"), ("industries", "Sectors")])}
     <section class="sec">
       <div class="container">
-{svc_block("run", "01", "Managed services", "Delivered by our Lahore team under a UK lead, to defined capacity, outputs and service levels.", RUN, btn("Book a Managed Operations Assessment", ASSESS_HREF, "btn-ember btn-sm"))}
-{svc_block("advise", "02", "Assess and advise", "Fixed-scope consulting wherever possible, so you know the cost before we start.", ADVISE)}
-{svc_block("ai", "03", "AI services", "Practical AI using Microsoft Copilot, SharePoint, Power Automate, ChatGPT and Claude, starting from a measurable business problem.", AI, '<a class="btn btn-line btn-sm" href="ai-scorecard.html">Take the AI Readiness Scorecard ' + ARR + '</a>')}
-{svc_block("learn", "04", "Training and briefings", "Capability building for leaders and teams.", LEARN)}
+{svc_block("lead", "01", "Lead the change", "Business and technology transformation, designed and led by a senior UK practitioner with 25+ years between business and technology teams.", LEAD, btn("Book a Discovery Call", DISCOVERY_HREF, "btn-ember btn-sm"))}
+{svc_block("run", "02", "Keep it running", "Managed services delivered by our Lahore team under a UK lead, to defined capacity, outputs and service levels.", RUN, btn("Book a Managed Operations Assessment", ASSESS_HREF, "btn-primary btn-sm"))}
+{svc_block("advise", "03", "Assess and advise", "Fixed-scope consulting wherever possible, so you know the cost before we start.", ADVISE)}
+{svc_block("ai", "04", "AI services", "Practical AI using Microsoft Copilot, SharePoint, Power Automate, ChatGPT and Claude, starting from a measurable business problem.", AI, '<a class="btn btn-line btn-sm" href="ai-scorecard.html">Take the AI Readiness Scorecard ' + ARR + '</a>')}
+{svc_block("learn", "05", "Training and briefings", "Capability building for leaders and teams.", LEARN)}
         <div class="pillar-block" id="industries">
           <div class="side reveal">
             <span class="big-n">✦</span>
             <h2>Sectors</h2>
-            <p>Our focus is logistics, supply chain and professional services. We also work with the sectors below.</p>
+            <p>We work mainly with operationally complex organisations, including logistics and supply chain, and professional services. <a href="logistics.html">Transformation for logistics →</a></p>
           </div>
           <ul class="chips reveal" style="align-self:start">{''.join(f'<li>{x}</li>' for x in INDUSTRIES)}</ul>
         </div>
@@ -1228,8 +1465,8 @@ services = f"""    <section class="page-hero">
 {cta()}"""
 
 page("services.html", "Services",
-     "Managed PMO, Business Analysis as a Service and process documentation from Bespoke Vista, plus assessment, AI workflow and advisory services with clear prices.",
-     services, schema=[svc_schema(r[0], r[1], None) for r in RUN[:3] + AI[:2]])
+     "Transformation services (automation, AI adoption, cybersecurity implementation, migration and operating-model design) plus managed PMO, business analysis and documentation from Bespoke Vista.",
+     services, schema=[svc_schema(r[0], r[1], None) for r in LEAD + RUN[:3]])
 
 # ============================================================== DELIVERY MODEL (managed-teams.html)
 primary_offers = "\n".join(f"""          <div class="offer reveal">
@@ -1254,7 +1491,7 @@ managed = f"""    <section class="page-hero">
       <div class="container">
         {label("Delivery model")}
         <h1>UK-managed. Lahore-delivered. <em class="ember">AI-enabled.</em></h1>
-        <p class="lead">You contract with a UK company. A senior UK lead owns the outcome. Office-based professionals in our Lahore delivery centre do the work to documented processes and service levels.</p>
+        <p class="lead">This is the "keeps it running" half of what we do. You contract with a UK company, a senior UK lead owns the outcome, and office-based professionals in our Lahore delivery centre do the work to documented processes and service levels.</p>
         <div style="margin-top:28px">{CLOCKS}</div>
       </div>
     </section>
@@ -1346,7 +1583,7 @@ page("managed-teams.html", "Delivery Model",
      managed)
 
 # ============================================================== PRICING
-SUBNAV_PRICING = [("start", "Assessment and pilot"), ("pmo", "PMO-in-a-Box"), ("ba", "Managed BA"), ("documentation", "Documentation Factory"),
+SUBNAV_PRICING = [("transformation", "Transformation packages"), ("start", "Assessment and pilot"), ("pmo", "PMO-in-a-Box"), ("ba", "Managed BA"), ("documentation", "Documentation Factory"),
                   ("terms", "Commercial terms"), ("projects", "AI and fixed-price projects"), ("intelligence", "Subscriptions"),
                   ("training", "Training"), ("dojoos", "DojoOS"), ("faq", "FAQs")]
 
@@ -1358,14 +1595,25 @@ pricing = f"""    <section class="page-hero">
       <div class="container">
         {label("Pricing and terms")}
         <h1>Real prices. <em class="ember">Clear boundaries.</em></h1>
-        <p class="lead">Every package states what's included, how much capacity you get, and what isn't covered. No package provides unlimited work. All prices exclude VAT.</p>
+        <p class="lead">Transformation packages to lead the change, and managed services to keep it running. Every package states what's included and what isn't. No package provides unlimited work. All prices exclude VAT.</p>
       </div>
     </section>
 {subnav(SUBNAV_PRICING)}
+    <section class="sec" id="transformation" style="scroll-margin-top:140px">
+      <div class="container">
+        <div class="head">
+          <div>{label("Lead the change")}<h2>Transformation packages, <em class="ember">indicative prices.</em></h2></div>
+          <p>Led by Azeem Mushtaq. Final pricing depends on organisational scale, the number of functions involved, stakeholder availability and the detail required, and is confirmed in a written proposal.</p>
+        </div>
+        <div class="grid g3">
+{lt_packages}
+        </div>
+      </div>
+    </section>
     <section class="sec" id="start" style="scroll-margin-top:140px">
       <div class="container">
         <div class="head">
-          <div>{label("Start here")}<h2>Assess first. <em class="ember">Pilot before you commit.</em></h2></div>
+          <div>{label("Keep it running")}<h2>Assess first. <em class="ember">Pilot before you commit.</em></h2></div>
           <p>The assessment fee is credited against a qualifying pilot commissioned within 30 days.</p>
         </div>
         <div class="grid g2">
@@ -1455,7 +1703,7 @@ pricing = f"""    <section class="page-hero">
 {cta()}"""
 
 page("pricing.html", "Pricing",
-     "Bespoke Vista prices and package boundaries: £495 assessment, 30-day pilots from £1,500, PMO-in-a-Box from £1,950/month, Managed Business Analysis from £2,250/month, Documentation Factory from £2,950.",
+     "Bespoke Vista prices: Transformation Discovery from £1,500, Automation and AI Assessment from £2,500, operating-model sprints, change leadership, £495 managed-operations assessment, PMO-in-a-Box from £1,950/month and more.",
      pricing, schema=[svc_schema("PMO-in-a-Box", PMO[3], "1950"), svc_schema("Managed Business Analysis", BA[3], "2250"),
                       svc_schema("Documentation Factory", DOCS[3], "2950")])
 
@@ -1485,7 +1733,7 @@ S_DOCS = {"name": "Documentation Factory: Process Starter", "price": "£2,950 fi
           "what": "Five documented processes and SOPs in a controlled library: the foundation for handing any work over safely."}
 S_PILOT = {"name": "30-Day Managed Delivery Pilot", "price": "£1,500–£2,500", "href": "index.html#pilot",
            "what": "One defined process or workstream, a named delivery lead, baseline measures, weekly reviews and a results report."}
-S_AI = {"name": "AI Operations Discovery", "price": "£2,500 fixed", "href": "index.html#ai",
+S_AI = {"name": "Automation and AI Opportunity Assessment", "price": "£2,500–£5,000 fixed", "href": "index.html#ai",
         "what": "AI readiness, process and data review, five prioritised use cases, risk review and a 90-day roadmap."}
 S_SCALE = {"name": "PMO-in-a-Box Managed or Transformation Office", "price": "£3,950 to £7,500+/month", "href": "pricing.html#pmo",
            "what": "A weekly PMO rhythm or programme-level support across several workstreams, with senior UK oversight."}
@@ -1614,12 +1862,12 @@ AI_QUIZ = {
          "text": "AI is on the radar but not yet in the business. Agree where it will genuinely pay off, and put a few safe rules in place.",
          "risks": ["Staff using unapproved tools with company data", "Investment in licences before the use cases are clear", "Processes too undocumented to automate"],
          "actions": ["Agree two or three business problems AI should address", "Publish a short AI usage policy", "Document the processes you'd most like to improve"],
-         "service": S_AI, "next": {"label": "Enquire about AI Operations Discovery", "href": "contact.html?topic=ai-discovery", "track": "ai_cta", "text": "A fixed-price discovery that ends with five prioritised use cases and a 90-day roadmap."}},
+         "service": S_AI, "next": {"label": "Request an Automation Assessment", "href": "contact.html?topic=automation", "track": "ai_cta", "text": "A fixed-price discovery that ends with five prioritised use cases and a 90-day roadmap."}},
         {"max": 59, "name": "Experimenter", "title": "Turn pockets of use into a plan",
          "text": "People are using AI, but without much structure. Agree priorities, put governance in place and pick use cases worth scaling.",
          "risks": ["Inconsistent results across teams", "Data leakage through unapproved tools", "No measurable benefit to show leadership"],
          "actions": ["Prioritise use cases by value and risk", "Put governance and approved tools in place", "Measure a baseline before implementing"],
-         "service": S_AI, "next": {"label": "Enquire about AI Operations Discovery", "href": "contact.html?topic=ai-discovery", "track": "ai_cta", "text": "Turn scattered experiments into a prioritised, governed plan."}},
+         "service": S_AI, "next": {"label": "Request an Automation Assessment", "href": "contact.html?topic=automation", "track": "ai_cta", "text": "Turn scattered experiments into a prioritised, governed plan."}},
         {"max": 79, "name": "Adopter", "title": "Scale what works",
          "text": "The foundations are in place. The value now comes from implementing end-to-end workflows and measuring the benefit.",
          "risks": ["Pilots that never become production workflows", "Rising consumption costs", "Workflows nobody maintains"],
@@ -2097,6 +2345,7 @@ page("insights.html", "Insights",
 
 # ============================================================== CONTACT
 TOPICS = [
+    ("discovery-call", "Free 30-minute discovery call"),
     ("assessment", "Book a Managed Operations Assessment (£495)"),
     ("pilot", "Start a 30-Day Pilot"),
     ("transformation-discovery", "Transformation Discovery Call"),
@@ -2112,7 +2361,7 @@ TOPICS = [
     ("pmo", "PMO-in-a-Box / discuss our project portfolio"),
     ("ba", "Managed Business Analysis"),
     ("documentation", "Documentation Factory"),
-    ("ai-discovery", "AI Operations Discovery"),
+    ("ai-discovery", "Automation and AI Opportunity Assessment"),
     ("ai-workflow", "AI Workflow Implementation"),
     ("scorecard", "Readiness Scorecard results"),
     ("ai-scorecard", "AI Scorecard results"),
@@ -2120,7 +2369,6 @@ TOPICS = [
     ("managed", "Other managed services"),
     ("intelligence", "Executive AI Intelligence"),
     ("advisory", "Bespoke Vista AI Advisory"),
-    ("fractional", "Fractional Business Architect"),
     ("health-check", "Transformation Health Check"),
     ("tom", "Target Operating Model Design"),
     ("governance", "AI Governance Pack"),
@@ -2281,7 +2529,7 @@ samples_body = "\n".join([
     sample("process-map", "Process map", "A swim-lane process map from the Documentation Factory, with control points marked.", S4, "Visio or PDF"),
     sample("sop", "Standard operating procedure", "An extract from an SOP in our controlled template. A standard SOP covers one process, up to five pages.", S5, "Word or PDF"),
     sample("rtm", "Requirements traceability matrix", "From Managed Business Analysis: each requirement traced to its source, user story, test and status.", S6, "Excel template"),
-    sample("ai-report", "AI readiness report", "The prioritised use-case table from an AI Operations Discovery.", S7, "PDF"),
+    sample("ai-report", "AI readiness report", "The prioritised use-case table from an Automation and AI Opportunity Assessment.", S7, "PDF"),
     sample("pilot-plan", "30-day pilot plan", "How a 30-Day Managed Delivery Pilot is structured, measured and decided.", S8, "PDF"),
 ])
 
@@ -2327,88 +2575,6 @@ LT_CHALLENGES = [
 ]
 lt_challenges = "\n".join(f'          <div class="problem reveal"><p class="pq">{c}</p></div>' for c in LT_CHALLENGES)
 
-# (id, label, heading, intro, [scope], extra paragraph, tools, (cta text, cta href))
-LT_SERVICES = [
-    ("automation", "Process automation", "Automate repetitive work and remove unnecessary complexity",
-     "We find the manual, repetitive work that slows teams down, simplify the process first, then automate what's worth automating, with human approval where it matters.",
-     ["Identify manual and repetitive processes", "Map current workflows", "Find delays, duplication and control weaknesses",
-      "Prioritise automation opportunities", "Redesign processes before automating them", "Implement workflow automation",
-      "Improve management information", "Introduce appropriate human approval points", "Measure time, cost and quality improvements"],
-     "We recommend a platform only when it suits your systems, licences and skills.",
-     "Microsoft Power Automate, Microsoft 365, SharePoint, Microsoft Teams, Power Apps, approved AI platforms, and your existing systems and APIs.",
-     ("Book an Automation Discovery Session", "contact.html?topic=automation")),
-    ("ai", "AI adoption and implementation", "Turn AI interest into controlled, practical implementation",
-     "Implementation-led AI adoption using established tools such as Microsoft Copilot and approved AI platforms, with the governance, data and training that make it safe and useful.",
-     ["AI readiness assessments", "Identification of viable business use cases", "Process and data suitability", "AI risk assessment",
-      "Governance and acceptable-use controls", "Proofs of concept", "Microsoft Copilot adoption", "AI-enabled knowledge management",
-      "Document and information workflows", "User training", "Implementation roadmaps", "Adoption and benefits measurement"],
-     "We help you adopt and implement existing AI platforms. We don't build proprietary machine-learning models.",
-     "", ("Assess Your AI Readiness", "ai-scorecard.html")),
-    ("cyber", "Cybersecurity implementation", "Translate cybersecurity requirements into delivered change",
-     "We lead the business and delivery side of cybersecurity improvement: turning requirements and risk findings into controls, processes and behaviours that are actually in place.",
-     ["Cybersecurity transformation programmes", "Control implementation", "Identity and access-management change",
-      "Security-process design", "Governance and accountability", "Supplier coordination", "Risk remediation programmes",
-      "Security requirements", "Business engagement", "Migration and implementation planning", "User adoption",
-      "Programme reporting", "Operational handover"],
-     "We provide strategy support, implementation leadership and programme delivery. We are not a penetration-testing company, security operations centre or managed detection provider: specialist technical testing is carried out by your internal teams or specialist partners.",
-     "", ("Discuss a Cybersecurity Change Programme", "contact.html?topic=cyber-change")),
-    ("migration", "Technology and data migration", "Move systems, data and users without losing operational control",
-     "We lead the business change, governance and delivery of migrations, coordinating your internal teams and specialist technology partners so operations keep running.",
-     ["Business and technical requirements", "Current-state analysis", "Migration strategy", "Impact assessment",
-      "Stakeholder coordination", "Data and system dependencies", "Cutover planning", "Business readiness", "Testing governance",
-      "Communications", "Training", "Hypercare", "Benefits tracking", "Decommissioning planning"],
-     "Specialist technical migration work, such as data transformation scripts or platform configuration, is carried out by your teams or technology partners under our coordination.",
-     "Microsoft 365 migration, SharePoint migration, collaboration-platform migration, application replacement, cloud adoption, data migration and workplace technology change.",
-     ("Plan Your Migration", "contact.html?topic=migration")),
-    ("tom", "Target operating-model design", "Design how the future organisation will actually operate",
-     "A target operating model describes how your organisation will work in future: who does what, through which processes, with what information and technology. We design it so it can be implemented, not just presented.",
-     ["Current-state assessment", "Target operating-model blueprint", "Business capability map", "Process architecture",
-      "Organisation and responsibility design", "Governance model", "Technology implications", "Transition roadmap",
-      "Implementation work packages", "Benefits and KPI framework"],
-     "The model connects customer needs, capabilities, structure, roles, processes, governance, decision rights, data, technology, controls, performance measures, and sourcing and delivery locations, with a practical route from today's operation to the future one.",
-     "", ("Design Your Future Operating Model", "contact.html?topic=tom")),
-    ("simplify", "Process simplification and cost reduction", "Reduce operating cost by fixing complexity at its source",
-     "Much avoidable cost comes from complexity: repeated entry, unclear handoffs, rework and technology that isn't used. We find it, remove it and measure the difference.",
-     ["Repeated manual entry", "Duplicate systems", "Unclear handoffs", "Unnecessary approvals", "Process delays", "Rework",
-      "Poor information quality", "Weak ownership", "Unused technology", "Fragmented reporting", "Activities that don't add enough value"],
-     "Our method: map the current process; establish the baseline; identify delay, duplication and failure demand; simplify; assess automation; define the future process; build the business case; implement and measure. We measure cycle time, cost per transaction, manual touches, error and rework rates, service response time, system usage and staff capacity released. We don't promise a percentage saving before an assessment.",
-     "", ("Request a Process Review", "contact.html?topic=process-review")),
-    ("change", "Complex change and programme delivery", "Bring structure, governance and momentum to complex change",
-     "The value is in connecting strategy, business operations and technical delivery, so decisions are made on time and change lands in the operation.",
-     ["Programme mobilisation", "Recovery of struggling programmes", "Delivery governance", "Workstream coordination",
-      "Business architecture", "Business analysis", "RAID management", "Dependency management", "Stakeholder engagement",
-      "Supplier coordination", "Executive reporting", "Decision management", "Business readiness", "Transition planning",
-      "Benefits realisation", "Operational handover"],
-     "", "", ("Discuss Your Change Programme", "contact.html?topic=change-programme")),
-    ("workplace", "Remote and hybrid working enablement", "Enable secure and effective work across locations",
-     "Distributed work is not just installing Microsoft Teams. It changes ways of working, processes, controls, management practices, information access, security and user behaviour, and each needs designing.",
-     ["Microsoft 365, Teams and SharePoint", "Collaboration practices", "Document management", "Remote access", "Identity and access",
-      "Information security", "Employee onboarding", "Digital approval processes", "Knowledge sharing", "Governance", "Adoption and training"],
-     "", "", ("Review Your Digital Workplace", "contact.html?topic=digital-workplace")),
-]
-
-
-def lt_service(sid, lbl, heading, intro, scope, note, tools, cta_):
-    visible, more = scope[:5], scope[5:]
-    more_html = ""
-    if more or note or tools:
-        more_html = f"""<details class="more-scope"><summary>Full scope</summary>
-              {'<ul class="ticks compact">' + ''.join(f'<li>{x}</li>' for x in more) + '</ul>' if more else ''}
-              {f'<p class="small"><strong>Typical technologies:</strong> {tools}</p>' if tools else ''}
-              {f'<p class="small">{note}</p>' if note else ''}
-            </details>"""
-    return f"""          <article class="svc-card reveal" id="svc-{sid}">
-            <span class="label">{lbl}</span>
-            <h3>{heading}</h3>
-            <p>{intro}</p>
-            <ul class="ticks compact">{''.join(f'<li>{x}</li>' for x in visible)}</ul>
-            {more_html}
-            <div class="svc-actions">{btn(cta_[0], cta_[1], 'btn-line btn-sm')}</div>
-          </article>"""
-
-
-lt_services = "\n".join(lt_service(*s) for s in LT_SERVICES)
-
 LT_SITUATIONS = ["Replacing legacy operational systems", "Automating order and exception workflows", "Improving management reporting",
                  "Integrating customer and supplier information", "Migrating collaboration and document platforms",
                  "Strengthening identity and access controls", "Improving governance across programmes",
@@ -2416,46 +2582,6 @@ LT_SITUATIONS = ["Replacing legacy operational systems", "Automating order and e
                  "Introducing AI-assisted knowledge processes"]
 LT_NOT = "route optimisation, warehouse layout engineering, fleet maintenance, customs brokerage, freight forwarding, demand forecasting, inventory planning, transport procurement or network design"
 
-# (name, price, period, [inclusions], note, cta)
-LT_PACKAGES = [
-    ("Transformation Discovery", "£1,500–£3,000", "fixed · ex VAT · about 1–2 weeks",
-     ["Leadership discovery session", "Problem definition", "Current-state review", "Initial stakeholder analysis",
-      "High-level risks and dependencies", "Prioritised opportunities", "Recommended delivery approach", "Written findings", "Next-step roadmap"],
-     "Delivery period depends on access and scope.", ("Book a Transformation Discovery Call", None)),
-    ("Automation and AI Opportunity Assessment", "£2,500–£5,000", "fixed · ex VAT · about 2–3 weeks",
-     ["Review of three to five candidate processes", "Current-process analysis", "Automation suitability", "AI and data considerations",
-      "Risk and control assessment", "Prioritised use cases", "Indicative benefits", "90-day roadmap"],
-     "", ("Request an Automation Assessment", "contact.html?topic=automation")),
-    ("Target Operating-Model Sprint", "£7,500–£15,000", "fixed · ex VAT · about 4–6 weeks",
-     ["Current-state assessment", "Design principles", "Capability assessment", "Target operating-model blueprint",
-      "Roles and responsibilities", "Process and governance implications", "Technology considerations", "Transition roadmap", "Leadership playback"],
-     "", ("Review Your Operating Model", "contact.html?topic=tom")),
-    ("Change Delivery Leadership", "From £7,500", "per month · ex VAT",
-     ["Senior transformation leadership", "Programme mobilisation", "Governance", "Dependency and risk management",
-      "Stakeholder coordination", "Supplier coordination", "Executive reporting", "Delivery assurance"],
-     "Monthly capacity is defined in the proposal. This is not an unlimited service.", ("Discuss a Complex Change Programme", "contact.html?topic=change-programme")),
-    ("Fractional Transformation Adviser", "£1,950–£4,500", "per month · ex VAT",
-     ["Two to four advisory sessions each month", "Programme and roadmap review", "Architecture and operating-model guidance",
-      "Independent challenge", "Risk and dependency review", "Leadership decision support", "Written monthly recommendations"],
-     "Delivery management and detailed documentation are scoped separately.", ("Discuss a Fractional Adviser Arrangement", "contact.html?topic=fractional-adviser")),
-]
-
-
-def lt_package(i, p):
-    name, price, per, items, note, (ctext, chref) = p
-    href = chref or DISCOVERY_HREF
-    feat = i == 0
-    return f"""          <div class="plan{' featured' if feat else ''} reveal">
-            {'<span class="flag">Start here</span>' if feat else ''}
-            <h3>{name}</h3>
-            <div class="amount">{price}</div><div class="per">{per}</div>
-            <ul>{''.join(f'<li>{x}</li>' for x in items)}</ul>
-            {f'<p class="small" style="margin:0 0 20px">{note}</p>' if note else ''}
-            {btn(ctext, href, 'btn-ember' if feat else 'btn-primary')}
-          </div>"""
-
-
-lt_packages = "\n".join(lt_package(i, p) for i, p in enumerate(LT_PACKAGES))
 
 LT_METHOD = [
     ("Understand", "Establish the problem, objectives, stakeholders and current constraints."),
@@ -2561,6 +2687,18 @@ logistics = f"""    <section class="hero home-hero">
         <div class="grid g2 svc-grid">
 {lt_services}
         </div>
+      </div>
+    </section>
+
+    <section class="sec sec-sand" id="keep-running">
+      <div class="container split" style="align-items:center">
+        <div class="reveal">
+          {label("After go-live")}
+          <h2>We lead the change. <em class="ember">Our team keeps it running.</em></h2>
+          <p>Most transformation support ends at go-live. Ours doesn't have to. Our managed team in Lahore can take on the PMO reporting, business analysis, process documentation and automation upkeep that keep the new way of working going, under the same UK contract and the same accountable lead.</p>
+          <a class="text-link" href="index.html#journeys">See Design &amp; Run, Migrate &amp; Run and Automate &amp; Run →</a>
+        </div>
+        <ul class="ticks reveal"><li>PMO-in-a-Box from £1,950/month</li><li>Managed Business Analysis from £2,250/month</li><li>Documentation Factory from £2,950</li><li>Automation and AI workflow upkeep, scoped after implementation</li></ul>
       </div>
     </section>
 
