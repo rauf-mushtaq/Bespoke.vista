@@ -51,6 +51,9 @@ FOUNDING_PLACES = 3
 PRIVACY_UPDATED = "21 November 2026"
 
 ASSESS_HREF = BOOKING_URL or "contact.html?topic=assessment"
+# TODO: optional separate Microsoft Bookings page for transformation discovery calls (logistics page).
+DISCOVERY_BOOKING_URL = ""
+DISCOVERY_HREF = DISCOVERY_BOOKING_URL or "contact.html?topic=transformation-discovery"
 ARR = '<span class="arr" aria-hidden="true">→</span>'
 
 NAV = [
@@ -79,6 +82,8 @@ def owner(text, inline=False):
 
 
 def track_for(href):
+    if href == DISCOVERY_HREF:
+        return "discovery_call_start" if DISCOVERY_BOOKING_URL else "discovery_enquiry_start"
     if href == ASSESS_HREF:
         return "booking_start" if BOOKING_URL else "assessment_enquiry_start"
     if "topic=pilot" in href:
@@ -1468,7 +1473,7 @@ CONTEXT_QS = [
                  "Property", "Other: membership, training, wellbeing or similar"]},
 ]
 CONTEXT_NOTES = {
-    "sector": {"0": "Logistics and supply chain is where our founder has spent much of his career, so we already understand warehouse and transport processes, peak planning, customer reporting and the systems behind them."},
+    "sector": {"0": "Our founder has worked in logistics and supply-chain environments, so we understand how operational, customer and technology changes affect each other. Our role is the business and technology change, not logistics operations advice. <a href=\"logistics.html\">How we work with logistics businesses</a>."},
     "size": {"0": "For organisations under 50 people we usually start with a single workflow or a Process Starter documentation project, so the commitment stays proportionate."},
 }
 
@@ -2094,6 +2099,15 @@ page("insights.html", "Insights",
 TOPICS = [
     ("assessment", "Book a Managed Operations Assessment (£495)"),
     ("pilot", "Start a 30-Day Pilot"),
+    ("transformation-discovery", "Transformation Discovery Call"),
+    ("automation", "Automation discovery or assessment"),
+    ("ai-readiness", "AI readiness and adoption"),
+    ("cyber-change", "Cybersecurity change programme"),
+    ("migration", "Technology or data migration"),
+    ("process-review", "Process review and cost reduction"),
+    ("change-programme", "Complex change programme"),
+    ("digital-workplace", "Remote and hybrid working / digital workplace"),
+    ("fractional-adviser", "Fractional Transformation Adviser"),
     ("founding", "Founding-client terms"),
     ("pmo", "PMO-in-a-Box / discuss our project portfolio"),
     ("ba", "Managed Business Analysis"),
@@ -2292,137 +2306,399 @@ page("samples.html", "Sample Deliverables",
      samples)
 
 # ============================================================== LOGISTICS LANDING PAGE
-LOG_SITUATIONS = [
-    ("Warehouse and transport system changes", "WMS or TMS implementations and upgrades that need RAID control, requirements and documented new processes before go-live."),
-    ("New customer onboarding", "3PL onboardings with tight dates: site set-up plans, SOPs for the new account and customer-ready reporting."),
-    ("Peak readiness", "Documented processes and training material so temporary staff are productive quickly and errors don't climb with volume."),
-    ("Multi-site consistency", "The same process done differently at every site. Document it once, agree the standard, then measure it."),
-    ("Customer and contract reporting", "Regular operational and project reporting that currently takes a supervisor a day each week to compile."),
-    ("Audit and accreditation evidence", "Controlled SOPs, owners and review dates that make customer audits and accreditation visits easier to prepare for."),
-]
-log_sit = "\n".join(f"""          <div class="card reveal"><h3>{t}</h3><p style="margin:0">{d}</p></div>""" for t, d in LOG_SITUATIONS)
+# Positioning: business and technology transformation applied in logistics and operational
+# environments. Logistics is the client context, not the specialist discipline.
 
-LOG_PACKAGES = [
-    ("Warehouse SOP Starter", "Documentation Factory · Process Starter", "£2,950 fixed",
-     "Five core warehouse processes documented with SOPs and process maps, for example goods-in, put-away, picking, despatch and returns.", "documentation"),
-    ("Site Operations Manual", "Documentation Factory · Operations Manual", "£5,950 fixed",
-     "Twelve processes with roles, control points and operational KPIs, structured for SharePoint, ready for training and audits.", "documentation"),
-    ("Project control for change", "PMO-in-a-Box · Foundation", "£1,950/month",
-     "RAID, actions and a monthly portfolio dashboard across up to five projects, such as a system upgrade and customer onboardings.", "pmo"),
-    ("Onboarding analysis", "Managed Business Analysis · Essential", "£2,250/month",
-     "Up to six delivery days a month for requirements, process mapping and backlog upkeep on customer onboardings or system change.", "ba"),
-]
-log_pk = "\n".join(f"""          <div class="offer reveal">
-            <span class="label">{s}</span>
-            <h3>{n}</h3>
-            <p class="muted">{d}</p>
-            <div class="meta"><span class="p">{p} · ex VAT</span><a href="contact.html?topic={t}">Discuss this →</a></div>
-          </div>""" for n, s, p, d, t in LOG_PACKAGES)
+LT_ORGS = ["Logistics companies", "Warehousing businesses", "Distribution organisations", "Freight and transport operators",
+           "Supply-chain service providers", "Third-party logistics (3PL) businesses", "Other operationally complex organisations"]
+LT_BUYERS = ["Chief Operating Officers", "Chief Information Officers", "Chief Technology Officers", "Transformation Directors",
+             "IT Directors", "Programme Directors", "Heads of Change", "Heads of Automation", "Heads of Cybersecurity",
+             "Business Architecture leaders", "Operational Excellence leaders"]
 
-LOG_FAQ = [
-    ("Can you work with our warehouse or transport system?", "Yes. We document, analyse and report on processes in whichever WMS, TMS or ERP you use. We only need system access where the service requires it, and you grant and control that access."),
-    ("How do you price documentation across several sites?", "Per process. Where a process differs materially between sites, each version counts as a separate process. We confirm the count in the assessment, before you commit."),
-    ("When should we start before peak?", "For documentation, ideally eight to ten weeks before peak, so SOPs are reviewed and training material is ready before temporary staff arrive."),
-    ("Who attends our project and customer meetings?", "Your UK lead attends governance and customer-facing meetings where needed. The Lahore team prepares the RAID logs, dashboards and packs behind them."),
-    ("How is customer data handled?", "We work inside your systems where possible, under a Data Processing Agreement and international-transfer safeguards where personal data is involved. See our security section for the status of each control."),
+LT_CHALLENGES = [
+    "“Our core operational system is ageing, and replacing it touches almost every team.”",
+    "“People re-key the same information between operational, finance and customer systems.”",
+    "“AI tools are appearing in teams before we've agreed how they should be used.”",
+    "“Customers and insurers are asking for security improvements we need to actually deliver.”",
+    "“We have a migration coming and too many dependencies to see clearly.”",
+    "“Several programmes are competing for the same people, and nobody has the full picture.”",
+    "“Management reporting is assembled by hand from spreadsheets every week.”",
+    "“Sites and teams work in different ways, and there's no agreed operating model.”",
 ]
-log_faq = "\n".join(f"          <details><summary>{q}</summary><p>{a}</p></details>" for q, a in LOG_FAQ)
+lt_challenges = "\n".join(f'          <div class="problem reveal"><p class="pq">{c}</p></div>' for c in LT_CHALLENGES)
+
+# (id, label, heading, intro, [scope], extra paragraph, tools, (cta text, cta href))
+LT_SERVICES = [
+    ("automation", "Process automation", "Automate repetitive work and remove unnecessary complexity",
+     "We find the manual, repetitive work that slows teams down, simplify the process first, then automate what's worth automating, with human approval where it matters.",
+     ["Identify manual and repetitive processes", "Map current workflows", "Find delays, duplication and control weaknesses",
+      "Prioritise automation opportunities", "Redesign processes before automating them", "Implement workflow automation",
+      "Improve management information", "Introduce appropriate human approval points", "Measure time, cost and quality improvements"],
+     "We recommend a platform only when it suits your systems, licences and skills.",
+     "Microsoft Power Automate, Microsoft 365, SharePoint, Microsoft Teams, Power Apps, approved AI platforms, and your existing systems and APIs.",
+     ("Book an Automation Discovery Session", "contact.html?topic=automation")),
+    ("ai", "AI adoption and implementation", "Turn AI interest into controlled, practical implementation",
+     "Implementation-led AI adoption using established tools such as Microsoft Copilot and approved AI platforms, with the governance, data and training that make it safe and useful.",
+     ["AI readiness assessments", "Identification of viable business use cases", "Process and data suitability", "AI risk assessment",
+      "Governance and acceptable-use controls", "Proofs of concept", "Microsoft Copilot adoption", "AI-enabled knowledge management",
+      "Document and information workflows", "User training", "Implementation roadmaps", "Adoption and benefits measurement"],
+     "We help you adopt and implement existing AI platforms. We don't build proprietary machine-learning models.",
+     "", ("Assess Your AI Readiness", "ai-scorecard.html")),
+    ("cyber", "Cybersecurity implementation", "Translate cybersecurity requirements into delivered change",
+     "We lead the business and delivery side of cybersecurity improvement: turning requirements and risk findings into controls, processes and behaviours that are actually in place.",
+     ["Cybersecurity transformation programmes", "Control implementation", "Identity and access-management change",
+      "Security-process design", "Governance and accountability", "Supplier coordination", "Risk remediation programmes",
+      "Security requirements", "Business engagement", "Migration and implementation planning", "User adoption",
+      "Programme reporting", "Operational handover"],
+     "We provide strategy support, implementation leadership and programme delivery. We are not a penetration-testing company, security operations centre or managed detection provider: specialist technical testing is carried out by your internal teams or specialist partners.",
+     "", ("Discuss a Cybersecurity Change Programme", "contact.html?topic=cyber-change")),
+    ("migration", "Technology and data migration", "Move systems, data and users without losing operational control",
+     "We lead the business change, governance and delivery of migrations, coordinating your internal teams and specialist technology partners so operations keep running.",
+     ["Business and technical requirements", "Current-state analysis", "Migration strategy", "Impact assessment",
+      "Stakeholder coordination", "Data and system dependencies", "Cutover planning", "Business readiness", "Testing governance",
+      "Communications", "Training", "Hypercare", "Benefits tracking", "Decommissioning planning"],
+     "Specialist technical migration work, such as data transformation scripts or platform configuration, is carried out by your teams or technology partners under our coordination.",
+     "Microsoft 365 migration, SharePoint migration, collaboration-platform migration, application replacement, cloud adoption, data migration and workplace technology change.",
+     ("Plan Your Migration", "contact.html?topic=migration")),
+    ("tom", "Target operating-model design", "Design how the future organisation will actually operate",
+     "A target operating model describes how your organisation will work in future: who does what, through which processes, with what information and technology. We design it so it can be implemented, not just presented.",
+     ["Current-state assessment", "Target operating-model blueprint", "Business capability map", "Process architecture",
+      "Organisation and responsibility design", "Governance model", "Technology implications", "Transition roadmap",
+      "Implementation work packages", "Benefits and KPI framework"],
+     "The model connects customer needs, capabilities, structure, roles, processes, governance, decision rights, data, technology, controls, performance measures, and sourcing and delivery locations, with a practical route from today's operation to the future one.",
+     "", ("Design Your Future Operating Model", "contact.html?topic=tom")),
+    ("simplify", "Process simplification and cost reduction", "Reduce operating cost by fixing complexity at its source",
+     "Much avoidable cost comes from complexity: repeated entry, unclear handoffs, rework and technology that isn't used. We find it, remove it and measure the difference.",
+     ["Repeated manual entry", "Duplicate systems", "Unclear handoffs", "Unnecessary approvals", "Process delays", "Rework",
+      "Poor information quality", "Weak ownership", "Unused technology", "Fragmented reporting", "Activities that don't add enough value"],
+     "Our method: map the current process; establish the baseline; identify delay, duplication and failure demand; simplify; assess automation; define the future process; build the business case; implement and measure. We measure cycle time, cost per transaction, manual touches, error and rework rates, service response time, system usage and staff capacity released. We don't promise a percentage saving before an assessment.",
+     "", ("Request a Process Review", "contact.html?topic=process-review")),
+    ("change", "Complex change and programme delivery", "Bring structure, governance and momentum to complex change",
+     "The value is in connecting strategy, business operations and technical delivery, so decisions are made on time and change lands in the operation.",
+     ["Programme mobilisation", "Recovery of struggling programmes", "Delivery governance", "Workstream coordination",
+      "Business architecture", "Business analysis", "RAID management", "Dependency management", "Stakeholder engagement",
+      "Supplier coordination", "Executive reporting", "Decision management", "Business readiness", "Transition planning",
+      "Benefits realisation", "Operational handover"],
+     "", "", ("Discuss Your Change Programme", "contact.html?topic=change-programme")),
+    ("workplace", "Remote and hybrid working enablement", "Enable secure and effective work across locations",
+     "Distributed work is not just installing Microsoft Teams. It changes ways of working, processes, controls, management practices, information access, security and user behaviour, and each needs designing.",
+     ["Microsoft 365, Teams and SharePoint", "Collaboration practices", "Document management", "Remote access", "Identity and access",
+      "Information security", "Employee onboarding", "Digital approval processes", "Knowledge sharing", "Governance", "Adoption and training"],
+     "", "", ("Review Your Digital Workplace", "contact.html?topic=digital-workplace")),
+]
+
+
+def lt_service(sid, lbl, heading, intro, scope, note, tools, cta_):
+    visible, more = scope[:5], scope[5:]
+    more_html = ""
+    if more or note or tools:
+        more_html = f"""<details class="more-scope"><summary>Full scope</summary>
+              {'<ul class="ticks compact">' + ''.join(f'<li>{x}</li>' for x in more) + '</ul>' if more else ''}
+              {f'<p class="small"><strong>Typical technologies:</strong> {tools}</p>' if tools else ''}
+              {f'<p class="small">{note}</p>' if note else ''}
+            </details>"""
+    return f"""          <article class="svc-card reveal" id="svc-{sid}">
+            <span class="label">{lbl}</span>
+            <h3>{heading}</h3>
+            <p>{intro}</p>
+            <ul class="ticks compact">{''.join(f'<li>{x}</li>' for x in visible)}</ul>
+            {more_html}
+            <div class="svc-actions">{btn(cta_[0], cta_[1], 'btn-line btn-sm')}</div>
+          </article>"""
+
+
+lt_services = "\n".join(lt_service(*s) for s in LT_SERVICES)
+
+LT_SITUATIONS = ["Replacing legacy operational systems", "Automating order and exception workflows", "Improving management reporting",
+                 "Integrating customer and supplier information", "Migrating collaboration and document platforms",
+                 "Strengthening identity and access controls", "Improving governance across programmes",
+                 "Supporting organisational restructuring", "Enabling distributed operational teams",
+                 "Introducing AI-assisted knowledge processes"]
+LT_NOT = "route optimisation, warehouse layout engineering, fleet maintenance, customs brokerage, freight forwarding, demand forecasting, inventory planning, transport procurement or network design"
+
+# (name, price, period, [inclusions], note, cta)
+LT_PACKAGES = [
+    ("Transformation Discovery", "£1,500–£3,000", "fixed · ex VAT · about 1–2 weeks",
+     ["Leadership discovery session", "Problem definition", "Current-state review", "Initial stakeholder analysis",
+      "High-level risks and dependencies", "Prioritised opportunities", "Recommended delivery approach", "Written findings", "Next-step roadmap"],
+     "Delivery period depends on access and scope.", ("Book a Transformation Discovery Call", None)),
+    ("Automation and AI Opportunity Assessment", "£2,500–£5,000", "fixed · ex VAT · about 2–3 weeks",
+     ["Review of three to five candidate processes", "Current-process analysis", "Automation suitability", "AI and data considerations",
+      "Risk and control assessment", "Prioritised use cases", "Indicative benefits", "90-day roadmap"],
+     "", ("Request an Automation Assessment", "contact.html?topic=automation")),
+    ("Target Operating-Model Sprint", "£7,500–£15,000", "fixed · ex VAT · about 4–6 weeks",
+     ["Current-state assessment", "Design principles", "Capability assessment", "Target operating-model blueprint",
+      "Roles and responsibilities", "Process and governance implications", "Technology considerations", "Transition roadmap", "Leadership playback"],
+     "", ("Review Your Operating Model", "contact.html?topic=tom")),
+    ("Change Delivery Leadership", "From £7,500", "per month · ex VAT",
+     ["Senior transformation leadership", "Programme mobilisation", "Governance", "Dependency and risk management",
+      "Stakeholder coordination", "Supplier coordination", "Executive reporting", "Delivery assurance"],
+     "Monthly capacity is defined in the proposal. This is not an unlimited service.", ("Discuss a Complex Change Programme", "contact.html?topic=change-programme")),
+    ("Fractional Transformation Adviser", "£1,950–£4,500", "per month · ex VAT",
+     ["Two to four advisory sessions each month", "Programme and roadmap review", "Architecture and operating-model guidance",
+      "Independent challenge", "Risk and dependency review", "Leadership decision support", "Written monthly recommendations"],
+     "Delivery management and detailed documentation are scoped separately.", ("Discuss a Fractional Adviser Arrangement", "contact.html?topic=fractional-adviser")),
+]
+
+
+def lt_package(i, p):
+    name, price, per, items, note, (ctext, chref) = p
+    href = chref or DISCOVERY_HREF
+    feat = i == 0
+    return f"""          <div class="plan{' featured' if feat else ''} reveal">
+            {'<span class="flag">Start here</span>' if feat else ''}
+            <h3>{name}</h3>
+            <div class="amount">{price}</div><div class="per">{per}</div>
+            <ul>{''.join(f'<li>{x}</li>' for x in items)}</ul>
+            {f'<p class="small" style="margin:0 0 20px">{note}</p>' if note else ''}
+            {btn(ctext, href, 'btn-ember' if feat else 'btn-primary')}
+          </div>"""
+
+
+lt_packages = "\n".join(lt_package(i, p) for i, p in enumerate(LT_PACKAGES))
+
+LT_METHOD = [
+    ("Understand", "Establish the problem, objectives, stakeholders and current constraints."),
+    ("Simplify", "Remove unnecessary complexity before selecting or automating technology."),
+    ("Design", "Define the future process, target operating model, controls and technology requirements."),
+    ("Deliver", "Mobilise the programme, coordinate teams and implement the change."),
+    ("Embed", "Support adoption, operational handover, measurement and continuous improvement."),
+]
+lt_method = "\n".join(f'          <div class="reveal"><h3>{t}</h3><p>{d}</p></div>' for t, d in LT_METHOD)
+
+LT_OUTCOMES = ["Less manual administration", "Simpler and more consistent processes", "Lower avoidable operating cost",
+               "Better use of existing technology", "Clearer accountability", "Stronger programme governance", "Safer AI adoption",
+               "Improved cybersecurity controls", "More effective remote collaboration", "Reduced migration risk",
+               "Better management information", "Faster implementation of approved change"]
+LT_MEASURES = ["Cycle time", "Cost per transaction", "Manual touches", "Error rate", "Rework rate", "Service response time",
+               "System usage", "Staff capacity released"]
+
+LT_EXPERTISE = ["Business and technology transformation", "Automation", "Practical AI adoption", "Cybersecurity implementation",
+                "Technology and application migration", "Target operating-model design", "Business architecture", "Business analysis",
+                "Process simplification", "Microsoft 365 implementation and adoption", "Remote and hybrid working", "Programme governance",
+                "Stakeholder alignment"]
+
+LT_SCENARIO = [
+    ("Client context", "A UK distribution business with several sites, an ageing operational system and customer reporting compiled by hand."),
+    ("Business problem", "Support for the operational system ends within two years. Delivery exceptions are handled through email and spreadsheets, and there is no agreed future process."),
+    ("Bespoke Vista's role", "Transformation lead: discovery, operating-model design for exception management, migration governance, automation design and supplier coordination."),
+    ("Complexity", "Dependencies across customer service, operations, finance, IT and two technology suppliers, with cutover windows constrained by trading peaks."),
+    ("Approach", "Transformation Discovery, then process simplification, an automation and AI opportunity assessment, a migration plan with business-readiness activities, and change delivery leadership."),
+    ("Deliverables", "Current- and future-state process maps, an exception-management operating model, a workflow automation design with human approval points, a migration and cutover plan, RAID and governance packs, and a benefits framework."),
+    ("Measured result", "In a real engagement we would report cycle time, manual touches and error rate against the baseline. No results are shown because this is not a real engagement."),
+    ("Lessons", "Simplify the exception process before automating it; plan cutover around trading peaks; agree benefit measures before go-live."),
+]
+lt_scenario = "".join(f"<dt>{k}</dt><dd>{v}</dd>" for k, v in LT_SCENARIO)
+
+LT_FAQ = [
+    ("Are you a logistics operations consultancy?", "No. We are a business and technology transformation consultancy that works with logistics and other operationally complex organisations. We don't advise on " + LT_NOT + "."),
+    ("What types of logistics transformation do you support?", "Process automation, AI adoption, cybersecurity implementation, technology and data migration, target operating-model design, process simplification, complex programme delivery and remote or hybrid working. Typical situations include replacing legacy operational systems, automating exception workflows and improving management reporting."),
+    ("Can you deliver the technical implementation?", "We lead the business change, design, governance and delivery. Workflow automation in Microsoft 365 and Power Automate can be delivered directly where suitable. Specialist engineering, platform configuration and penetration testing are delivered by your internal teams or verified technical partners, depending on the engagement."),
+    ("Do you work with internal IT teams and external suppliers?", "Yes. Coordinating internal teams and suppliers, and translating between business and technical teams, is a core part of the role."),
+    ("Can you lead a migration programme?", "Yes: strategy, impact assessment, dependencies, cutover planning, business readiness, testing governance, communications, training, hypercare and decommissioning planning, working alongside your technical teams and partners."),
+    ("How do you identify automation opportunities?", "We map candidate processes, measure volumes, delays and manual touches, simplify the process first, then assess automation suitability, data and control risks, and indicative benefits."),
+    ("Can you help us adopt Microsoft Copilot?", "Yes: readiness and permissions review, governance and acceptable-use controls, use cases, user training and adoption measurement."),
+    ("What is included in target operating-model design?", "A current-state assessment, blueprint, capability map, process architecture, roles and responsibilities, governance model, technology implications, transition roadmap, implementation work packages and a benefits and KPI framework."),
+    ("Can you recover a delayed or struggling programme?", "Yes. We start with an independent review of scope, plan, governance, risks and stakeholder alignment, then agree a recovery plan and, if required, lead its delivery."),
+    ("Do you provide cybersecurity testing?", "No. We lead cybersecurity change programmes and control implementation. Penetration testing, security monitoring and managed detection are provided by specialist partners or your internal teams."),
+    ("Can you support remote and hybrid working?", "Yes, covering technology, ways of working, processes, information access, security, onboarding and adoption, not just collaboration tools."),
+    ("How do you measure cost reduction?", "We establish a baseline at the start, covering cycle time, cost per transaction, manual touches, error and rework rates and staff capacity, agree how progress will be evaluated, and report against it. We don't promise a percentage saving before an assessment."),
+    ("Can you work on a fractional basis?", "Yes. The Fractional Transformation Adviser runs from £1,950 to £4,500 a month, with two to four advisory sessions and written recommendations each month."),
+    ("How quickly can an assessment begin?", "A Transformation Discovery can usually begin within one to two weeks of agreement, subject to stakeholder availability and access."),
+    ("What information is required to produce a proposal?", "Your objectives, the scope and scale of the change (functions, sites, systems and users), key stakeholders, known constraints and timescales, and any existing plans or supplier arrangements. A discovery call is usually enough to produce an outline proposal."),
+]
+lt_faq = "\n".join(f"          <details><summary>{q}</summary><p>{a}</p></details>" for q, a in LT_FAQ)
 
 logistics = f"""    <section class="hero home-hero">
       <div class="container hero-grid">
         <div>
-          {label("For logistics, warehousing and 3PL businesses")}
-          <h1>Keep projects and processes under control, <em class="ember">through peak and growth.</em></h1>
-          <p class="lead">Bespoke Vista provides PMO, process documentation and business analysis for UK logistics and supply-chain businesses, with senior UK oversight and office-based delivery in Lahore.</p>
-          <p class="support">Led by a founder whose career includes logistics and supply-chain operations. Defined outputs, transparent prices, one accountable UK lead.</p>
+          <h1><span class="h1-kicker">Technology-enabled transformation for logistics</span>Modernise operations. Simplify processes. <em class="ember">Deliver change with confidence.</em></h1>
+          <p class="lead">Bespoke Vista helps logistics and operational organisations automate work, adopt AI, strengthen cybersecurity, migrate technology and design more efficient operating models.</p>
+          <p class="support">From early-stage strategy through implementation and adoption, we connect business needs, operational processes and technology to produce change that works in practice.</p>
           <div class="hero-actions">
-            {btn("Book a Managed Operations Assessment", ASSESS_HREF, "btn-ember")}
-            {btn("Take the Free Readiness Scorecard", "scorecard.html", "btn-line", arrow=False)}
+            {btn("Book a Transformation Discovery Call", DISCOVERY_HREF, "btn-ember")}
+            {btn("Explore Our Transformation Services", "#services", "btn-line", arrow=False)}
           </div>
-          <p class="tagline-strong">UK-managed. Lahore-delivered. AI-enabled.</p>
+          <p class="tagline-strong">25+ years bridging business, technology and complex change.</p>
         </div>
         <div class="hero-art">
-          {horizon(["INBOUND", "STORE", "DISPATCH", "REPORT"])}
+          {horizon(["PEOPLE", "PROCESS", "DATA", "TECHNOLOGY"], "A sun rising over a horizon, marked people, process, data and technology")}
         </div>
       </div>
     </section>
 
-    <section class="sec sec-white">
+    <section class="sec sec-white" id="who">
       <div class="container">
         <div class="head">
-          <div>{label("Where we help")}<h2>Six situations we're <em class="ember">built for.</em></h2></div>
-          <p>Logistics businesses run change alongside live operations. These are the points where projects slip and process knowledge gets lost.</p>
-        </div>
-        <div class="grid g3">
-{log_sit}
-        </div>
-      </div>
-    </section>
-
-    <section class="sec">
-      <div class="container">
-        <div class="head">
-          <div>{label("Packages for logistics")}<h2>Start with a defined, <em class="ember">priced piece of work.</em></h2></div>
-          <p>Each package is one of our standard services, scoped for logistics. Full boundaries and terms are on the <a href="pricing.html">pricing page</a>.</p>
+          <div>{label("Who we work with")}<h2>Organisations where operations, partners and technology are <em class="ember">tightly connected.</em></h2></div>
+          <p>We help logistics and operational organisations simplify processes, implement technology and deliver complex change.</p>
         </div>
         <div class="grid g2">
-{log_pk}
+          <div class="reveal"><h3>Organisations</h3><ul class="chips">{''.join(f'<li>{x}</li>' for x in LT_ORGS)}</ul></div>
+          <div class="reveal"><h3>Leaders we typically work with</h3><ul class="chips">{''.join(f'<li>{x}</li>' for x in LT_BUYERS)}</ul></div>
         </div>
-      </div>
-    </section>
-
-    <section class="sec sec-dark">
-      <div class="container split" style="align-items:center">
-        <div class="reveal">
-          {label("Why Bespoke Vista")}
-          <h2>Operational experience, <em class="ember">not just templates.</em></h2>
-          <p>Azeem Mushtaq has more than 25 years of experience across business architecture, business analysis, transformation, programme delivery and operational improvement, including logistics and supply-chain operations. He scopes every engagement and reviews quality before work reaches you.</p>
-          <p>Delivery takes place in our Lahore office, with a live overlap with UK mornings, so reports and documents are being prepared before your day starts.</p>
-          <a class="text-link" href="index.html#founder">About the founder →</a>
-        </div>
-        {TIMELINE}
       </div>
     </section>
 
     <section class="sec">
       <div class="container">
         <div class="head">
-          <div>{label("Illustrative scenario")}<h2>How it works <em class="ember">in a logistics business.</em></h2></div>
-          <p>This example demonstrates how the service operates and is not presented as an actual client engagement.</p>
+          <div>{label("Common challenges")}<h2>Where change tends to <em class="ember">get stuck.</em></h2></div>
+          <p>These are the situations that usually prompt a first conversation. Most involve people, process, data and technology at the same time.</p>
         </div>
-        <article class="scenario reveal"><dl>{scenario_html}</dl></article>
+        <div class="grid g4">
+{lt_challenges}
+        </div>
       </div>
     </section>
 
-    <section class="sec sec-white">
+    <section class="sec sec-white" id="services">
       <div class="container">
         <div class="head">
-          <div>{label("Low-risk route")}<h2>Assess. Pilot. <em class="ember">Then decide.</em></h2></div>
-          <p>The £495 assessment fee is credited against a qualifying pilot commissioned within 30 days.</p>
+          <div>{label("Transformation services")}<h2>Eight ways we help <em class="ember">deliver change.</em></h2></div>
+          <p>Each service can be engaged on its own or as part of a wider programme. Open "Full scope" for detail, typical technologies and what is delivered by partners.</p>
         </div>
-        <div class="ladder">
-{ladder_html}
+        <div class="grid g2 svc-grid">
+{lt_services}
         </div>
-        {('<div style="margin-top:40px">' + FOUNDING_BOX + '</div>') if FOUNDING_PLACES else ''}
       </div>
     </section>
 
-    <section class="sec" id="faq">
+    <section class="sec sec-dark" id="context">
+      <div class="container">
+        <div class="head">
+          <div>{label("Why operational complexity matters")}<h2>Transformation designed for operationally <em class="ember">complex environments.</em></h2></div>
+          <p>Logistics businesses operate through interconnected people, partners, processes, systems and data. Even a relatively small technology change can affect customer service, warehouse operations, transport planning, billing, reporting and compliance.</p>
+        </div>
+        <div class="split">
+          <div class="reveal">
+            <p>Bespoke Vista brings a business-and-technology perspective to these programmes. We help organisations understand dependencies, simplify processes, define the future operating model and coordinate delivery across operational and technical teams.</p>
+            <h3>Typical situations</h3>
+            <ul class="ticks">{''.join(f'<li>{x}</li>' for x in LT_SITUATIONS)}</ul>
+          </div>
+          <div class="not-box reveal">
+            <h3>What we don't do</h3>
+            <p>We are not a logistics operations consultancy. We don't provide {LT_NOT}.</p>
+            <p>Where a programme needs that expertise, it comes from your operational teams or specialist partners. We make sure their decisions are reflected in the processes, systems and operating model we help you change.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="packages">
+      <div class="container">
+        <div class="head">
+          <div>{label("Engagement packages")}<h2>Clear ways to start, <em class="ember">with indicative prices.</em></h2></div>
+          <p>Final pricing depends on organisational scale, the number of functions involved, stakeholder availability and the level of detail required, and is confirmed in a written proposal.</p>
+        </div>
+        <div class="grid g3">
+{lt_packages}
+        </div>
+      </div>
+    </section>
+
+    <section class="sec sec-white" id="approach">
+      <div class="container">
+        <div class="head">
+          <div>{label("Delivery approach")}<h2>Understand. Simplify. Design. <em class="ember">Deliver. Embed.</em></h2></div>
+          <p>Transformation isn't complete when the technology goes live. It's complete when the new way of working operates reliably and produces the intended business outcome.</p>
+        </div>
+        <div class="steps steps5">
+{lt_method}
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="outcomes">
       <div class="container split">
-        <div>{label("Logistics FAQs")}<h2>Straight answers.</h2><p class="muted"><a href="index.html#faq">All FAQs →</a></p></div>
+        <div class="reveal">
+          {label("Outcomes and measurement")}
+          <h2>Outcomes we help <em class="ember">clients pursue.</em></h2>
+          <p>We establish baseline measures at the start of an engagement and agree how progress will be evaluated. We don't guarantee outcomes or quote savings before an assessment.</p>
+          <h3>Typical measures</h3>
+          <ul class="chips">{''.join(f'<li>{x}</li>' for x in LT_MEASURES)}</ul>
+        </div>
+        <ul class="ticks reveal">{''.join(f'<li>{x}</li>' for x in LT_OUTCOMES)}</ul>
+      </div>
+    </section>
+
+    <section class="sec sec-sand" id="founder">
+      <div class="container split">
+        <div class="reveal">
+          {label("Founder")}
+          <h2>Experience at the intersection of business, technology <em class="ember">and change.</em></h2>
+          <p>Azeem Mushtaq has more than 25 years of experience working between business and technology teams. His expertise centres on automation, AI adoption, cybersecurity implementation, migration, target operating-model design, process simplification and the delivery of complex change.</p>
+          <p>His role is to turn strategic objectives into practical delivery: understanding the current operation, defining the future state, aligning stakeholders, managing dependencies and ensuring that technology change produces a usable business outcome.</p>
+          {btn("Book a Transformation Discovery Call", DISCOVERY_HREF, "btn-primary")}
+        </div>
+        <aside class="profile reveal" aria-label="Founder profile">
+          {owner("professional photograph of Azeem.")}
+          <div class="avatar" aria-hidden="true">AM</div>
+          <h3>Azeem Mushtaq</h3>
+          <p class="role">Founder · Business and technology transformation</p>
+          <ul class="chips">{''.join(f'<li>{x}</li>' for x in LT_EXPERTISE)}</ul>
+          {f'<p style="margin-top:18px"><a href="{LINKEDIN_URL}" rel="noopener">View LinkedIn profile →</a></p>' if LINKEDIN_URL else owner("LinkedIn profile URL.")}
+          {owner("verified project examples, industry experience, qualifications, certifications and client recommendations.")}
+        </aside>
+      </div>
+    </section>
+
+    <section class="sec" id="proof">
+      <div class="container">
+        <div class="head">
+          <div>{label("Evidence")}<h2>Illustrative transformation <em class="ember">scenario.</em></h2></div>
+          <p>Verified, anonymised case studies will be published here with client permission.</p>
+        </div>
+        <article class="scenario reveal">
+          <div class="scenario-head">
+            <span class="status s-future">Illustrative transformation scenario</span>
+            <h3>Replacing a legacy operational system and automating exception handling</h3>
+            <p class="small"><strong>This scenario illustrates how the service may be applied and is not presented as an actual client engagement.</strong></p>
+          </div>
+          <dl>{lt_scenario}</dl>
+        </article>
+        {owner("verified case studies: client context, business problem, Azeem's role, complexity, approach, deliverables, measured result and lessons learned. Use descriptions such as 'national logistics organisation' only where factually true.")}
+      </div>
+    </section>
+
+    <section class="sec sec-white" id="faq">
+      <div class="container split">
+        <div>{label("FAQs")}<h2>Straight answers.</h2><p class="muted">Something else? <a href="{DISCOVERY_HREF}">Book a discovery call.</a></p></div>
         <div class="faq">
-{log_faq}
+{lt_faq}
         </div>
       </div>
     </section>
 
-{cta()}"""
+{cta("Talk through your transformation priorities.", "A discovery call to understand your objectives, constraints and options. If it's a good fit, we'll propose a fixed-price Transformation Discovery with clear outputs.", ("Book a Transformation Discovery Call", DISCOVERY_HREF), ("Explore Our Transformation Services", "#services"))}
 
-page("logistics.html", "Logistics",
-     "Managed PMO, warehouse SOP documentation and business analysis for UK logistics, warehousing and 3PL businesses. UK-led, delivered from Lahore. Assessments from £495.",
-     logistics, full_title="Logistics PMO and Process Documentation Services | Bespoke Vista",
-     schema=[svc_schema("Logistics PMO and process documentation", "PMO, process documentation and business analysis for UK logistics and supply-chain businesses.", "495"),
-             {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in LOG_FAQ]}])
+    <section class="sec-tight" id="company">
+      <div class="container">
+        <div class="company reveal">
+          <div>
+            <h3>Bespoke Vista Ltd</h3>
+            <p>Registered in England and Wales.{f' Company number {COMPANY_NUMBER}.' if COMPANY_NUMBER else ''}</p>
+            {f'<p>Registered office: {REGISTERED_OFFICE}</p>' if REGISTERED_OFFICE else owner("company number and registered office address.")}
+          </div>
+          <div>
+            <h3>Contact</h3>
+            <p><a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a></p>
+            <p><a href="contact.html">Contact form</a> · <a href="privacy.html">Privacy notice</a></p>
+          </div>
+          <div>
+            <h3>Other services</h3>
+            <p><a href="index.html#services">Managed PMO, business analysis and documentation</a></p>
+            <p><a href="pricing.html">All prices and terms</a></p>
+          </div>
+        </div>
+      </div>
+    </section>"""
+
+page("logistics.html", "Technology and Transformation for Logistics",
+     "Bespoke Vista helps logistics and operational organisations automate processes, adopt AI, strengthen cybersecurity, migrate technology and deliver complex change.",
+     logistics, full_title="Technology Transformation for Logistics | Bespoke Vista",
+     schema=[svc_schema("Technology-enabled transformation for logistics", "Process automation, AI adoption, cybersecurity implementation, technology migration, target operating-model design, process simplification and complex change delivery for logistics and operational organisations.", "1500"),
+             {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in LT_FAQ]}])
 
 # ============================================================== PMO-IN-A-BOX LANDING PAGE
 PMO_CYCLE = [

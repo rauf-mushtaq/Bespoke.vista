@@ -269,7 +269,7 @@
       var notes = [];
       Object.keys(D.notes || {}).forEach(function (k) { var note = D.notes[k][String(ctx[k])]; if (note) notes.push(note); });
       var ctxEl = $('.r-context', r);
-      ctxEl.textContent = notes.join(' ');
+      ctxEl.innerHTML = notes.join(' '); // notes are trusted, static site content from build.py
       ctxEl.style.display = notes.length ? '' : 'none';
 
       var nx = $('.r-next', r);

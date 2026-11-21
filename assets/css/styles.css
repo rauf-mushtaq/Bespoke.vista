@@ -829,3 +829,17 @@ span.owner-ph { display: inline-block; margin: 4px 0; padding: 4px 10px; }
 }
 @media (min-width: 1181px) and (max-width: 1360px) { .brand-name { font-size: 1.2rem; } }
 .nav-links a { white-space: nowrap; }
+
+/* Logistics transformation page */
+.h1-kicker { display: block; font-family: var(--mono); font-size: .78rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; line-height: 1.4; }
+.h1-kicker::before { content: ""; display: inline-block; width: 22px; height: 2px; background: var(--ember); border-radius: 2px; vertical-align: middle; margin-right: 10px; }
+.more-scope { margin: 4px 0 0; border-top: 1px dashed var(--line); }
+.more-scope summary { cursor: pointer; padding: 12px 0 6px; font-weight: 600; color: var(--ink); font-size: .92rem; list-style: none; }
+.more-scope summary::-webkit-details-marker { display: none; }
+.more-scope summary::after { content: " +"; color: var(--accent); }
+.more-scope[open] summary::after { content: " −"; }
+.more-scope .small { color: var(--muted); }
+.not-box { background: var(--ink-2); border: 1px solid var(--line-dark); border-left: 4px solid var(--ember-1); border-radius: var(--radius); padding: 28px; }
+.not-box p { color: var(--slate-light); }
+.problem .pq:only-child { margin: 0; }
+.r-context a { color: var(--accent); font-weight: 600; }
