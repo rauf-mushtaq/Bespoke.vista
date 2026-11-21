@@ -9,19 +9,20 @@ subscriptions, UK-led managed teams in Lahore, training, and the DojoOS product.
 
 | Page | Purpose |
 |---|---|
-| `index.html` | Home: hero, Advise / Build / Run / Learn, comparison with large consultancies, follow-the-sun timeline, subscriptions, "start where you are" ladder, principles, proof |
-| `services.html` | Every service, grouped by pillar, with expandable details and prices |
-| `managed-teams.html` | Outcome-priced managed services delivered from Lahore, SLA tiers, trust and security |
-| `pricing.html` | Subscriptions (monthly/annual toggle), managed plans, fixed-price projects, training, DojoOS, FAQs |
-| `scorecard.html` | Operations Capacity Scorecard: the main lead-generation page for UK-managed, Lahore-delivered, AI-enabled services. Hero with sample result, trust strip, who it's for, 10+2 question scorecard, proposition, comparison with recruiting and contractors, Assess → Pilot → Run pricing, quality controls, FAQs |
-| `ai-scorecard.html` | AI Readiness Scorecard (same engine, AI-focused questions) |
-| `about.html`, `case-studies.html`, `insights.html`, `contact.html` | Supporting pages |
+| `index.html` | Commercial homepage: three managed services, assessment → pilot route, delivery model, samples, AI, security, founder, FAQs |
+| `scorecard.html` | Free Managed Delivery Readiness Scorecard (main lead magnet) |
+| `pricing.html` | All prices, package boundaries and commercial terms |
+| `samples.html` | Illustrative sample deliverables |
+| `services.html`, `managed-teams.html` (Delivery Model), `contact.html`, `ai-scorecard.html` | Supporting pages |
+| `about.html`, `case-studies.html`, `insights.html` | Background pages |
 
-## Visitor journey
+See `docs/REVIEW-AND-CHANGELOG.md` for the full review, commercial assessment, QA results and the owner action list.
 
-Visitor → **Lead** (AI Scorecard, sample briefing) → **Subscriber** (Executive AI Intelligence, from £49/month)
-→ **Client** (fixed-price assessment or project) → **Retainer** (AI Advisory, Fractional Architect, managed teams).
-Every page ends with a call to action pointing at the next step.
+## Configuration (top of `build.py`)
+
+`BASE_URL`, `CONTACT_EMAIL`, `BOOKING_URL` (Microsoft Bookings), `FORM_ENDPOINT` (Power Automate HTTP trigger or Formspree),
+`GA4_ID`, `CLARITY_ID`, `COMPANY_NUMBER`, `REGISTERED_OFFICE`, `LAHORE_ADDRESS`, `LINKEDIN_URL`, and
+`SHOW_OWNER_PLACEHOLDERS` (set to `False` before publication to hide unfinished items).
 
 ## Scorecards
 
