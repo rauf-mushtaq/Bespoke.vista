@@ -108,132 +108,121 @@
   }
   billBtns.forEach(function (b) { b.addEventListener('click', function () { setBilling(b.getAttribute('data-billing')); }); });
 
-  /* ---------- AI Readiness Scorecard ---------- */
-  var quiz = $('#scorecard');
-  if (quiz) {
-    var Q = [
-      ['Strategy', 'Does your leadership team agree on what AI should achieve for the business?',
-        ['Not discussed yet', 'Talked about, nothing agreed', 'Some goals agreed for specific areas', 'Clear goals, with owners and measures']],
-      ['Strategy', 'Have you identified specific processes where AI could save time or money?',
-        ['No', 'A few ideas', 'A shortlist with rough value', 'A prioritised, costed pipeline']],
-      ['People', 'How are your people using AI tools today?',
-        ['Not at all, or we don’t know', 'A few enthusiasts, on their own', 'Several teams use approved tools', 'Widely used, part of how we work']],
-      ['People', 'Have staff been trained to use AI well and safely?',
-        ['No training', 'Informal tips and videos', 'Some formal training', 'Role-based training with ongoing support']],
-      ['Process', 'How well documented are your core processes?',
-        ['Mostly in people’s heads', 'Some documents, often out of date', 'Key processes documented', 'Documented, owned and kept current']],
-      ['Process', 'How much repetitive manual work do teams do (re-keying, chasing, copying between systems)?',
-        ['A lot, it’s a daily burden', 'Quite a bit', 'Some, we’ve automated the worst', 'Very little, most is automated']],
-      ['Data & tools', 'Where does your business information live?',
-        ['Scattered across email, desktops and paper', 'Shared drives, hard to find things', 'Mostly in Microsoft 365 / SharePoint, reasonably organised', 'Well structured, searchable, clear permissions']],
-      ['Data & tools', 'Which AI tools do you have access to?',
-        ['None', 'Free consumer tools only', 'Business licences for some (Copilot, ChatGPT, Claude)', 'Business tools connected to our systems']],
-      ['Governance', 'Do you have an AI usage policy?',
-        ['No', 'Being drafted', 'Yes, but few people know it', 'Yes, communicated and reviewed regularly']],
-      ['Governance', 'Do you know what company data is going into AI tools?',
-        ['No idea', 'We suspect it happens', 'Partly, with some controls', 'Yes, with controls and monitoring']]
-    ];
-    var host = $('#questions', quiz);
-    Q.forEach(function (q, i) {
+  /* ---------- Scorecards (data-driven: see the JSON block inside each .quiz) ---------- */
+  function track(name, data) {
+    // Pushes events for Google Tag Manager / GA4 if installed; harmless otherwise.
+    try { (window.dataLayer = window.dataLayer || []).push(Object.assign({ event: name }, data || {})); } catch (e) {}
+  }
+  $$('.quiz[data-quiz]').forEach(function (quiz) {
+    var D = JSON.parse($('.quiz-data', quiz).textContent);
+    var steps = D.questions.map(function (q) { return { dim: q.dim, text: q.text, options: q.options, scored: true }; })
+      .concat(D.context.map(function (c) { return { id: c.id, dim: null, text: c.text, options: c.options, scored: false }; }));
+    var dimName = {}; D.dims.forEach(function (d) { dimName[d.id] = d.name; });
+    var host = $('.questions', quiz);
+    steps.forEach(function (q, i) {
       var fs = document.createElement('fieldset');
-      fs.className = 'q' + (i === 0 ? ' active' : '');
-      var html = '<legend>' + q[1] + '</legend>';
-      q[2].forEach(function (o, v) {
-        html += '<label class="opt"><input type="radio" name="q' + i + '" value="' + v + '"><span>' + o + '</span></label>';
+      fs.className = 'q';
+      var html = '<legend>' + q.text + '</legend>';
+      q.options.forEach(function (o, v) {
+        html += '<label class="opt"><input type="radio" name="' + D.id + '-q' + i + '" value="' + v + '"><span>' + o + '</span></label>';
       });
       fs.innerHTML = html;
       host.appendChild(fs);
     });
-    var cur = 0, total = Q.length;
-    var prev = $('#q-prev', quiz), next = $('#q-next', quiz), bar = $('.progress span', quiz);
-    var counter = $('#q-count', quiz), dim = $('#q-dim', quiz);
+    var cur = 0, total = steps.length, started = false;
+    var prev = $('.q-prev', quiz), next = $('.q-next', quiz), bar = $('.progress span', quiz);
     var sets = $$('.q', quiz);
-    function answered(i) { return !!$('input[name="q' + i + '"]:checked', quiz); }
+    var picked = function (i) { return $('input[name="' + D.id + '-q' + i + '"]:checked', quiz); };
     function render() {
       sets.forEach(function (s, i) { s.classList.toggle('active', i === cur); });
-      counter.textContent = 'Question ' + (cur + 1) + ' of ' + total;
-      dim.textContent = Q[cur][0];
+      $('.q-count', quiz).textContent = 'Question ' + (cur + 1) + ' of ' + total;
+      $('.q-dim', quiz).textContent = steps[cur].scored ? dimName[steps[cur].dim] : 'About you';
       bar.style.width = (cur / total * 100) + '%';
       prev.disabled = cur === 0;
-      next.disabled = !answered(cur);
-      next.innerHTML = cur === total - 1 ? 'See my score <span class="arr">→</span>' : 'Next <span class="arr">→</span>';
+      next.disabled = !picked(cur);
+      next.innerHTML = cur === total - 1 ? 'See my result <span class="arr">→</span>' : 'Next <span class="arr">→</span>';
     }
-    quiz.addEventListener('change', function () {
-      next.disabled = !answered(cur);
+    quiz.addEventListener('change', function (e) {
+      if (!e.target.matches('.q input')) return;
+      if (!started) { started = true; track('scorecard_start', { scorecard: D.id }); }
+      next.disabled = false;
       if (cur < total - 1) setTimeout(function () { cur++; render(); var f = $('.q.active input', quiz); if (f) f.focus({ preventScroll: true }); }, 220);
     });
     prev.addEventListener('click', function () { if (cur > 0) { cur--; render(); } });
     next.addEventListener('click', function () {
-      if (!answered(cur)) return;
+      if (!picked(cur)) return;
       if (cur < total - 1) { cur++; render(); } else showResult();
     });
     render();
 
     function showResult() {
-      var dims = {}, sum = 0;
-      Q.forEach(function (q, i) {
-        var v = parseInt($('input[name="q' + i + '"]:checked', quiz).value, 10);
-        sum += v; dims[q[0]] = (dims[q[0]] || 0) + v;
+      var sums = {}, counts = {}, sum = 0, n = 0, ctx = {};
+      steps.forEach(function (q, i) {
+        var v = parseInt(picked(i).value, 10);
+        if (q.scored) { sum += v; n++; sums[q.dim] = (sums[q.dim] || 0) + v; counts[q.dim] = (counts[q.dim] || 0) + 1; }
+        else ctx[q.id] = v;
       });
-      var score = Math.round(sum / (total * 3) * 100);
-      var bands = [
-        [35, 'Explorer', 'Start with clarity',
-          'AI is on the radar but not yet in the business. The quickest win is an agreed view of where AI will genuinely pay off, and a few safe rules so people can start experimenting without putting data at risk.',
-          [['AI Readiness Assessment', 'services.html#ai'], ['Executive AI Intelligence', 'pricing.html#intelligence']]],
-        [60, 'Experimenter', 'Turn pockets of use into a plan',
-          'People are already using AI, but in pockets and without much structure. Now is the time to agree priorities, put governance in place and pick two or three use cases worth scaling.',
-          [['AI Readiness Assessment', 'services.html#ai'], ['AI Governance Pack', 'pricing.html#projects']]],
-        [80, 'Adopter', 'Scale what works',
-          'You have the foundations. The value now comes from rolling out proven use cases, automating end-to-end workflows and measuring the benefit properly.',
-          [['Copilot Adoption Programme', 'pricing.html#projects'], ['AI Advisory subscription', 'pricing.html#advisory']]],
-        [101, 'Leader', 'Optimise and run',
-          'You’re ahead of most UK organisations. The next step is getting more from your existing tools and having a team that runs and improves AI workflows every month.',
-          [['AI Optimisation Review', 'pricing.html#projects'], ['AI Operations Team', 'managed-teams.html#offerings']]]
-      ];
-      var b = bands.filter(function (x) { return score < x[0]; })[0];
-      var weakest = Object.keys(dims).sort(function (a, c) { return dims[a] - dims[c]; })[0];
+      var score = Math.round(sum / (n * 3) * 100);
+      var band = D.bands.filter(function (b) { return score <= b.max; })[0] || D.bands[D.bands.length - 1];
+      var pct = {};
+      D.dims.forEach(function (d) { pct[d.id] = Math.round((sums[d.id] || 0) / ((counts[d.id] || 1) * 3) * 100); });
+      var ranked = D.dims.slice().sort(function (a, b) { return pct[a.id] - pct[b.id]; });
+      var top = ranked.slice(0, 2);
 
-      $('#questions', quiz).style.display = 'none';
-      $('.quiz-nav', quiz).style.display = 'none';
-      $('.q-meta', quiz).style.display = 'none';
+      ['.questions', '.quiz-nav', '.q-meta'].forEach(function (s) { $(s, quiz).style.display = 'none'; });
       bar.style.width = '100%';
-      var r = $('#result', quiz);
+      var r = $('.result', quiz);
       r.classList.add('show');
-      $('#r-score', r).textContent = score;
-      $('#r-band', r).textContent = b[1];
-      $('#r-title', r).textContent = b[2];
-      $('#r-text', r).textContent = b[3];
-      $('#r-weak', r).textContent = weakest;
-      var C = 2 * Math.PI * 88;
-      var arc = $('#r-arc', r);
-      arc.style.strokeDasharray = C;
-      arc.style.strokeDashoffset = C;
-      requestAnimationFrame(function () { setTimeout(function () { arc.style.strokeDashoffset = C * (1 - score / 100); }, 60); });
-      var bars = $('#r-bars', r);
-      bars.innerHTML = '';
-      Object.keys(dims).forEach(function (k) {
-        var p = Math.round(dims[k] / 6 * 100);
+      $('.r-score', r).textContent = score;
+      $('.r-band', r).textContent = band.name;
+      $('.r-title', r).textContent = band.title;
+      $('.r-text', r).textContent = band.text;
+
+      var C = 2 * Math.PI * 88, arc = $('.r-arc', r);
+      arc.style.strokeDasharray = C; arc.style.strokeDashoffset = C;
+      setTimeout(function () { arc.style.strokeDashoffset = C * (1 - score / 100); }, 80);
+
+      var bars = $('.r-bars', r); bars.innerHTML = '';
+      D.dims.forEach(function (d) {
         var row = document.createElement('div');
         row.className = 'bar-row';
-        row.innerHTML = '<span>' + k + '</span><div class="track"><div class="fill"></div></div><span class="v">' + p + '%</span>';
+        row.innerHTML = '<span>' + d.name + '</span><div class="track"><div class="fill"></div></div><span class="v">' + pct[d.id] + '%</span>';
         bars.appendChild(row);
-        setTimeout(function () { $('.fill', row).style.width = p + '%'; }, 120);
+        setTimeout(function () { $('.fill', row).style.width = pct[d.id] + '%'; }, 120);
       });
-      var recs = $('#r-recs', r);
-      recs.innerHTML = b[4].map(function (x) { return '<a class="btn btn-line-light btn-sm" href="' + x[1] + '">' + x[0] + '</a>'; }).join('');
-      var msg = 'My AI Readiness Scorecard result: ' + score + '/100 (' + b[1] + '). Weakest area: ' + weakest + '.\n\nI would like to discuss next steps.';
-      $('#r-discuss', r).href = 'contact.html?topic=scorecard&message=' + encodeURIComponent(msg);
+
+      $('.r-recs', r).innerHTML = top.map(function (d) {
+        var s = d.service;
+        return '<div class="rec-card"><span class="label">' + d.name + ' · ' + pct[d.id] + '%</span><h4>' + s.name + '</h4><p>' + s.what +
+          '</p><div class="rec-meta"><span>' + s.price + '</span><a href="' + s.href + '">Details →</a></div></div>';
+      }).join('');
+
+      var notes = [];
+      Object.keys(D.notes || {}).forEach(function (k) {
+        var note = D.notes[k][String(ctx[k])];
+        if (note) notes.push(note);
+      });
+      var ctxEl = $('.r-context', r);
+      ctxEl.textContent = notes.join(' ');
+      ctxEl.style.display = notes.length ? '' : 'none';
+
+      var ctxText = D.context.map(function (c) { return c.text.replace(/\?$/, '') + ': ' + c.options[ctx[c.id]]; }).join('\n');
+      var summary = D.title + ': ' + score + '/100 (' + band.name + ')\n' +
+        D.dims.map(function (d) { return '- ' + d.name + ': ' + pct[d.id] + '%'; }).join('\n') +
+        '\nTop opportunities: ' + top.map(function (d) { return d.service.name; }).join(', ') + '\n' + ctxText;
+      $('.r-summary', r).value = summary;
+      track('scorecard_complete', { scorecard: D.id, score: score, band: band.name });
       r.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-    $('#r-retake', quiz).addEventListener('click', function () {
-      $$('input', quiz).forEach(function (i) { i.checked = false; });
-      $('#result', quiz).classList.remove('show');
-      $('#questions', quiz).style.display = '';
-      $('.quiz-nav', quiz).style.display = '';
-      $('.q-meta', quiz).style.display = '';
+
+    $('.r-retake', quiz).addEventListener('click', function () {
+      $$('.q input', quiz).forEach(function (i) { i.checked = false; });
+      $('.result', quiz).classList.remove('show');
+      ['.questions', '.quiz-nav', '.q-meta'].forEach(function (s) { $(s, quiz).style.display = ''; });
       cur = 0; render();
+      quiz.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
-  }
+  });
 
   /* ---------- Contact form ---------- */
   var topicSelect = $('#topic');
@@ -253,6 +242,7 @@
     form.addEventListener('submit', function (ev) {
       ev.preventDefault();
       if (!form.checkValidity()) { form.reportValidity(); return; }
+      track('lead_submit', { form: form.getAttribute('data-subject') || form.id || 'form' });
       var data = new FormData(form);
       var endpoint = form.getAttribute('data-endpoint');
       if (endpoint) {

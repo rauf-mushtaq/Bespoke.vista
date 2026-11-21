@@ -13,7 +13,8 @@ subscriptions, UK-led managed teams in Lahore, training, and the DojoOS product.
 | `services.html` | Every service, grouped by pillar, with expandable details and prices |
 | `managed-teams.html` | Outcome-priced managed services delivered from Lahore, SLA tiers, trust and security |
 | `pricing.html` | Subscriptions (monthly/annual toggle), managed plans, fixed-price projects, training, DojoOS, FAQs |
-| `scorecard.html` | Free interactive AI Readiness Scorecard (lead magnet); results link to a pre-filled enquiry |
+| `scorecard.html` | Operations Capacity Scorecard: the main lead-generation page for UK-managed, Lahore-delivered, AI-enabled services. Hero with sample result, trust strip, who it's for, 10+2 question scorecard, proposition, comparison with recruiting and contractors, Assess → Pilot → Run pricing, quality controls, FAQs |
+| `ai-scorecard.html` | AI Readiness Scorecard (same engine, AI-focused questions) |
 | `about.html`, `case-studies.html`, `insights.html`, `contact.html` | Supporting pages |
 
 ## Visitor journey
@@ -21,6 +22,16 @@ subscriptions, UK-led managed teams in Lahore, training, and the DojoOS product.
 Visitor → **Lead** (AI Scorecard, sample briefing) → **Subscriber** (Executive AI Intelligence, from £49/month)
 → **Client** (fixed-price assessment or project) → **Retainer** (AI Advisory, Fractional Architect, managed teams).
 Every page ends with a call to action pointing at the next step.
+
+## Scorecards
+
+Both scorecards run on one engine in `assets/js/main.js`. Questions, the service recommended for each area,
+result bands and sector/size notes are defined in `build.py` (`OPS_QUIZ`, `AI_QUIZ`).
+Results show the overall score, five area scores, the two weakest areas with matching services and prices,
+and a results-review request form pre-filled with the answers. Answers stay in the browser unless the visitor submits.
+
+Analytics: if Google Tag Manager or GA4 is installed, the site pushes `scorecard_start`, `scorecard_complete`
+(with score and band) and `lead_submit` events to `dataLayer`.
 
 ## Editing
 
@@ -54,6 +65,7 @@ assets/img/             logo, favicon
   add a form-service URL (e.g. Formspree) to the `data-endpoint` attribute on the forms in `build.py`.
 - **Prices and terms**: all prices, tier contents, the annual "2 months free" offer, 30-day notice
   and 3-month managed-service minimum are proposals. Check them before publishing.
+- **Scorecard page commercial terms**: Operations Assessment £1,950 (credited against a pilot within 60 days), 60-day pilot from £3,000, managed service from £1,500/month with a three-month minimum, and "2 to 4 weeks" mobilisation are proposals.
 - **Managed-team claims**: the SLA tiers and the trust and security list (data processing agreements,
   working in the client's Microsoft 365 tenant, confidentiality agreements) describe how the service
   should run. Make sure they match what you can contractually commit to.
