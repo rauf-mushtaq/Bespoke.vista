@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Readiness Scorecard | Bespoke Vista</title>
+  <meta name="description" content="Free AI Readiness Scorecard: ten questions, three minutes. See how ready your business is for AI and what to do next.">
+  <meta property="og:title" content="AI Readiness Scorecard | Bespoke Vista">
+  <meta property="og:description" content="Free AI Readiness Scorecard: ten questions, three minutes. See how ready your business is for AI and what to do next.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/img/logo@2x.png">
+  <meta name="theme-color" content="#F7F3EE">
+  <link rel="icon" href="assets/img/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <nav class="container nav" aria-label="Main">
+      <a class="brand" href="index.html" aria-label="Bespoke Vista home">
+        <img src="assets/img/logo.png" srcset="assets/img/logo.png 1x, assets/img/logo@2x.png 2x" alt="" width="55" height="38">
+        <span><span class="brand-name">Bespoke Vista</span><span class="brand-tag">Bridging Strategy and Execution</span></span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu
+      </button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="services.html">Services</a></li>
+        <li><a href="managed-teams.html">Managed Teams</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="insights.html">Insights</a></li>
+        <li class="nav-btns">
+          <a class="btn btn-line btn-sm" href="scorecard.html" aria-current="page">Free AI Scorecard</a>
+          <a class="btn btn-primary btn-sm" href="contact.html">Book a call</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+  <main id="main">
+    <section class="page-hero">
+      <div class="container">
+        <span class="label">Free · 3 minutes · No sign-up</span>
+        <h1>How ready is your business <em class="ember">for AI?</em></h1>
+        <p class="lead">Ten quick questions across strategy, people, process, data and governance. Get your score, see where you're strong and where to focus, and find out what to do next.</p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="container">
+        <form class="quiz" id="scorecard" onsubmit="return false" aria-live="polite">
+          <div class="progress" aria-hidden="true"><span></span></div>
+          <div class="q-meta"><span id="q-count">Question 1 of 10</span><span id="q-dim">Strategy</span></div>
+          <div id="questions"></div>
+          <div class="quiz-nav">
+            <button type="button" class="btn btn-line" id="q-prev">← Back</button>
+            <button type="button" class="btn btn-primary" id="q-next" disabled>Next <span class="arr" aria-hidden="true">→</span></button>
+          </div>
+          <div class="result" id="result">
+            <div class="score-wrap">
+              <div class="gauge">
+                <svg viewBox="0 0 200 200" width="200" height="200" aria-hidden="true">
+                  <defs><linearGradient id="gG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F7941D"/><stop offset="1" stop-color="#EE2A24"/></linearGradient></defs>
+                  <circle cx="100" cy="100" r="88" fill="none" stroke="#EDE5DA" stroke-width="14"/>
+                  <circle id="r-arc" cx="100" cy="100" r="88" fill="none" stroke="url(#gG)" stroke-width="14" stroke-linecap="round" style="transition:stroke-dashoffset 1.2s cubic-bezier(.2,.7,.2,1)"/>
+                </svg>
+                <div class="num"><div><strong id="r-score">0</strong><small>out of 100</small></div></div>
+              </div>
+              <div>
+                <span class="band" id="r-band"></span>
+                <h2 id="r-title" style="margin:6px 0 10px;font-size:clamp(1.8rem,3.4vw,2.6rem)"></h2>
+                <p id="r-text" class="muted"></p>
+                <p class="small">Your biggest opportunity: <strong id="r-weak"></strong></p>
+              </div>
+            </div>
+            <div class="bars" id="r-bars"></div>
+            <div class="rec">
+              <h3>Recommended next steps</h3>
+              <p>Based on your answers, these are the services most likely to help. A short call is the quickest way to turn your score into a plan.</p>
+              <div class="btns" id="r-recs"></div>
+              <div class="btns"><a class="btn btn-ember" id="r-discuss" href="contact.html?topic=scorecard">Discuss my results <span class="arr" aria-hidden="true">→</span></a><button type="button" class="btn btn-line-light" id="r-retake">Retake the scorecard</button></div>
+            </div>
+          </div>
+        </form>
+        <p class="note center">Your answers stay in your browser. Nothing is sent unless you choose to contact us.</p>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-word" aria-hidden="true">Bespoke <span>Vista</span></div>
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand"><img src="assets/img/logo.png" srcset="assets/img/logo.png 1x, assets/img/logo@2x.png 2x" alt="" width="55" height="38"><span>Bespoke Vista</span></div>
+          <p>Bridging Strategy and Execution. Senior UK consulting, AI-enabled delivery and managed teams in Lahore.</p>
+          <p class="clocks" style="margin-top:8px"><span><span class="dot"></span><span data-status="lahore">Lahore team</span></span><span><b>LDN</b><span data-clock="london">--:--</span></span><span><b>LHE</b><span data-clock="lahore">--:--</span></span></p>
+        </div>
+        <div>
+          <h4>Services</h4>
+          <ul>
+            <li><a href="services.html#advise">Consulting &amp; advisory</a></li>
+            <li><a href="services.html#ai">AI services</a></li>
+            <li><a href="managed-teams.html">Managed teams</a></li>
+            <li><a href="services.html#learn">Training</a></li>
+            <li><a href="pricing.html#dojoos">DojoOS</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Start here</h4>
+          <ul>
+            <li><a href="scorecard.html">AI Readiness Scorecard</a></li>
+            <li><a href="pricing.html#intelligence">Executive AI Intelligence</a></li>
+            <li><a href="pricing.html">Plans &amp; pricing</a></li>
+            <li><a href="contact.html">Book a call</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="case-studies.html">Case studies</a></li>
+            <li><a href="insights.html">Insights</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="mailto:hello@bespokevista.co.uk">hello@bespokevista.co.uk</a></li>
+            <li>United Kingdom</li>
+            <li>Delivery hub: Lahore, Pakistan</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; <span id="year">2026</span> Bespoke Vista Ltd. Registered in England &amp; Wales.</span>
+        <span>All prices exclude VAT.</span>
+      </div>
+    </div>
+  </footer>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
