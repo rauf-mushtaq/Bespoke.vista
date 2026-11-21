@@ -273,3 +273,36 @@ Not tested here:
 | Low-risk route in? | Yes: £495 assessment, then pilot |
 | Leads to a paid assessment or pilot? | Yes |
 | Avoids invented evidence? | Yes: illustrative content is labelled; no testimonials, logos or results invented |
+
+---
+
+## Update: recommendations applied (21 November 2026)
+
+| Recommendation | What was done | Files |
+|---|---|---|
+| Don't show placeholders on a public site | `SHOW_OWNER_PLACEHOLDERS` now defaults to `False`. Missing items are hidden, and the testimonials block only appears when there are testimonials | `build.py` |
+| Lead with PMO-in-a-Box and the Documentation Factory | Service order on the homepage is now PMO, Documentation Factory, Business Analysis; problems reordered to match | `build.py`, `index.html` |
+| Logistics and PMO landing pages for campaigns | New `logistics.html` (six logistics situations, four logistics packages, founder relevance, scenario, route, FAQs) and `pmo-in-a-box.html` (weekly PMO rhythm, tiers and boundaries, "what it isn't", samples, FAQs); "Logistics" added to the main menu | new pages, nav |
+| Win founding clients for proof | Founding-client offer (first `FOUNDING_PLACES` = 3 clients; reduced first-term rate agreed individually, in return for a reference and an approved case study) on home, logistics and PMO pages; contact topic added | `build.py` |
+| Privacy notice before collecting data | Draft UK GDPR privacy notice at `privacy.html`, linked from every form and the footer. The text adapts to whether analytics or a form service are configured | `privacy.html` |
+| Cookie consent before analytics | GA4 and Clarity now load only after the visitor accepts; a banner appears automatically when IDs are set; "Cookie settings" link in the footer | `build.py`, `main.js` |
+| Forms ready for Power Automate | Forms send JSON (works with a Power Automate HTTP trigger and Formspree); hidden spam-trap field | `main.js` |
+| Confirm the VAT position | `VAT_REGISTERED` switch rewrites all "ex VAT" wording if you are not registered | `build.py` |
+| Integration set-up | Step-by-step guide for Bookings, Power Automate with SharePoint, Formspree, HubSpot, GA4 key events and Clarity | `docs/INTEGRATIONS.md` |
+| Menu fit | Six-link menu tightened; collapses below 1180px; no wrapping or sideways scroll at any width | CSS |
+
+**QA after these changes:**
+- 14 pages, with no horizontal overflow at 1366, 820 and 390px, and the menu checked at 1179, 1181, 1220 and 1280px.
+- No JavaScript errors, and all links and anchors resolve.
+- Scorecard bands verified.
+- In a test build:
+  - The consent banner blocks Google Analytics until the visitor accepts.
+  - The JSON form post was received by a mock endpoint.
+  - The spam trap blocked a bot-style submission.
+
+**Recommendations that are business decisions, not code (still with you):**
+- Raise the assessment price after the first 5–10 sales.
+- Check delivery cost per day against the monthly prices.
+- Plan a UK service-manager hire at around 8–12 clients.
+- Get Cyber Essentials before the first managed-service contract.
+- Have the privacy notice reviewed.

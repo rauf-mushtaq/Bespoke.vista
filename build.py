@@ -41,13 +41,21 @@ LINKEDIN_URL = ""        # founder or company LinkedIn URL
 
 # Shows dashed "Owner to provide" boxes where information is missing.
 # Set to False before publication: missing items are then hidden instead.
-SHOW_OWNER_PLACEHOLDERS = True
+SHOW_OWNER_PLACEHOLDERS = False  # switch to True to see every missing item marked on the pages
+
+# TODO: confirm VAT registration. If False, "ex VAT" wording becomes "no VAT charged".
+VAT_REGISTERED = True
+# Founding-client programme: reduced terms for the first managed-service clients in return for
+# a published case study and reference. Set to 0 to remove it from the site.
+FOUNDING_PLACES = 3
+PRIVACY_UPDATED = "21 November 2026"
 
 ASSESS_HREF = BOOKING_URL or "contact.html?topic=assessment"
 ARR = '<span class="arr" aria-hidden="true">→</span>'
 
 NAV = [
     ("services.html", "Services"),
+    ("logistics.html", "Logistics"),
     ("managed-teams.html", "Delivery Model"),
     ("pricing.html", "Pricing"),
     ("samples.html", "Samples"),
@@ -140,10 +148,11 @@ FOOTER = f"""  <footer class="site-footer">
         <div>
           <h4>Managed services</h4>
           <ul>
-            <li><a href="pricing.html#pmo">PMO-in-a-Box</a></li>
+            <li><a href="pmo-in-a-box.html">PMO-in-a-Box</a></li>
             <li><a href="pricing.html#ba">Managed Business Analysis</a></li>
             <li><a href="pricing.html#documentation">Documentation Factory</a></li>
             <li><a href="index.html#ai">AI workflow services</a></li>
+            <li><a href="logistics.html">For logistics businesses</a></li>
             <li><a href="services.html">All services</a></li>
           </ul>
         </div>
@@ -165,6 +174,8 @@ FOOTER = f"""  <footer class="site-footer">
             <li><a href="insights.html">Insights</a></li>
             <li><a href="ai-scorecard.html">AI Readiness Scorecard</a></li>
             <li><a href="contact.html">Contact</a></li>
+            <li><a href="privacy.html">Privacy notice</a></li>
+            {'<li><button type="button" class="linklike" data-consent-open>Cookie settings</button></li>' if (GA4_ID or CLARITY_ID) else ''}
           </ul>
         </div>
         <div>
@@ -186,15 +197,19 @@ FOOTER = f"""  <footer class="site-footer">
 
 
 def analytics():
-    out = ""
-    if GA4_ID:
-        out += f"""  <script async src="https://www.googletagmanager.com/gtag/js?id={GA4_ID}"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments);}}gtag('js',new Date());gtag('config','{GA4_ID}');</script>
-"""
-    if CLARITY_ID:
-        out += f"""  <script>(function(c,l,a,r,i,t,y){{c[a]=c[a]||function(){{(c[a].q=c[a].q||[]).push(arguments)}};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);}})(window,document,"clarity","script","{CLARITY_ID}");</script>
-"""
-    return out
+    """Analytics load only after the visitor accepts cookies (see the consent banner in main.js)."""
+    if not (GA4_ID or CLARITY_ID):
+        return ""
+    return f"  <script>window.BV_ANALYTICS={json.dumps({'ga4': GA4_ID, 'clarity': CLARITY_ID})};</script>\n"
+
+
+CONSENT_BANNER = """  <div class="consent" role="dialog" aria-live="polite" aria-label="Cookie preferences" hidden>
+    <p>We'd like to use analytics cookies (Google Analytics and Microsoft Clarity) to understand how the site is used. They are only set if you accept. <a href="privacy.html#cookies">Privacy notice</a></p>
+    <div class="consent-btns"><button type="button" class="btn btn-primary btn-sm" data-consent="accept">Accept analytics</button><button type="button" class="btn btn-line btn-sm" data-consent="reject">Reject</button></div>
+  </div>"""
+
+HONEYPOT = ('<div class="hp" aria-hidden="true"><label>Leave this field empty'
+            '<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>')
 
 
 def page(filename, title, description, body, schema=None, full_title=None):
@@ -211,6 +226,7 @@ def page(filename, title, description, body, schema=None, full_title=None):
               + json.dumps({"@context": "https://schema.org", "@graph": graphs}, ensure_ascii=False).replace("</", "<\\/")
               + "</script>\n")
     body = body.replace('data-endpoint=""', f'data-endpoint="{FORM_ENDPOINT}"')
+    body = body.replace(" novalidate>", " novalidate>" + HONEYPOT)
     html = f"""<!doctype html>
 <html lang="en-GB">
 <head>
@@ -241,10 +257,18 @@ def page(filename, title, description, body, schema=None, full_title=None):
 {body}
   </main>
 {FOOTER}
+{CONSENT_BANNER if (GA4_ID or CLARITY_ID) else ''}
   <script src="assets/js/main.js" defer></script>
 </body>
 </html>
 """
+    if not VAT_REGISTERED:
+        for a, b in [("All prices exclude VAT.", "Bespoke Vista is not VAT-registered, so no VAT is charged."),
+                     ("All prices are shown excluding VAT.", "No VAT is charged."),
+                     ("exclude VAT", "carry no VAT"), ("excluding VAT", "with no VAT"),
+                     (", ex VAT", ", no VAT charged"), (" · ex VAT", " · no VAT charged"), ("ex VAT", "no VAT charged"),
+                     ("Price excludes VAT", "No VAT charged")]:
+            html = html.replace(a, b)
     (ROOT / filename).write_text(html, encoding="utf-8")
     print("wrote", filename)
 
@@ -387,7 +411,7 @@ DOCS = ("documentation", "Documentation Factory", "For organisations with undocu
            "SOPs and work instructions", "Controls and ownership", "Knowledge-base structure", "Implementation support",
            "Typically 10 to 12 weeks"], "Around 25 to 30 processes")], 1)
 
-PRIMARY = [PMO, BA, DOCS]
+PRIMARY = [PMO, DOCS, BA]  # lead with PMO and documentation (easiest to buy, lowest data risk)
 
 SOP_DEFINITION = ["One defined process", "Up to five pages", "Up to two stakeholder interviews", "One agreed process map",
                   "Review cycles as stated in the package (a maximum of two per SOP)", "One final approved document"]
@@ -624,6 +648,7 @@ PROBLEMS = [
     ("“Our processes live in people’s heads.”", "Documentation Factory", "#documentation-card"),
     ("“We want AI to help, but our processes aren’t ready for it.”", "Documentation Factory, then AI Operations Discovery", "#ai"),
 ]
+PROBLEMS = [PROBLEMS[i] for i in (0, 1, 4, 5, 2, 3)]
 problems_html = "\n".join(f"""          <div class="problem reveal"><p class="pq">{q}</p><a href="{h}" class="fix"><span>Addressed by</span>{s} →</a></div>""" for q, s, h in PROBLEMS)
 
 SERVICE_CTA = {
@@ -654,6 +679,7 @@ def service_card(product):
             {extra}
             <div class="svc-actions">
               {btn(c_text, c_href, 'btn-primary btn-sm')}
+              {'<a class="text-link" href="pmo-in-a-box.html">How PMO-in-a-Box works</a>' if pid == 'pmo' else ''}
               <a class="text-link" href="pricing.html#{pid}-terms">Package boundaries and terms</a>
             </div>
           </article>"""
@@ -663,9 +689,9 @@ services_cards = "\n".join(service_card(p) for p in PRIMARY)
 
 LADDER = [
     ("Free", "Readiness Scorecard", "13 questions. Your score, risks and recommended next step, instantly.", "£0", "scorecard.html"),
-    ("Assess", "Managed Operations Assessment", "Workshop, readiness review, capacity and cost model, recommended pilot.", "£495", "#assessment"),
-    ("Pilot", "30-day delivery pilot", "One defined workflow, baseline measures and a results report.", "£1,500–£2,500", "#pilot"),
-    ("Run", "Managed service", "Defined monthly capacity, outputs and service levels.", "From £1,950/month", "#services"),
+    ("Assess", "Managed Operations Assessment", "Workshop, readiness review, capacity and cost model, recommended pilot.", "£495", "index.html#assessment"),
+    ("Pilot", "30-day delivery pilot", "One defined workflow, baseline measures and a results report.", "£1,500–£2,500", "index.html#pilot"),
+    ("Run", "Managed service", "Defined monthly capacity, outputs and service levels.", "From £1,950/month", "index.html#services"),
     ("Expand", "Further workstreams", "Add services once the first one is stable and measured.", "Priced per service", "pricing.html"),
 ]
 ladder_html = "\n".join(f"""          <a class="step reveal" href="{h}">
@@ -754,10 +780,17 @@ scenario_html = "".join(f"<dt>{k}</dt><dd>{v}</dd>" for k, v in SCENARIO)
 SAMPLE_BARS = [("Process maturity", 50), ("Documentation", 33), ("Project governance", 42), ("Technology readiness", 67), ("Leadership commitment", 67)]
 sample_bars = "\n".join(f"""              <div class="bar-row"><span>{n}</span><div class="track"><div class="fill" style="width:{v}%"></div></div><span class="v">{v}%</span></div>""" for n, v in SAMPLE_BARS)
 
+FOUNDING_BOX = f"""<div class="founding reveal">
+            <span class="status s-contract">Founding clients</span>
+            <h3>Be one of our first {FOUNDING_PLACES} managed-service clients</h3>
+            <p>We're offering founding-client terms, a reduced rate for the initial three-month term agreed individually, to our first {FOUNDING_PLACES} managed-service clients. In return, we ask you to act as a reference and to let us publish a case study once results are measured. You approve the wording before anything is published.</p>
+            {btn("Ask about founding-client terms", "contact.html?topic=founding", "btn-primary btn-sm")}
+          </div>"""
+
 home = f"""    <section class="hero home-hero">
       <div class="container hero-grid">
         <div>
-          {label("Managed PMO · Business analysis · Process documentation")}
+          {label("Managed PMO · Process documentation · Business analysis")}
           <h1>Build the capability you need, <em class="ember">without building another department.</em></h1>
           <p class="lead">Bespoke Vista provides UK-led business analysis, PMO, process documentation and AI-enabled operational services, delivered by managed teams in our Lahore office.</p>
           <p class="support">Senior UK oversight. Office-based delivery. Defined outputs, transparent pricing and accountable service management.</p>
@@ -790,6 +823,7 @@ home = f"""    <section class="hero home-hero">
         <div class="fit-grid">
 {who_html}
         </div>
+        <p class="note"><a class="text-link" href="logistics.html">Logistics, warehousing or 3PL? See how we work with logistics businesses →</a></p>
       </div>
     </section>
 
@@ -1008,10 +1042,8 @@ home = f"""    <section class="hero home-hero">
             <p>Azeem's background includes enterprise transformation, cyber security programmes, AI productivity work, delivery across the UK, Pakistan and India, and the turnaround of a property business in Lahore.</p>
             <a class="text-link" href="case-studies.html">Read the experience summaries →</a>
           </div>
-          <div class="reveal">
-            <h3>Client testimonials</h3>
-            {owner("verified testimonials with name, role, organisation and written permission to publish. Until then this block is hidden when placeholders are switched off.")}
-          </div>
+          {FOUNDING_BOX if FOUNDING_PLACES else ''}
+          {owner("verified client testimonials with name, role, organisation and written permission to publish.")}
         </div>
       </div>
     </section>
@@ -1659,6 +1691,7 @@ def quiz_block(d):
                   </div>
                   <div class="btns"><button class="btn btn-ember" type="submit">Request my full report {ARR}</button></div>
                   <p class="form-mode small"></p>
+                  <p class="small" style="color:var(--slate);margin:4px 0 0">We use your details only to send your report and arrange a consultation. <a href="privacy.html">Privacy notice</a></p>
                   <div class="form-status" role="status" aria-live="polite"></div>
                 </form>
               </div>
@@ -2018,7 +2051,7 @@ SUBSCRIBE = f"""        <div class="subscribe reveal">
               <input id="sub-email" name="email" type="email" placeholder="Your work email" autocomplete="email" required>
               <button class="btn btn-ember" type="submit">Request a sample</button>
             </div>
-            <small>We'll send a sample briefing and plan details. No spam, unsubscribe any time.</small>
+            <small>We'll send a sample briefing and plan details. No spam, unsubscribe any time. <a href="privacy.html">Privacy notice</a></small>
             <div class="form-status" role="status" aria-live="polite"></div>
           </form>
         </div>"""
@@ -2061,6 +2094,7 @@ page("insights.html", "Insights",
 TOPICS = [
     ("assessment", "Book a Managed Operations Assessment (£495)"),
     ("pilot", "Start a 30-Day Pilot"),
+    ("founding", "Founding-client terms"),
     ("pmo", "PMO-in-a-Box / discuss our project portfolio"),
     ("ba", "Managed Business Analysis"),
     ("documentation", "Documentation Factory"),
@@ -2138,7 +2172,7 @@ contact = f"""    <section class="page-hero">
           <div class="field"><label for="message">Your message *</label><textarea id="message" name="message" required placeholder="The work you'd like help with, roughly how many projects or processes are involved, and any timescales."></textarea></div>
           <button class="btn btn-primary" type="submit">Send enquiry {ARR}</button>
           <p class="form-mode small"></p>
-          <p class="form-note">We use your details only to respond to your enquiry. {owner("link to your privacy notice here once published.", inline=True)}</p>
+          <p class="form-note">We use your details only to respond to your enquiry. See our <a href="privacy.html">privacy notice</a>.</p>
           <div class="form-status" role="status" aria-live="polite"></div>
         </form>
       </div>
@@ -2256,3 +2290,322 @@ samples = f"""    <section class="page-hero">
 page("samples.html", "Sample Deliverables",
      "Illustrative examples of Bespoke Vista deliverables: PMO dashboard, RAID register, service report, process map, SOP, traceability matrix, AI readiness report and 30-day pilot plan.",
      samples)
+
+# ============================================================== LOGISTICS LANDING PAGE
+LOG_SITUATIONS = [
+    ("Warehouse and transport system changes", "WMS or TMS implementations and upgrades that need RAID control, requirements and documented new processes before go-live."),
+    ("New customer onboarding", "3PL onboardings with tight dates: site set-up plans, SOPs for the new account and customer-ready reporting."),
+    ("Peak readiness", "Documented processes and training material so temporary staff are productive quickly and errors don't climb with volume."),
+    ("Multi-site consistency", "The same process done differently at every site. Document it once, agree the standard, then measure it."),
+    ("Customer and contract reporting", "Regular operational and project reporting that currently takes a supervisor a day each week to compile."),
+    ("Audit and accreditation evidence", "Controlled SOPs, owners and review dates that make customer audits and accreditation visits easier to prepare for."),
+]
+log_sit = "\n".join(f"""          <div class="card reveal"><h3>{t}</h3><p style="margin:0">{d}</p></div>""" for t, d in LOG_SITUATIONS)
+
+LOG_PACKAGES = [
+    ("Warehouse SOP Starter", "Documentation Factory · Process Starter", "£2,950 fixed",
+     "Five core warehouse processes documented with SOPs and process maps, for example goods-in, put-away, picking, despatch and returns.", "documentation"),
+    ("Site Operations Manual", "Documentation Factory · Operations Manual", "£5,950 fixed",
+     "Twelve processes with roles, control points and operational KPIs, structured for SharePoint, ready for training and audits.", "documentation"),
+    ("Project control for change", "PMO-in-a-Box · Foundation", "£1,950/month",
+     "RAID, actions and a monthly portfolio dashboard across up to five projects, such as a system upgrade and customer onboardings.", "pmo"),
+    ("Onboarding analysis", "Managed Business Analysis · Essential", "£2,250/month",
+     "Up to six delivery days a month for requirements, process mapping and backlog upkeep on customer onboardings or system change.", "ba"),
+]
+log_pk = "\n".join(f"""          <div class="offer reveal">
+            <span class="label">{s}</span>
+            <h3>{n}</h3>
+            <p class="muted">{d}</p>
+            <div class="meta"><span class="p">{p} · ex VAT</span><a href="contact.html?topic={t}">Discuss this →</a></div>
+          </div>""" for n, s, p, d, t in LOG_PACKAGES)
+
+LOG_FAQ = [
+    ("Can you work with our warehouse or transport system?", "Yes. We document, analyse and report on processes in whichever WMS, TMS or ERP you use. We only need system access where the service requires it, and you grant and control that access."),
+    ("How do you price documentation across several sites?", "Per process. Where a process differs materially between sites, each version counts as a separate process. We confirm the count in the assessment, before you commit."),
+    ("When should we start before peak?", "For documentation, ideally eight to ten weeks before peak, so SOPs are reviewed and training material is ready before temporary staff arrive."),
+    ("Who attends our project and customer meetings?", "Your UK lead attends governance and customer-facing meetings where needed. The Lahore team prepares the RAID logs, dashboards and packs behind them."),
+    ("How is customer data handled?", "We work inside your systems where possible, under a Data Processing Agreement and international-transfer safeguards where personal data is involved. See our security section for the status of each control."),
+]
+log_faq = "\n".join(f"          <details><summary>{q}</summary><p>{a}</p></details>" for q, a in LOG_FAQ)
+
+logistics = f"""    <section class="hero home-hero">
+      <div class="container hero-grid">
+        <div>
+          {label("For logistics, warehousing and 3PL businesses")}
+          <h1>Keep projects and processes under control, <em class="ember">through peak and growth.</em></h1>
+          <p class="lead">Bespoke Vista provides PMO, process documentation and business analysis for UK logistics and supply-chain businesses, with senior UK oversight and office-based delivery in Lahore.</p>
+          <p class="support">Led by a founder whose career includes logistics and supply-chain operations. Defined outputs, transparent prices, one accountable UK lead.</p>
+          <div class="hero-actions">
+            {btn("Book a Managed Operations Assessment", ASSESS_HREF, "btn-ember")}
+            {btn("Take the Free Readiness Scorecard", "scorecard.html", "btn-line", arrow=False)}
+          </div>
+          <p class="tagline-strong">UK-managed. Lahore-delivered. AI-enabled.</p>
+        </div>
+        <div class="hero-art">
+          {horizon(["INBOUND", "STORE", "DISPATCH", "REPORT"])}
+        </div>
+      </div>
+    </section>
+
+    <section class="sec sec-white">
+      <div class="container">
+        <div class="head">
+          <div>{label("Where we help")}<h2>Six situations we're <em class="ember">built for.</em></h2></div>
+          <p>Logistics businesses run change alongside live operations. These are the points where projects slip and process knowledge gets lost.</p>
+        </div>
+        <div class="grid g3">
+{log_sit}
+        </div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="container">
+        <div class="head">
+          <div>{label("Packages for logistics")}<h2>Start with a defined, <em class="ember">priced piece of work.</em></h2></div>
+          <p>Each package is one of our standard services, scoped for logistics. Full boundaries and terms are on the <a href="pricing.html">pricing page</a>.</p>
+        </div>
+        <div class="grid g2">
+{log_pk}
+        </div>
+      </div>
+    </section>
+
+    <section class="sec sec-dark">
+      <div class="container split" style="align-items:center">
+        <div class="reveal">
+          {label("Why Bespoke Vista")}
+          <h2>Operational experience, <em class="ember">not just templates.</em></h2>
+          <p>Azeem Mushtaq has more than 25 years of experience across business architecture, business analysis, transformation, programme delivery and operational improvement, including logistics and supply-chain operations. He scopes every engagement and reviews quality before work reaches you.</p>
+          <p>Delivery takes place in our Lahore office, with a live overlap with UK mornings, so reports and documents are being prepared before your day starts.</p>
+          <a class="text-link" href="index.html#founder">About the founder →</a>
+        </div>
+        {TIMELINE}
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="container">
+        <div class="head">
+          <div>{label("Illustrative scenario")}<h2>How it works <em class="ember">in a logistics business.</em></h2></div>
+          <p>This example demonstrates how the service operates and is not presented as an actual client engagement.</p>
+        </div>
+        <article class="scenario reveal"><dl>{scenario_html}</dl></article>
+      </div>
+    </section>
+
+    <section class="sec sec-white">
+      <div class="container">
+        <div class="head">
+          <div>{label("Low-risk route")}<h2>Assess. Pilot. <em class="ember">Then decide.</em></h2></div>
+          <p>The £495 assessment fee is credited against a qualifying pilot commissioned within 30 days.</p>
+        </div>
+        <div class="ladder">
+{ladder_html}
+        </div>
+        {('<div style="margin-top:40px">' + FOUNDING_BOX + '</div>') if FOUNDING_PLACES else ''}
+      </div>
+    </section>
+
+    <section class="sec" id="faq">
+      <div class="container split">
+        <div>{label("Logistics FAQs")}<h2>Straight answers.</h2><p class="muted"><a href="index.html#faq">All FAQs →</a></p></div>
+        <div class="faq">
+{log_faq}
+        </div>
+      </div>
+    </section>
+
+{cta()}"""
+
+page("logistics.html", "Logistics",
+     "Managed PMO, warehouse SOP documentation and business analysis for UK logistics, warehousing and 3PL businesses. UK-led, delivered from Lahore. Assessments from £495.",
+     logistics, full_title="Logistics PMO and Process Documentation Services | Bespoke Vista",
+     schema=[svc_schema("Logistics PMO and process documentation", "PMO, process documentation and business analysis for UK logistics and supply-chain businesses.", "495"),
+             {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in LOG_FAQ]}])
+
+# ============================================================== PMO-IN-A-BOX LANDING PAGE
+PMO_CYCLE = [
+    ("Monday", "Project updates collected from your project managers against a standard template"),
+    ("Tuesday", "RAID logs and action trackers updated; overdue actions chased"),
+    ("Wednesday", "Portfolio dashboard refreshed; exceptions flagged to your UK lead"),
+    ("Thursday", "Governance-meeting pack prepared and quality-checked"),
+    ("Monthly", "Service review with your UK lead: outputs, service levels, risks and improvements"),
+]
+pmo_cycle = "".join(f"<tr><th scope=\"row\">{d}</th><td>{a}</td></tr>" for d, a in PMO_CYCLE)
+
+PMO_NOT = ["It doesn't replace your project managers or their accountability for delivery",
+           "It isn't unlimited: each package has a project limit and monthly capacity",
+           "It isn't software: we use your Microsoft 365 tools, or others by agreement",
+           "It doesn't make decisions for you: it makes sure the right decisions are visible on time"]
+
+PMO_FAQ = [
+    ("What do our project managers need to do?", "Provide updates by an agreed day each week or month, using a short template we set up. We do the chasing, consolidation, RAID upkeep and reporting."),
+    ("Which tools do you use?", "Your Microsoft 365 environment by default: SharePoint, Teams, Excel and Planner, with Power BI where you hold licences. Smartsheet, Jira or similar by agreement."),
+    ("Can you attend our governance meetings?", "Your UK lead can attend governance meetings where agreed. The Lahore team prepares packs, logs and dashboards behind them."),
+    ("What if we have more than ten projects?", "The Transformation Office package covers multiple workstreams with a dedicated PMO analyst, from £7,500 a month, scoped in a proposal."),
+    ("How do we start?", "With a £495 Managed Operations Assessment, then a 30-day pilot covering a few projects, then a Foundation or Managed package with a three-month initial term."),
+]
+pmo_faq = "\n".join(f"          <details><summary>{q}</summary><p>{a}</p></details>" for q, a in PMO_FAQ)
+
+pmo_page = f"""    <section class="hero home-hero">
+      <div class="container hero-grid">
+        <div>
+          {label("PMO-in-a-Box · from £1,950 a month")}
+          <h1>A working PMO for 3 to 15 projects, <em class="ember">without hiring one.</em></h1>
+          <p class="lead">Governance, RAID management and portfolio reporting, run for you as a managed service by a UK-led team with office-based delivery in Lahore.</p>
+          <p class="support">Defined monthly capacity. Weekly or monthly reporting. A UK-led service review every month.</p>
+          <div class="hero-actions">
+            {btn("Discuss Your Project Portfolio", "contact.html?topic=pmo", "btn-ember")}
+            {btn("Book a Managed Operations Assessment", ASSESS_HREF, "btn-line", arrow=False)}
+          </div>
+          <p class="tagline-strong">UK-managed. Lahore-delivered. AI-enabled.</p>
+        </div>
+        <div class="hero-art">
+          {horizon(["RAID", "REPORT", "GOVERN", "REVIEW"])}
+        </div>
+      </div>
+    </section>
+
+    <section class="sec sec-white">
+      <div class="container split">
+        <div class="reveal">
+          {label("How it runs")}
+          <h2>Your weekly <em class="ember">PMO rhythm.</em></h2>
+          <p>An example cycle for the Managed package. Foundation runs the same activities on a monthly cycle. Days are agreed with you.</p>
+          <p class="small muted">Illustrative example; your schedule is set out in your service definition.</p>
+        </div>
+        <div class="table-wrap table-light reveal"><table class="sla"><tbody>{pmo_cycle}</tbody></table></div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="container">
+{product_block(PMO)}
+{boundaries_table(PMO)}
+      </div>
+    </section>
+
+    <section class="sec sec-sand">
+      <div class="container split">
+        <div class="reveal">
+          {label("Clear boundaries")}
+          <h2>What PMO-in-a-Box <em class="ember">isn't.</em></h2>
+          <p>Being clear about limits is what keeps a managed PMO working well.</p>
+        </div>
+        <ul class="ticks warn reveal">{''.join(f'<li>{x}</li>' for x in PMO_NOT)}</ul>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="container">
+        <div class="head">
+          <div>{label("Example outputs")}<h2>See what you <em class="ember">will receive.</em></h2></div>
+          <p>Illustrative examples, not actual client deliverables.</p>
+        </div>
+        <div class="grid g3">
+{chr(10).join(f'''          <a class="card sample-link reveal" href="samples.html#{sid}" data-track="sample_view"><span class="ill">Illustrative example</span><h3>{t}</h3><p>{d}</p><span class="more">View sample →</span></a>''' for sid, t, d in SAMPLES if sid in ("pmo-dashboard", "raid", "service-report"))}
+        </div>
+      </div>
+    </section>
+
+    <section class="sec sec-white">
+      <div class="container">
+        <article class="scenario reveal">
+          <div class="scenario-head">
+            <span class="status s-future">Illustrative delivery scenario</span>
+            <h3>PMO-in-a-Box for a UK logistics business</h3>
+            <p class="small"><strong>This example demonstrates how the service operates and is not presented as an actual client engagement.</strong></p>
+          </div>
+          <dl>{scenario_html}</dl>
+        </article>
+        {('<div style="margin-top:32px">' + FOUNDING_BOX + '</div>') if FOUNDING_PLACES else ''}
+      </div>
+    </section>
+
+    <section class="sec" id="faq">
+      <div class="container split">
+        <div>{label("FAQs")}<h2>PMO-in-a-Box questions.</h2><p class="muted"><a href="index.html#faq">All FAQs →</a></p></div>
+        <div class="faq">
+{pmo_faq}
+        </div>
+      </div>
+    </section>
+
+{cta("Start with a £495 assessment of your project portfolio.", "We review your projects, reporting and governance, recommend the right package, and scope a 30-day pilot. The fee is credited against a qualifying pilot commissioned within 30 days.", ("Book a Managed Operations Assessment", ASSESS_HREF), ("Discuss Your Project Portfolio", "contact.html?topic=pmo"))}"""
+
+page("pmo-in-a-box.html", "PMO-in-a-Box",
+     "PMO-in-a-Box: a managed PMO for UK organisations running 3 to 15 projects. RAID, reporting and governance from £1,950 a month, UK-led and delivered from Lahore.",
+     pmo_page, full_title="PMO-in-a-Box: Managed and Outsourced PMO Service UK | Bespoke Vista",
+     schema=[svc_schema("PMO-in-a-Box", PMO[3], "1950"),
+             {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in PMO_FAQ]}])
+
+# ============================================================== PRIVACY NOTICE
+# Draft privacy notice. Have it reviewed (e.g. by a solicitor or data-protection adviser) before relying on it.
+_analytics_on = bool(GA4_ID or CLARITY_ID)
+_company_id = "Bespoke Vista Ltd, a company registered in England and Wales"
+if COMPANY_NUMBER:
+    _company_id += f" (company number {COMPANY_NUMBER})"
+if REGISTERED_OFFICE:
+    _company_id += f", whose registered office is at {REGISTERED_OFFICE}"
+
+privacy = f"""    <section class="page-hero">
+      <div class="container">
+        {label("Privacy notice")}
+        <h1>How we use <em class="ember">your information.</em></h1>
+        <p class="lead">Last updated {PRIVACY_UPDATED}.</p>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="container">
+        <div class="article legal" style="padding-top:0">
+          <h2>Who we are</h2>
+          <p>This website is operated by {_company_id} ("Bespoke Vista", "we", "us"). We are the controller of the personal information described in this notice. You can contact us about privacy at <a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a>.</p>
+
+          <h2>What we collect</h2>
+          <ul>
+            <li><strong>Enquiries:</strong> when you use a form or email us, we receive your name, work email, and any organisation, phone number, organisation size, topic and message you provide.</li>
+            <li><strong>Scorecards:</strong> your answers are processed in your browser and are not sent to us. If you request a full report, we receive your name, email, organisation and a summary of your answers and result.</li>
+            <li><strong>Bookings:</strong> if you book through our booking page, Microsoft Bookings collects the details you enter on our behalf.</li>
+            <li><strong>Technical data:</strong> {"if you accept analytics cookies, Google Analytics and Microsoft Clarity collect information about how you use the site (see Cookies below)." if _analytics_on else "we do not use analytics or tracking cookies on this site."}</li>
+          </ul>
+
+          <h2>How we use it, and our lawful basis</h2>
+          <ul>
+            <li>To respond to your enquiry, send a report you requested and arrange a consultation: <em>legitimate interests</em> in responding to business enquiries, or <em>steps prior to entering into a contract</em> at your request.</li>
+            <li>To provide services if you become a client: <em>performance of a contract</em>.</li>
+            <li>To keep business records and meet legal obligations: <em>legal obligation</em> and <em>legitimate interests</em>.</li>
+            {"<li>To understand how the site is used: <em>consent</em>, which you can withdraw at any time through Cookie settings.</li>" if _analytics_on else ""}
+          </ul>
+          <p>We do not sell your information or use it for automated decision-making. We will only send you marketing emails if you ask us to, and you can unsubscribe at any time.</p>
+
+          <h2>Who we share it with</h2>
+          <ul>
+            <li>Our email, document and booking providers (Microsoft 365, including Microsoft Bookings), which process data on our behalf.</li>
+            <li>{"The form service we use to receive website enquiries." if FORM_ENDPOINT else "Your own email provider, because our website forms currently open your email app to send your message."}</li>
+            <li>Members of our team in our Lahore, Pakistan office who support enquiries and client work. This is an international transfer, protected by appropriate safeguards under UK data-protection law, such as the UK International Data Transfer Agreement or UK Addendum.</li>
+            {"<li>Google and Microsoft, for analytics, only if you accept analytics cookies.</li>" if _analytics_on else ""}
+            <li>Professional advisers and authorities where required by law.</li>
+          </ul>
+
+          <h2>How long we keep it</h2>
+          <p>We keep enquiry information for up to 24 months after our last contact, unless you become a client, in which case we keep records for the duration of the contract and for six years afterwards for legal and accounting purposes.</p>
+
+          <h2 id="cookies">Cookies and fonts</h2>
+          <p>{"With your consent, we use analytics cookies from Google Analytics and Microsoft Clarity. Nothing is set until you accept, and you can change your choice at any time using Cookie settings in the footer. We store your choice in your browser." if _analytics_on else "We do not set analytics or advertising cookies."} Our pages load fonts from Google Fonts, which means your browser connects to Google's servers and shares your IP address with Google for that purpose.</p>
+
+          <h2>Your rights</h2>
+          <p>You have the right to access, correct or erase your personal information, to restrict or object to how we use it, and to data portability. Where we rely on consent, you can withdraw it at any time. To exercise these rights, email <a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a>. We will respond within one month.</p>
+          <p>If you are unhappy with how we handle your information, you can complain to the Information Commissioner's Office at <a href="https://ico.org.uk/make-a-complaint/" rel="noopener">ico.org.uk</a>. We would appreciate the chance to resolve your concern first.</p>
+
+          <h2>Changes to this notice</h2>
+          <p>We will update this notice when our practices change. The date at the top shows when it was last revised.</p>
+          <p class="small muted">This notice covers our website and enquiries. Client personal data processed during an engagement is governed by the Data Processing Agreement in your contract.</p>
+        </div>
+      </div>
+    </section>"""
+
+page("privacy.html", "Privacy Notice",
+     "How Bespoke Vista Ltd collects, uses and protects personal information from website visitors and enquiries.",
+     privacy)

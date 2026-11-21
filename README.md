@@ -13,8 +13,13 @@ subscriptions, UK-led managed teams in Lahore, training, and the DojoOS product.
 | `scorecard.html` | Free Managed Delivery Readiness Scorecard (main lead magnet) |
 | `pricing.html` | All prices, package boundaries and commercial terms |
 | `samples.html` | Illustrative sample deliverables |
+| `logistics.html` | Landing page for UK logistics, warehousing and 3PL businesses (for LinkedIn and paid campaigns) |
+| `pmo-in-a-box.html` | Landing page for the PMO-in-a-Box service |
+| `privacy.html` | Privacy notice (draft: have it reviewed); updates itself when analytics or a form endpoint are configured |
 | `services.html`, `managed-teams.html` (Delivery Model), `contact.html`, `ai-scorecard.html` | Supporting pages |
 | `about.html`, `case-studies.html`, `insights.html` | Background pages |
+
+Setting up Bookings, forms, CRM and analytics: `docs/INTEGRATIONS.md`.
 
 See `docs/REVIEW-AND-CHANGELOG.md` for the full review, commercial assessment, QA results and the owner action list.
 
@@ -22,7 +27,7 @@ See `docs/REVIEW-AND-CHANGELOG.md` for the full review, commercial assessment, Q
 
 `BASE_URL`, `CONTACT_EMAIL`, `BOOKING_URL` (Microsoft Bookings), `FORM_ENDPOINT` (Power Automate HTTP trigger or Formspree),
 `GA4_ID`, `CLARITY_ID`, `COMPANY_NUMBER`, `REGISTERED_OFFICE`, `LAHORE_ADDRESS`, `LINKEDIN_URL`, and
-`SHOW_OWNER_PLACEHOLDERS` (set to `False` before publication to hide unfinished items).
+`SHOW_OWNER_PLACEHOLDERS` (off by default; switch on to see every missing item marked), `VAT_REGISTERED`, `FOUNDING_PLACES` and `PRIVACY_UPDATED`.
 
 ## Scorecards
 

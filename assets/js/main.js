@@ -23,6 +23,46 @@
     if (el) track(el.getAttribute('data-track'), { href: el.getAttribute('href') || '' });
   });
 
+  /* ---------- Cookie consent ----------
+     Only active when GA4 or Clarity IDs are configured in build.py (window.BV_ANALYTICS).
+     Nothing is loaded until the visitor accepts. The choice is kept in localStorage. */
+  var cfg = window.BV_ANALYTICS, banner = $('.consent'), analyticsLoaded = false;
+  function getConsent() { try { return localStorage.getItem('bv-consent'); } catch (e) { return null; } }
+  function setConsent(v) { try { localStorage.setItem('bv-consent', v); } catch (e) {} }
+  function loadAnalytics() {
+    if (!cfg || analyticsLoaded) return;
+    analyticsLoaded = true;
+    if (cfg.ga4) {
+      var g = document.createElement('script');
+      g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(cfg.ga4);
+      document.head.appendChild(g);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { window.dataLayer.push(arguments); };
+      window.gtag('js', new Date()); window.gtag('config', cfg.ga4);
+    }
+    if (cfg.clarity) {
+      (function (c, l, a, r, i, t, y) {
+        c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); };
+        t = l.createElement(r); t.async = 1; t.src = 'https://www.clarity.ms/tag/' + i;
+        y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+      })(window, document, 'clarity', 'script', encodeURIComponent(cfg.clarity));
+    }
+  }
+  if (cfg && banner) {
+    var choice = getConsent();
+    if (choice === 'accept') loadAnalytics(); else if (!choice) banner.hidden = false;
+    $$('[data-consent]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var v = b.getAttribute('data-consent');
+        var wasLoaded = analyticsLoaded;
+        setConsent(v); banner.hidden = true;
+        if (v === 'accept') loadAnalytics();
+        else if (wasLoaded) window.location.reload(); // stop analytics already running on this page
+      });
+    });
+    $$('[data-consent-open]').forEach(function (b) { b.addEventListener('click', function () { banner.hidden = false; }); });
+  }
+
   /* ---------- Mobile navigation ---------- */
   var toggle = $('.nav-toggle'), links = $('.nav-links');
   if (toggle && links) {
@@ -299,11 +339,17 @@
       ev.preventDefault();
       if (!form.checkValidity()) { form.reportValidity(); return; }
       var data = new FormData(form);
+      // Spam trap: real visitors never see or fill the hidden "website" field.
+      if (data.get('website')) { form.reset(); show('Thank you.', true); return; }
+      data.delete('website');
       var evt = form.getAttribute('data-event') || 'lead_submit';
       if (data.get('topic') === 'pilot') evt = 'pilot_enquiry_submit';
       track(evt, { topic: data.get('topic') || '', via: endpoint ? 'endpoint' : 'email_app' });
       if (endpoint) {
-        fetch(endpoint, { method: 'POST', body: data, headers: { Accept: 'application/json' } })
+        // JSON works directly with a Power Automate "When an HTTP request is received" trigger and with Formspree.
+        var payload = { form: form.getAttribute('data-subject') || form.id || 'enquiry', page: location.pathname, submittedAt: new Date().toISOString() };
+        data.forEach(function (v, k) { payload[k] = v; });
+        fetch(endpoint, { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'application/json', Accept: 'application/json' } })
           .then(function (r) { if (!r.ok) throw new Error(); form.reset(); show('Thank you. Your message has been sent and we will reply within one working day.', true); })
           .catch(function () { show('Sorry, your message could not be sent. Please email ' + form.getAttribute('data-email') + ' instead.', false); });
         return;
