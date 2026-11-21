@@ -574,7 +574,7 @@ a.card:hover { text-decoration: none; transform: translateY(-4px); box-shadow: v
 .sample-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
 .sample-score { font-family: var(--mono); font-size: .8rem; color: var(--muted); }
 .sample-score strong { font-family: var(--display); font-size: 2rem; color: var(--ink); font-weight: 600; margin-right: 2px; }
-.sample-card .bar-row { grid-template-columns: 150px 1fr 40px; font-size: .86rem; }
+.sample-card .bar-row { grid-template-columns: 172px 1fr 40px; font-size: .86rem; }
 .sample-foot { display: grid; gap: 2px; padding-top: 18px; border-top: 1px dashed var(--line); }
 .sample-foot strong { font-family: var(--display); font-size: 1.25rem; color: var(--ink); font-weight: 600; }
 @media (max-width: 900px) { .sc-hero .sample-card { order: 0; transform: none; margin-top: 12px; } }
@@ -628,3 +628,15 @@ a.card:hover { text-decoration: none; transform: translateY(-4px); box-shadow: v
 .result { scroll-margin-top: 100px; }
 .quiz .bar-row { grid-template-columns: 180px 1fr 44px; }
 @media (max-width: 520px) { .quiz .bar-row { grid-template-columns: 1fr 80px 40px; font-size: .86rem; } }
+
+/* Scorecard hero: horizon artwork with the sample result floating over it */
+.sc-hero::after { display: none; }
+.sc-art { position: relative; }
+.sc-art .horizon { width: 100%; }
+.sc-art .sample-card { margin: -108px 0 0 auto; width: 84%; }
+.sc-art .sample-card .bars { margin: 16px 0 !important; gap: 10px; }
+@media (max-width: 900px) {
+  .sc-art { max-width: 520px; margin: 8px auto 0; }
+  .sc-art .sample-card { margin-top: -76px; width: 92%; }
+}
+@media (max-width: 480px) { .sc-art .sample-card { margin-top: -60px; width: 100%; padding: 22px; } }

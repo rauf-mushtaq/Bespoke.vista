@@ -1171,6 +1171,14 @@ ops_faq = "\n".join(f"          <details><summary>{q}</summary><p>{a}</p></detai
 SAMPLE = [("Project control", 33), ("Business analysis", 50), ("Process documentation", 33), ("Operational capacity", 67), ("AI &amp; automation", 50)]
 sample_bars = "\n".join(f"""              <div class="bar-row"><span>{n}</span><div class="track"><div class="fill" style="width:{v}%"></div></div><span class="v">{v}%</span></div>""" for n, v in SAMPLE)
 
+SC_HORIZON = (HORIZON
+    .replace('aria-label="A sun rising over a horizon: advise, build, run and learn"',
+             'aria-hidden="true"')
+    .replace('>ADVISE</text>', '>UK-LED</text>')
+    .replace('>BUILD</text>', '>MANAGED</text>')
+    .replace('>RUN</text>', '>LAHORE</text>')
+    .replace('>LEARN</text>', '>AI-ENABLED</text>'))
+
 scorecard = f"""    <section class="page-hero sc-hero">
       <div class="container hero-grid">
         <div>
@@ -1183,12 +1191,15 @@ scorecard = f"""    <section class="page-hero sc-hero">
           </div>
           <p class="tagline-strong">UK-managed. Lahore-delivered. AI-enabled.</p>
         </div>
+        <div class="sc-art">
+          {SC_HORIZON}
         <div class="sample-card reveal" aria-label="Example of a scorecard result">
           <div class="sample-top"><span class="label" style="margin:0">Sample result</span><span class="sample-score"><strong>47</strong>/100 · Coping</span></div>
           <div class="bars" style="margin:22px 0">
 {sample_bars}
           </div>
           <div class="sample-foot"><span class="small muted">Top opportunity</span><strong>Managed PMO Office</strong><span class="small muted">from £1,500/month · pilot first</span></div>
+        </div>
         </div>
       </div>
     </section>
