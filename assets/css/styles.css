@@ -905,3 +905,10 @@ span.owner-ph { display: inline-block; margin: 4px 0; padding: 4px 10px; }
 }
 @media (prefers-reduced-motion: reduce) { .sticky-cta { transition: none; } }
 @media (max-width: 1440px) { .brand-tag { display: none; } }
+
+/* v8: Virtual Consultancy */
+.chooser { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 1180px) { .chooser { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .chooser { grid-template-columns: 1fr; } }
+#trial .steps > div h3 { margin-top: 4px; }
+@media (max-width: 560px) { #trial .steps { grid-template-columns: 1fr !important; } }

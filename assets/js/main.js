@@ -332,6 +332,18 @@
   if (topicSelect && params.get('topic')) {
     $$('option', topicSelect).forEach(function (o) { if (o.value === params.get('topic')) topicSelect.value = o.value; });
   }
+  // Virtual Consultancy: ?plan=trial|essentials|professional|partner pre-selects the plan.
+  var planSelect = $('#vc-plan');
+  if (planSelect && params.get('plan')) {
+    $$('option', planSelect).forEach(function (o) { if (o.value === params.get('plan')) planSelect.value = o.value; });
+  }
+  $$('a[href*="plan="][href$="#book"]').forEach(function (a) {
+    if (!planSelect || a.pathname.split('/').pop() !== location.pathname.split('/').pop()) return;
+    a.addEventListener('click', function () {
+      var v = new URL(a.href).searchParams.get('plan');
+      $$('option', planSelect).forEach(function (o) { if (o.value === v) planSelect.value = v; });
+    });
+  });
   var msgField = $('#message');
   if (msgField && params.get('message')) msgField.value = params.get('message');
 
@@ -368,6 +380,8 @@
       }
       var lines = [];
       data.forEach(function (v, k) { if (k !== 'message' && k !== 'results' && v) lines.push(k.charAt(0).toUpperCase() + k.slice(1) + ': ' + v); });
+      var subFrom = form.getAttribute('data-subject-from') && $('[name="' + form.getAttribute('data-subject-from') + '"]', form);
+      if (subFrom && subFrom.selectedOptions && subFrom.selectedOptions[0]) form.setAttribute('data-subject', 'Virtual Consultancy request: ' + subFrom.selectedOptions[0].text);
       var subject = form.getAttribute('data-subject') || ('Enquiry: ' + ((topicSelect && topicSelect.selectedOptions[0]) ? topicSelect.selectedOptions[0].text : 'General'));
       var body = lines.join('\n') + (data.get('message') ? '\n\n' + data.get('message') : '') + (data.get('results') ? '\n\n' + data.get('results') : '');
       window.location.href = 'mailto:' + form.getAttribute('data-email') + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);

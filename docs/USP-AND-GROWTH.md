@@ -50,3 +50,14 @@ This fills the gap between:
 5. **Turn the scorecard into a conversation.** Follow up every completed report request personally within one working day.
 6. **Make one landing page per campaign.** `logistics.html` and `pmo-in-a-box.html` exist. Next: a Microsoft 365 migration page and a Copilot adoption page.
 7. **Plan for capacity.** Azeem's time limits transformation work. Track hours per client, and plan a second senior lead or a UK service manager once there are 8–12 active clients.
+
+## Virtual Consultancy (added 21 November 2026)
+
+New page `virtual-consultancy.html`, in the main navigation (replacing Samples, which stays in the footer and homepage).
+
+- **Two-Week Work Package Trial: £950 fixed.** Kick-off with Azeem, a work-package plan, RAID and action log, two weeks of follow-up, two check-ins, two status reports and an end-of-trial recommendation. Credited in full against the first month if the client subscribes within 30 days.
+- **Monthly plans:** Essentials £1,450 (1 work package, 4 senior hours, 3 coordinator days), Professional £2,950 (3 packages, 8 hours, 6 days), Partner £5,450 (6 packages, 16 hours, 12 days). One-month minimum, then 30 days' notice; hours don't roll over.
+- **Booking:** an on-page request form (plan pre-selected from each button). No payment is taken on the site; scope is confirmed first. To take bookings or payments directly, set `TRIAL_BOOKING_URL` and `SUBSCRIBE_URLS` in `build.py`.
+- Also linked from: a fourth homepage "Where to start" choice, the pricing page (new section), the services page, the footer and two new contact topics.
+
+**Owner to confirm:** the trial price and credit, the plan prices and allowances, the one-month minimum term (other managed services have three months), the response times, and that a named Lahore coordinator can be assigned to each client.

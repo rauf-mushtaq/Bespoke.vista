@@ -12,6 +12,7 @@ GitHub Pages (or any static host) with no build step on the server.
 The previous implementation is preserved in git history at commit d2388d9.
 """
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).parent
@@ -55,6 +56,12 @@ ASSESS_HREF = BOOKING_URL or "contact.html?topic=assessment"
 DISCOVERY_BOOKING_URL = ""
 DISCOVERY_HREF = DISCOVERY_BOOKING_URL or "contact.html?topic=discovery-call"
 
+# Virtual Consultancy. Leave blank to use the request form on virtual-consultancy.html.
+# Set to a Microsoft Bookings page or a Stripe Payment Link once scope checks and terms are in place.
+TRIAL_BOOKING_URL = ""
+SUBSCRIBE_URLS = {"Essentials": "", "Professional": "", "Partner": ""}
+TRIAL_HREF = TRIAL_BOOKING_URL or "virtual-consultancy.html?plan=trial#book"
+
 # The core proposition, used across the site.
 USP = "We lead the change. Our team keeps it running."
 ARR = '<span class="arr" aria-hidden="true">→</span>'
@@ -64,7 +71,7 @@ NAV = [
     ("logistics.html", "Logistics"),
     ("managed-teams.html", "Delivery Model"),
     ("pricing.html", "Pricing"),
-    ("samples.html", "Samples"),
+    ("virtual-consultancy.html", "Virtual Consultancy"),
     ("about.html", "About"),
 ]
 LOGO = ('<img src="assets/img/logo.png" srcset="assets/img/logo.png 1x, assets/img/logo@2x.png 2x" '
@@ -89,6 +96,8 @@ def track_for(href):
         return "discovery_call_start" if DISCOVERY_BOOKING_URL else "discovery_enquiry_start"
     if href == ASSESS_HREF:
         return "booking_start" if BOOKING_URL else "assessment_enquiry_start"
+    if href == TRIAL_HREF or "plan=trial" in href:
+        return "virtual_trial_start"
     if "topic=pilot" in href:
         return "pilot_cta"
     if href.startswith("samples.html"):
@@ -119,7 +128,7 @@ def header(active):
     <nav class="container nav" aria-label="Main">
       <a class="brand" href="index.html" aria-label="{SITE} home">
         {LOGO}
-        <span><span class="brand-name">{SITE}</span><span class="brand-tag">Lead the change · Keep it running</span></span>
+        <span><span class="brand-name">{SITE}</span></span>
       </a>
       <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu
@@ -170,6 +179,7 @@ FOOTER = f"""  <footer class="site-footer">
             <li><a href="scorecard.html">Free Readiness Scorecard</a></li>
             <li><a href="index.html#assessment">Managed Operations Assessment</a></li>
             <li><a href="index.html#pilot">30-Day Pilot</a></li>
+            <li><a href="virtual-consultancy.html#trial">Two-Week Work Package Trial</a></li>
             <li><a href="samples.html">Sample deliverables</a></li>
             <li><a href="pricing.html">Pricing and terms</a></li>
           </ul>
@@ -433,10 +443,41 @@ AI_WORKFLOW = ("AI Workflow Implementation", "£5,000–£15,000", "fixed price 
                 "Testing", "User guidance", "Governance documentation", "Handover"],
                "We only propose an integration once we have confirmed a viable technical route in your environment. Software licences and AI consumption are charged separately.")
 
+# Virtual Consultancy: a two-week trial on one work package, then a monthly subscription.
+VC_TRIAL = ("Two-Week Work Package Trial", "£950", "fixed price · ex VAT",
+            ["60-minute virtual kick-off with Azeem", "Work-package plan: scope, milestones, owners and dates",
+             "RAID and action log set up in your Microsoft 365", "Actions followed up with your team for two weeks",
+             "Two 30-minute weekly check-ins", "Two weekly status reports", "End-of-trial review: continue, change or stop"],
+            "The £950 is credited in full against your first month if you subscribe within 30 days of the trial ending.")
+VIRTUAL = ("virtual", "Virtual Consultancy", "For leaders with more work packages than people to run them",
+           "A senior UK consultant and a named coordinator in Lahore, working with you online each month to plan, track and report on defined work packages.",
+           [("Essentials", "One work package, kept moving.", "£1,450",
+             ["1 active work package", "Up to 4 hours a month with Azeem", "Up to 3 coordinator days a month",
+              "Fortnightly 30-minute check-in", "RAID and action log maintained", "Fortnightly status report",
+              "Shared Teams channel, next-working-day response"], "1 work package · 4 senior hours"),
+            ("Professional", "Several work packages, one rhythm.", "£2,950",
+             ["Up to 3 active work packages", "Up to 8 hours a month with Azeem", "Up to 6 coordinator days a month",
+              "Weekly 30-minute check-in", "Weekly status report and a monthly leadership summary",
+              "One governance meeting attended each month", "Plans, briefs and process notes drafted for you",
+              "Same-working-day response (UK hours)"], "3 work packages · 8 senior hours"),
+            ("Partner", "A virtual change office.", "£5,450",
+             ["Up to 6 active work packages", "Up to 16 hours a month with Azeem", "Up to 12 coordinator days a month",
+              "Weekly check-in and fortnightly steering", "Monthly leadership reporting pack", "Dependency and benefits tracking",
+              "Quarterly priorities review", "Same-working-day response (UK hours)"], "6 work packages · 16 senior hours")], 1)
+
+
+
+def vc_cta(tier):
+    """CTA for a Virtual Consultancy plan: a payment/subscription link if configured, else the request form."""
+    url = SUBSCRIBE_URLS.get(tier)
+    return ((f"Subscribe to {tier}", url, "virtual_subscribe_start") if url
+            else (f"Request {tier}", f"virtual-consultancy.html?plan={tier.lower()}#book", "virtual_subscribe_start"))
+
+
 # Shared commercial terms
 TERMS = [
     ("Prices", "All prices exclude VAT."),
-    ("Initial term", "Monthly managed services have a three-month initial term."),
+    ("Initial term", "Monthly managed services have a three-month initial term. Virtual Consultancy has a one-month minimum term."),
     ("Payment", "Monthly in advance for managed services. Fixed-price work is invoiced as set out in the proposal."),
     ("Notice", "30 days' notice after the initial term."),
     ("Change control", "Changes to scope, capacity or service levels go through a formal change request and are only made once you approve the impact in writing."),
@@ -532,7 +573,7 @@ INDUSTRIES = ["Logistics", "Warehousing", "Supply chain", "Professional services
               "Financial services", "Healthcare", "Education", "Public sector"]
 
 
-def tier_cards(product, featured_flag="Recommended", per="per month, ex VAT", annual=False):
+def tier_cards(product, featured_flag="Recommended", per="per month, ex VAT", annual=False, cta=None):
     pid, name, who, desc, tiers, featured = product[:6]
     out = []
     for i, t in enumerate(tiers):
@@ -549,12 +590,12 @@ def tier_cards(product, featured_flag="Recommended", per="per month, ex VAT", an
             <p class="tier-desc">{tdesc}</p>
             {amount}
             <ul>{lis}</ul>
-            <a class="btn {'btn-ember' if f else 'btn-line'}" href="contact.html?topic={pid}">Discuss {tname} {ARR}</a>
+            {(lambda c: f'<a class="btn {"btn-ember" if f else "btn-line"}" href="{c[1]}" data-track="{c[2]}">{c[0]} {ARR}</a>')(cta(tname)) if cta else f'<a class="btn {"btn-ember" if f else "btn-line"}" href="contact.html?topic={pid}">Discuss {tname} {ARR}</a>'}
           </div>""")
     return "\n".join(out)
 
 
-def product_block(product, per="per month, ex VAT", annual=False, extra=""):
+def product_block(product, per="per month, ex VAT", annual=False, extra="", cta=None):
     pid, name, who, desc = product[:4]
     return f"""        <div class="product" id="{pid}">
           <div class="product-head">
@@ -562,7 +603,7 @@ def product_block(product, per="per month, ex VAT", annual=False, extra=""):
             <div class="for">{who}</div>
           </div>
           <div class="grid g3">
-{tier_cards(product, per=per, annual=annual)}
+{tier_cards(product, per=per, annual=annual, cta=cta)}
           </div>
         </div>"""
 
@@ -987,6 +1028,12 @@ home = f"""    <section class="hero home-hero">
             <span class="cp">£495 assessment, then services from £1,950/month</span>
             <span class="cl">Book a Managed Operations Assessment →</span>
           </a>
+          <a class="choice reveal" role="listitem" href="virtual-consultancy.html" data-track="virtual_view">
+            <span class="ck">I need a work package managed</span>
+            <span class="cd">A senior consultant and a coordinator, online, to plan, chase and report on it.</span>
+            <span class="cp">Two-week trial £950, then from £1,450/month</span>
+            <span class="cl">See Virtual Consultancy →</span>
+          </a>
           <a class="choice reveal" role="listitem" href="scorecard.html" data-track="scorecard_cta">
             <span class="ck">I'm not sure yet</span>
             <span class="cd">Thirteen questions and an instant result with a recommended next step.</span>
@@ -1371,6 +1418,8 @@ RUN = [
 ] + [(n, d, "Priced after assessment", "Clients with an established first service.", note, "managed") for n, d, note in SECONDARY]
 
 ADVISE = [
+    ("Virtual Consultancy", "A senior consultant and a coordinator, online, managing your work packages.", "Trial £950 · then £1,450–£5,450/month",
+     "Leaders with defined pieces of work and nobody free to run them.", "Work-package plans, RAID and action logs, follow-up with your team, check-ins and status reports. Start with a two-week trial.", "virtual"),
     ("Managed Operations Assessment", "Find out what could be handed over safely, and how.", "£495 · 1 to 2 weeks",
      "Any organisation considering managed delivery.", "Discovery workshop, readiness review, process prioritisation, capacity and cost model, recommended pilot and written findings.", "assessment"),
     ("Transformation Health Check", "An honest, independent view of a programme that's late, over budget or losing confidence.", "£4,950 · 2 weeks",
@@ -1583,7 +1632,7 @@ page("managed-teams.html", "Delivery Model",
      managed)
 
 # ============================================================== PRICING
-SUBNAV_PRICING = [("transformation", "Transformation packages"), ("start", "Assessment and pilot"), ("pmo", "PMO-in-a-Box"), ("ba", "Managed BA"), ("documentation", "Documentation Factory"),
+SUBNAV_PRICING = [("transformation", "Transformation packages"), ("virtual", "Virtual Consultancy"), ("start", "Assessment and pilot"), ("pmo", "PMO-in-a-Box"), ("ba", "Managed BA"), ("documentation", "Documentation Factory"),
                   ("terms", "Commercial terms"), ("projects", "AI and fixed-price projects"), ("intelligence", "Subscriptions"),
                   ("training", "Training"), ("dojoos", "DojoOS"), ("faq", "FAQs")]
 
@@ -1608,6 +1657,19 @@ pricing = f"""    <section class="page-hero">
         <div class="grid g3">
 {lt_packages}
         </div>
+      </div>
+    </section>
+    <section class="sec sec-white" id="virtual-sec" style="scroll-margin-top:140px">
+      <div class="container">
+{product_block(VIRTUAL, cta=vc_cta)}
+        <div class="grid g2" style="margin-top:28px;align-items:center">
+{offer_card(VC_TRIAL, "Book a Two-Week Trial", TRIAL_HREF, "Try it first", "featured")}
+          <div class="reveal">
+            <h3>Not sure yet? Try it on one work package.</h3>
+            <p class="muted">Two weeks, fixed price, one defined piece of work. At the end you get a review and a recommendation: continue on a plan, change the approach, or stop.</p>
+          </div>
+        </div>
+        <p class="small muted" style="margin-top:16px">One-month minimum term, then monthly with 30 days' notice. Unused hours and days don't roll over. <a href="virtual-consultancy.html">How Virtual Consultancy works →</a></p>
       </div>
     </section>
     <section class="sec" id="start" style="scroll-margin-top:140px">
@@ -2357,6 +2419,8 @@ TOPICS = [
     ("change-programme", "Complex change programme"),
     ("digital-workplace", "Remote and hybrid working / digital workplace"),
     ("fractional-adviser", "Fractional Transformation Adviser"),
+    ("virtual-trial", "Two-Week Work Package Trial (£950)"),
+    ("virtual", "Virtual Consultancy subscription"),
     ("founding", "Founding-client terms"),
     ("pmo", "PMO-in-a-Box / discuss our project portfolio"),
     ("ba", "Managed Business Analysis"),
@@ -2953,6 +3017,196 @@ page("pmo-in-a-box.html", "PMO-in-a-Box",
      pmo_page, full_title="PMO-in-a-Box: Managed and Outsourced PMO Service UK | Bespoke Vista",
      schema=[svc_schema("PMO-in-a-Box", PMO[3], "1950"),
              {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in PMO_FAQ]}])
+
+# ============================================================== VIRTUAL CONSULTANCY
+VC_EXAMPLES = [
+    ("A system or supplier change", "One phase of a roll-out: plan, readiness actions, supplier follow-up and go-live checklist."),
+    ("A process or policy roll-out", "A new way of working introduced across teams, with owners, dates and evidence of completion."),
+    ("A migration or cut-over plan", "Tasks, dependencies and decisions tracked so nothing is missed on the day."),
+    ("An audit or improvement action plan", "Findings turned into owned actions, followed up and reported to leadership."),
+    ("A Copilot or automation pilot", "Use cases, users, guidance, feedback and a recommendation at the end."),
+    ("A project without a project manager", "A small, important piece of work that keeps slipping behind the day job."),
+]
+VC_TRIAL_STEPS = [
+    ("Day 1", "Kick-off", "A 60-minute Teams call with Azeem: the outcome you need, the people involved, deadlines and constraints."),
+    ("Days 2–3", "Plan agreed", "A one-page work-package plan with milestones, owners and dates, plus a RAID and action log in your Microsoft 365."),
+    ("Days 4–9", "Run", "Your coordinator follows up actions with your team, keeps the log current and flags anything at risk to Azeem."),
+    ("Day 10", "Review", "Status report, lessons and a recommendation: continue on a plan, change the approach, or stop. No obligation."),
+]
+VC_NOT = ["It isn't a virtual-assistant or admin service: every plan is led by a senior consultant",
+          "It isn't staff supply: you don't manage our people, we deliver the agreed outputs",
+          "It doesn't take over your accountability: you own decisions, we make sure they're visible and acted on",
+          "It isn't unlimited: each plan has a work-package limit and monthly hours",
+          "It doesn't include specialist technical build, penetration testing or legal and financial advice"]
+VC_FAQ = [
+    ("What counts as a work package?", "A defined piece of work with an outcome, an owner on your side and an end date, such as one phase of a system roll-out, a process change across teams or an audit action plan. If it's bigger than that, we'll suggest splitting it, or a Transformation Discovery."),
+    ("Who will we work with?", "Azeem Mushtaq, the senior UK consultant who leads the plan, attends key meetings and reviews every report, and a named coordinator in our Lahore office who keeps the logs, follows up actions and prepares reports."),
+    ("Is it all online?", "Yes. We work through Microsoft Teams, with documents in your SharePoint or a workspace we set up for you. Azeem works UK hours. Lahore office hours overlap with the UK morning, so updates are ready when your day starts."),
+    ("What happens at the end of the trial?", "You receive a status report and a recommendation. If you subscribe within 30 days, the £950 is credited in full against your first month. If not, there's nothing further to pay."),
+    ("Can we change plan or cancel?", "Yes. You can move up or down a plan from the next month. After the one-month minimum term, give 30 days' notice to cancel."),
+    ("Do unused hours roll over?", "No. Each plan includes a set amount of senior and coordinator time each month. Extra time can be agreed in advance at a quoted price."),
+    ("How is this different from PMO-in-a-Box?", "PMO-in-a-Box runs governance and reporting across a portfolio of projects your own project managers lead. Virtual Consultancy manages specific work packages for you, with senior consultant time included."),
+    ("How do we pay?", "The trial is invoiced in advance. Subscriptions are invoiced monthly in advance. No payment is taken on this website: we confirm scope with you first."),
+    ("How do you protect our information?", "Confidentiality agreements, access only to what the work needs, multi-factor authentication and no client data in public AI tools. See <a href=\"index.html#security\">security and data protection</a>."),
+]
+vc_faq = "\n".join(f"          <details><summary>{q}</summary><p>{a}</p></details>" for q, a in VC_FAQ)
+vc_examples = "\n".join(f'          <div class="card reveal"><h3>{t}</h3><p>{d}</p></div>' for t, d in VC_EXAMPLES)
+vc_steps = "\n".join(f'          <div class="reveal"><span class="small muted">{d}</span><h3>{t}</h3><p>{x}</p></div>' for d, t, x in VC_TRIAL_STEPS)
+vc_plan_opts = "".join(f'<option value="{v}">{l}</option>' for v, l in
+                       [("trial", "Two-Week Work Package Trial (£950)"), ("essentials", "Essentials (£1,450/month)"),
+                        ("professional", "Professional (£2,950/month)"), ("partner", "Partner (£5,450/month)"),
+                        ("not-sure", "Not sure yet: please advise")])
+
+virtual = f"""    <section class="hero home-hero">
+      <div class="container hero-grid">
+        <div>
+          {label("Virtual Consultancy · trial £950 · plans from £1,450/month")}
+          <h1>Your work package, managed. <em class="ember">Senior-led and fully online.</em></h1>
+          <p class="lead">Give us a defined piece of work: a system roll-out phase, a process change, an audit action plan. We plan it, follow up the actions and report on it through your Microsoft Teams, led by a senior UK consultant with a coordinator in our Lahore office.</p>
+          <p class="support">Try it on one work package for two weeks at a fixed price. Or subscribe for a standing virtual consultancy, by the month.</p>
+          <div class="hero-actions">
+            {btn("Book a Two-Week Trial", TRIAL_HREF, "btn-ember")}
+            {btn("Compare Monthly Plans", "#plans", "btn-line", arrow=False)}
+          </div>
+          <p class="tagline-strong">{USP}</p>
+        </div>
+        <div class="hero-art">
+          {horizon(["SCOPE", "PLAN", "TRACK", "REPORT"], "A sun rising over a horizon, marking scope, plan, track and report")}
+        </div>
+      </div>
+    </section>
+
+    <section class="sec sec-white" id="work-packages">
+      <div class="container">
+        <div class="head">
+          <div>{label("What we manage")}<h2>Work that matters, <em class="ember">but nobody has time to run.</em></h2></div>
+          <p>A work package is a defined piece of work with an outcome, an owner on your side and an end date. Typical examples:</p>
+        </div>
+        <div class="grid g3">
+{vc_examples}
+        </div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="container">
+        <div class="head">
+          <div>{label("Who does what")}<h2>A senior lead and a coordinator, <em class="ember">for the price of neither.</em></h2></div>
+          <p>The same model as the rest of Bespoke Vista: we lead the change, our team keeps it running.</p>
+        </div>
+        <div class="leadrun">
+          <div class="lr-panel reveal">
+            <span class="lr-tag">UK · Azeem Mushtaq</span>
+            <h3>Your senior consultant</h3>
+            <ul class="ticks compact"><li>Shapes the plan and agrees it with you</li><li>Makes the judgement calls and raises the hard questions</li><li>Joins check-ins and key meetings</li><li>Reviews every report before you see it</li></ul>
+          </div>
+          <div class="lr-join" aria-hidden="true"><span>One plan<br>One channel<br>One monthly fee</span></div>
+          <div class="lr-panel lr-run reveal">
+            <span class="lr-tag">Coordinator · Lahore office</span>
+            <h3>Your named coordinator</h3>
+            <ul class="ticks compact"><li>Keeps the RAID and action log current</li><li>Follows up actions with your team, by agreement</li><li>Prepares status reports and meeting packs</li><li>Keeps documents organised in your SharePoint</li></ul>
+          </div>
+        </div>
+        {CLOCKS}
+      </div>
+    </section>
+
+    <section class="sec sec-white" id="trial" style="scroll-margin-top:100px">
+      <div class="container">
+        <div class="head">
+          <div>{label("Option 1 · Try it")}<h2>Two weeks. One work package. <em class="ember">Fixed price.</em></h2></div>
+          <p>See how we work on something real before you commit to anything.</p>
+        </div>
+        <div class="grid g2" style="align-items:start">
+{offer_card(VC_TRIAL, "Book a Two-Week Trial", TRIAL_HREF, "Try it first", "featured")}
+          <div class="reveal">
+            <h3>How the two weeks run</h3>
+            <div class="steps" style="grid-template-columns:1fr 1fr;margin-top:20px">
+{vc_steps}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="plans" style="scroll-margin-top:100px">
+      <div class="container">
+        <div class="head">
+          <div>{label("Option 2 · Subscribe")}<h2>A standing virtual consultancy, <em class="ember">by the month.</em></h2></div>
+          <p>One-month minimum, then monthly with 30 days' notice. Move up or down a plan from the next month. All prices exclude VAT.</p>
+        </div>
+{product_block(VIRTUAL, cta=vc_cta)}
+        <p class="small muted" style="margin-top:16px">Hours and coordinator days are monthly maximums and don't roll over. Extra time can be agreed in advance at a quoted price. Software licences are not included.</p>
+      </div>
+    </section>
+
+    <section class="sec sec-sand">
+      <div class="container split">
+        <div class="reveal">
+          {label("Clear boundaries")}
+          <h2>What Virtual Consultancy <em class="ember">isn't.</em></h2>
+          <p>Bigger or more technical work? Start with a <a href="{DISCOVERY_HREF}">discovery call</a> and we'll suggest the right route, or the right partner.</p>
+        </div>
+        <ul class="ticks warn reveal">{''.join(f'<li>{x}</li>' for x in VC_NOT)}</ul>
+      </div>
+    </section>
+
+    <section class="sec sec-white" id="book" style="scroll-margin-top:100px">
+      <div class="container contact-grid">
+        <div class="reveal">
+          {label("Book or subscribe")}
+          <h2>Tell us about <em class="ember">the work package.</em></h2>
+          <ol class="next-steps">
+            <li>We reply within one working day to confirm scope, or to ask a few questions on a short call.</li>
+            <li>We send a one-page scope and the terms for your trial or plan.</li>
+            <li>Once you approve, we invoice and book your kick-off, usually within five working days.</li>
+          </ol>
+          <p class="small muted">No payment is taken on this website. Nothing starts until you've approved the scope in writing.</p>
+        </div>
+        <form class="form reveal" id="virtual-form" data-email="{CONTACT_EMAIL}" data-endpoint="" data-event="virtual_request_submit" data-subject-from="plan" novalidate>
+          <input type="hidden" name="topic" value="virtual-consultancy">
+          <div class="form-row">
+            <div class="field"><label for="vc-name">Name *</label><input id="vc-name" name="name" type="text" autocomplete="name" required></div>
+            <div class="field"><label for="vc-org">Organisation</label><input id="vc-org" name="organisation" type="text" autocomplete="organization"></div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label for="vc-email">Work email *</label><input id="vc-email" name="email" type="email" autocomplete="email" required></div>
+            <div class="field"><label for="vc-phone">Phone</label><input id="vc-phone" name="phone" type="tel" autocomplete="tel"></div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label for="vc-plan">Trial or plan *</label><select id="vc-plan" name="plan" required>{vc_plan_opts}</select></div>
+            <div class="field"><label for="vc-start">Preferred start</label><select id="vc-start" name="start"><option>As soon as possible</option><option>In 2 to 4 weeks</option><option>Next month or later</option></select></div>
+          </div>
+          <div class="field"><label for="vc-message">The work package *</label><textarea id="vc-message" name="message" required placeholder="What needs to happen, by when, who is involved on your side, and what's getting in the way."></textarea></div>
+          <button class="btn btn-primary" type="submit">Send Trial or Plan Request {ARR}</button>
+          <p class="form-mode small"></p>
+          <p class="form-note">We use your details only to respond to your request. See our <a href="privacy.html">privacy notice</a>.</p>
+          <div class="form-status" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="sec" id="faq">
+      <div class="container split">
+        <div>{label("FAQs")}<h2>Virtual Consultancy questions.</h2><p class="muted"><a href="index.html#faq">All FAQs →</a></p></div>
+        <div class="faq">
+{vc_faq}
+        </div>
+      </div>
+    </section>
+
+{cta("Hand us one work package for two weeks.", "A fixed £950 trial, credited in full if you subscribe within 30 days. Or talk it through first on a free 30-minute discovery call.", ("Book a Two-Week Trial", TRIAL_HREF), ("Book a Discovery Call", DISCOVERY_HREF))}"""
+
+page("virtual-consultancy.html", "Virtual Consultancy",
+     "Virtual consultancy from Bespoke Vista: a senior UK consultant and a coordinator manage your work packages online. Two-week trial £950, plans from £1,450 a month.",
+     virtual, full_title="Virtual Consultancy and Work Package Management | Bespoke Vista",
+     schema=[{"@type": "Service", "name": "Virtual Consultancy", "serviceType": "Virtual consultancy and work-package management",
+              "provider": {"@id": BASE_URL + "#org"}, "areaServed": "GB",
+              "description": "A senior UK consultant and a named coordinator manage defined work packages online: plans, RAID and action logs, follow-up and status reporting.",
+              "offers": [{"@type": "Offer", "name": VC_TRIAL[0], "price": "950", "priceCurrency": "GBP"}]
+                        + [{"@type": "Offer", "name": f"Virtual Consultancy {t[0]}", "price": t[2].replace("£", "").replace(",", ""), "priceCurrency": "GBP",
+                            "priceSpecification": {"@type": "UnitPriceSpecification", "price": t[2].replace("£", "").replace(",", ""), "priceCurrency": "GBP", "unitText": "MONTH"}} for t in VIRTUAL[4]]},
+             {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": re.sub(r"<[^>]+>", "", a)}} for q, a in VC_FAQ]}])
 
 # ============================================================== PRIVACY NOTICE
 # Draft privacy notice. Have it reviewed (e.g. by a solicitor or data-protection adviser) before relying on it.
