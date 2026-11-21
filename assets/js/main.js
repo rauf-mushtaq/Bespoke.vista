@@ -332,16 +332,15 @@
   if (topicSelect && params.get('topic')) {
     $$('option', topicSelect).forEach(function (o) { if (o.value === params.get('topic')) topicSelect.value = o.value; });
   }
-  // Virtual Consultancy: ?plan=trial|essentials|professional|partner pre-selects the plan.
-  var planSelect = $('#vc-plan');
-  if (planSelect && params.get('plan')) {
-    $$('option', planSelect).forEach(function (o) { if (o.value === params.get('plan')) planSelect.value = o.value; });
-  }
-  $$('a[href*="plan="][href$="#book"]').forEach(function (a) {
-    if (!planSelect || a.pathname.split('/').pop() !== location.pathname.split('/').pop()) return;
-    a.addEventListener('click', function () {
-      var v = new URL(a.href).searchParams.get('plan');
-      $$('option', planSelect).forEach(function (o) { if (o.value === v) planSelect.value = v; });
+  // Request forms: select[data-param="plan"|"product"] is pre-selected from ?plan= / ?product=,
+  // and from same-page links that carry that parameter.
+  $$('select[data-param]').forEach(function (sel) {
+    var key = sel.getAttribute('data-param');
+    var pick = function (v) { $$('option', sel).forEach(function (o) { if (o.value === v) sel.value = v; }); };
+    if (params.get(key)) pick(params.get(key));
+    $$('a[href*="' + key + '="]').forEach(function (a) {
+      if (a.pathname.split('/').pop() !== location.pathname.split('/').pop()) return;
+      a.addEventListener('click', function () { pick(new URL(a.href).searchParams.get(key)); });
     });
   });
   var msgField = $('#message');
@@ -381,7 +380,7 @@
       var lines = [];
       data.forEach(function (v, k) { if (k !== 'message' && k !== 'results' && v) lines.push(k.charAt(0).toUpperCase() + k.slice(1) + ': ' + v); });
       var subFrom = form.getAttribute('data-subject-from') && $('[name="' + form.getAttribute('data-subject-from') + '"]', form);
-      if (subFrom && subFrom.selectedOptions && subFrom.selectedOptions[0]) form.setAttribute('data-subject', 'Virtual Consultancy request: ' + subFrom.selectedOptions[0].text);
+      if (subFrom && subFrom.selectedOptions && subFrom.selectedOptions[0]) form.setAttribute('data-subject', (form.id === 'virtual-form' ? 'Virtual Consultancy request: ' : 'Request: ') + subFrom.selectedOptions[0].text);
       var subject = form.getAttribute('data-subject') || ('Enquiry: ' + ((topicSelect && topicSelect.selectedOptions[0]) ? topicSelect.selectedOptions[0].text : 'General'));
       var body = lines.join('\n') + (data.get('message') ? '\n\n' + data.get('message') : '') + (data.get('results') ? '\n\n' + data.get('results') : '');
       window.location.href = 'mailto:' + form.getAttribute('data-email') + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);

@@ -62,16 +62,26 @@ TRIAL_BOOKING_URL = ""
 SUBSCRIBE_URLS = {"Essentials": "", "Professional": "", "Partner": ""}
 TRIAL_HREF = TRIAL_BOOKING_URL or "virtual-consultancy.html?plan=trial#book"
 
+# Instant checkout. Paste a Stripe Payment Link (or similar) against any plan to turn its button into
+# "Subscribe" / "Buy now". Plans left blank keep the request form, so nothing appears payable until it is.
+PAY_LINKS = {
+    "Executive AI Intelligence: Briefing": "", "Executive AI Intelligence: Professional": "", "Executive AI Intelligence: Boardroom": "",
+    "Member Portal: Portal": "", "Member Portal: Portal + Website": "", "Member Portal: Portal + Website + Content": "",
+    "Content Creation: Starter": "", "Content Creation: Growth": "", "Content Creation: Leader": "",
+    "Website Care": "",
+}
+EMPTYHANDS_URL = "https://emptyhands.co.uk/"
+EMPTYHANDS_APP_URL = "https://emptyhands.co.uk/our-app.html"
+
 # The core proposition, used across the site.
 USP = "We lead the change. Our team keeps it running."
 ARR = '<span class="arr" aria-hidden="true">→</span>'
 
 NAV = [
     ("services.html", "Services"),
-    ("logistics.html", "Logistics"),
-    ("managed-teams.html", "Delivery Model"),
     ("pricing.html", "Pricing"),
     ("virtual-consultancy.html", "Virtual Consultancy"),
+    ("websites-apps.html", "Websites &amp; Apps"),
     ("about.html", "About"),
 ]
 LOGO = ('<img src="assets/img/logo.png" srcset="assets/img/logo.png 1x, assets/img/logo@2x.png 2x" '
@@ -170,6 +180,7 @@ FOOTER = f"""  <footer class="site-footer">
             <li><a href="pricing.html#documentation">Documentation Factory</a></li>
             <li><a href="index.html#ai">AI workflow services</a></li>
             <li><a href="logistics.html">For logistics businesses</a></li>
+            <li><a href="websites-apps.html">Websites, apps and content</a></li>
             <li><a href="services.html">All services</a></li>
           </ul>
         </div>
@@ -188,6 +199,7 @@ FOOTER = f"""  <footer class="site-footer">
           <h4>Company</h4>
           <ul>
             <li><a href="about.html">About</a></li>
+            <li><a href="managed-teams.html">Delivery model</a></li>
             <li><a href="case-studies.html">Experience</a></li>
             <li><a href="insights.html">Insights</a></li>
             <li><a href="ai-scorecard.html">AI Readiness Scorecard</a></li>
@@ -555,11 +567,51 @@ PROJECTS = [
     ("Cyber Security Business Analysis", "Requirements, process design and change support for security programmes.", "Fixed scope or day rate", "By agreement"),
 ]
 
-DOJOOS = ("dojoos", "DojoOS", "For martial arts schools and wellness studios",
-          "Members, payments, attendance and gradings in one simple platform. In development: founding schools wanted.",
-          [("Starter", "For a single, growing school.", "£99", ["Up to 100 students", "Membership and payment tracking", "Attendance check-in", "Grading records"]),
-           ("Club", "Automate the admin.", "£179", ["Up to 300 students", "Automatic renewals and reminders", "Parent and student portal", "Lead and trial-class tracking"]),
-           ("Academy", "Multi-site and instructors.", "£299", ["Unlimited students, multiple sites", "AI marketing and content assistant", "Instructor scheduling", "Reporting dashboard"])], 1)
+# Build: websites, apps and content. The Member Portal lists only features running today in the
+# EmptyHands Portal (emptyhands.co.uk/our-app.html). Add features here only once they are live.
+PORTAL = ("portal", "Member Portal", "For martial arts schools, studios, clubs, tutors and coaches",
+          "The member app we built for EmptyHands, set up with your name, classes and fees. Members install it on their phone; you run notices, homework and fees from one place.",
+          [("Portal", "The app on its own.", "£99",
+            ["Up to 100 members", "Class calendar with a countdown to the next class", "Notices, group chat and private messages",
+             "Homework and training journal", "Fees by card or PayPal, with payment history", "Installs on Android and iPhone home screens",
+             "New members join with your approval"]),
+           ("Portal + Website", "Your app and website, looked after.", "£179",
+            ["Everything in Portal", "Up to 300 members", "A website like emptyhands.co.uk, hosted and maintained",
+             "Timetable, fees and contact pages kept up to date", "Up to 2 hours of changes a month"]),
+           ("Portal + Website + Content", "Your online presence, run for you.", "£299",
+            ["Everything in Portal + Website", "4 social posts a month, written and designed", "1 news article or newsletter a month",
+             "Monthly content plan agreed with you", "Nothing published without your approval"])], 1)
+PORTAL_SETUP = "One-off set-up from £495: your branding, classes, fees and calendar, member invitations and a launch guide. Card and PayPal charges are set by those providers and paid by you."
+
+WEBSITE = ("Business Website", "From £1,495", "fixed price · ex VAT",
+           ["Up to 8 pages, designed for phones first", "Copy written with you, in plain English", "Search basics: titles, descriptions, structured data",
+            "Contact, booking and WhatsApp links", "Privacy notice and cookie consent where needed", "Hosting and domain set-up", "Two review rounds"],
+           "Typically 3 to 4 weeks. Online shops and custom apps are quoted separately.")
+WEBSITE_CARE = ("Website Care", "£49", "per month · ex VAT",
+                ["Hosting and security updates", "Up to 1 hour of changes a month", "Monthly check of links, forms and speed", "Next-working-day response"],
+                "Cancel with 30 days' notice. Included in the Portal + Website plans.")
+
+CONTENT = ("content", "Content Creation", "For businesses and founders who need to show up consistently online",
+           "Social posts, articles and newsletters planned, written and designed for you each month. AI-assisted drafting, always edited by a person and approved by you.",
+           [("Starter", "Show up every week.", "£295",
+             ["8 social posts a month, written and designed", "1 article or newsletter a month", "Monthly content calendar",
+              "One round of edits", "Nothing published without your approval"]),
+            ("Growth", "A steady, recognisable voice.", "£595",
+             ["16 social posts a month", "2 articles a month", "Monthly email newsletter", "Scheduled to your channels",
+              "Monthly performance summary"]),
+            ("Leader", "Founder-led thought leadership.", "£995",
+             ["Everything in Growth", "8 LinkedIn posts a month in the founder's voice", "2 thought-leadership articles a month",
+              "Quarterly content strategy session with Azeem", "Campaign landing-page copy each quarter"])], 1)
+CONTENT_NOTE = "Photography and video are not included: we use your photos or properly licensed images. One-month minimum, then 30 days' notice."
+
+
+def pay_cta(product_name, tier, fallback_href, fallback_text=None):
+    """Use a payment link when one is configured; otherwise the request form."""
+    url = PAY_LINKS.get(f"{product_name}: {tier}") if tier else PAY_LINKS.get(product_name)
+    if url:
+        return (f"Subscribe to {tier or product_name}", url, "checkout_start")
+    return (fallback_text or f"Request {tier}", fallback_href, "")
+
 
 # Secondary managed services: offered after an assessment, not priced publicly.
 SECONDARY = [
@@ -1327,6 +1379,25 @@ home = f"""    <section class="hero home-hero">
       </div>
     </section>
 
+    <section class="sec sec-dark" id="build">
+      <div class="container split">
+        <div class="reveal">
+          {label("Also from Bespoke Vista · Websites, apps and content")}
+          <h2>We build the tools, <em class="ember">and we use them ourselves.</em></h2>
+          <p>We built the website and member app for <a href="{EMPTYHANDS_URL}" rel="noopener" style="color:inherit;text-decoration:underline">EmptyHands</a>, the Ilford karate school our founder has run since 2006. Students use it for the class calendar, notices, homework and paying fees.</p>
+          <div class="btns" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px">
+            {btn("See Websites, Apps and Content", "websites-apps.html", "btn-ember")}
+            {btn("See the EmptyHands Case Study", "websites-apps.html#emptyhands", "btn-line-light", arrow=False)}
+          </div>
+        </div>
+        <ul class="ticks reveal">
+          <li><strong>Member Portal</strong>: £99–£299 a month, for clubs, schools and studios</li>
+          <li><strong>Business Website</strong>: from £1,495, with Website Care at £49 a month</li>
+          <li><strong>Content Creation</strong>: £295–£995 a month for posts, articles and newsletters</li>
+        </ul>
+      </div>
+    </section>
+
     <section class="sec" id="faq">
       <div class="container split">
         <div>
@@ -1455,6 +1526,15 @@ LEARN = [
 ]
 
 
+BUILD = [
+    ("Member Portal", "The member app we built for EmptyHands, set up for your club or school.", "£99–£299/month + set-up",
+     "Martial arts schools, studios, clubs, tutors and coaches.", "Class calendar, notices and messages, homework, fees by card or PayPal, installs on members' phones.", "portal"),
+    ("Business Website", "A clear, fast website, written and built for you.", "From £1,495 · Care £49/month",
+     "Small businesses, clubs and practices.", "Up to 8 pages, copy, search basics, contact and booking links, hosting set-up.", "website"),
+    ("Content Creation", "Social posts, articles and newsletters, every month.", "£295–£995/month",
+     "Businesses and founders who need to show up consistently.", "Content calendar, written and designed posts, articles, newsletters and founder LinkedIn content, approved by you.", "content"),
+]
+
 LEAD_TAGS = {"automation": "Assessment from £2,500", "ai": "Assessment from £2,500", "cyber": "Leadership from £7,500/month",
              "migration": "Leadership from £7,500/month", "tom": "Sprint £7,500–£15,000", "simplify": "Discovery from £1,500",
              "change": "From £7,500/month", "workplace": "Discovery from £1,500"}
@@ -1500,6 +1580,7 @@ services = f"""    <section class="page-hero">
 {svc_block("advise", "03", "Assess and advise", "Fixed-scope consulting wherever possible, so you know the cost before we start.", ADVISE)}
 {svc_block("ai", "04", "AI services", "Practical AI using Microsoft Copilot, SharePoint, Power Automate, ChatGPT and Claude, starting from a measurable business problem.", AI, '<a class="btn btn-line btn-sm" href="ai-scorecard.html">Take the AI Readiness Scorecard ' + ARR + '</a>')}
 {svc_block("learn", "05", "Training and briefings", "Capability building for leaders and teams.", LEARN)}
+{svc_block("build", "06", "Websites, apps and content", "Practical digital tools for smaller organisations, proven first at EmptyHands, our founder's own school.", BUILD, '<a class="btn btn-line btn-sm" href="websites-apps.html">See Websites, Apps and Content ' + ARR + '</a>')}
         <div class="pillar-block" id="industries">
           <div class="side reveal">
             <span class="big-n">✦</span>
@@ -1634,9 +1715,9 @@ page("managed-teams.html", "Delivery Model",
 # ============================================================== PRICING
 SUBNAV_PRICING = [("transformation", "Transformation packages"), ("virtual", "Virtual Consultancy"), ("start", "Assessment and pilot"), ("pmo", "PMO-in-a-Box"), ("ba", "Managed BA"), ("documentation", "Documentation Factory"),
                   ("terms", "Commercial terms"), ("projects", "AI and fixed-price projects"), ("intelligence", "Subscriptions"),
-                  ("training", "Training"), ("dojoos", "DojoOS"), ("faq", "FAQs")]
+                  ("training", "Training"), ("portal", "Websites, apps and content"), ("faq", "FAQs")]
 
-subs_html = "\n".join(product_block(s, annual=True) for s in SUBSCRIPTIONS)
+subs_html = "\n".join(product_block(s, annual=True, cta=(lambda t, s=s: pay_cta(s[1], t, f"contact.html?topic={s[0]}", f"Discuss {t}"))) for s in SUBSCRIPTIONS)
 terms_html = "\n".join(f"<tr><th scope=\"row\">{a}</th><td>{b}</td></tr>" for a, b in TERMS)
 pricing_faq = "\n".join(f"          <details><summary>{q}</summary><p>{a}</p></details>" for q, a in [FAQ[12], FAQ[11], FAQ[16], FAQ[17], FAQ[13], FAQ[10]])
 
@@ -1749,7 +1830,16 @@ pricing = f"""    <section class="page-hero">
 
     <section class="sec">
       <div class="container">
-{product_block(DOJOOS, extra='<p style="margin-top:10px">' + label("In development · founding schools wanted") + '</p>')}
+{product_block(PORTAL, extra='<p style="margin-top:10px" class="small">' + PORTAL_SETUP + ' <a href="websites-apps.html#emptyhands">See it running at EmptyHands →</a></p>', cta=lambda t: pay_cta("Member Portal", t, f"websites-apps.html?product={t.lower().replace(' + ', '-').replace(' ', '-')}#request"))}
+      </div>
+    </section>
+    <section class="sec sec-white">
+      <div class="container">
+{product_block(CONTENT, extra='<p style="margin-top:10px" class="small">' + CONTENT_NOTE + '</p>', cta=lambda t: pay_cta("Content Creation", t, f"websites-apps.html?product=content-{t.lower()}#request"))}
+        <div class="grid g2" style="margin-top:28px">
+{offer_card(WEBSITE, "Request a Website Quote", "websites-apps.html?product=website#request")}
+{offer_card(WEBSITE_CARE, *pay_cta("Website Care", None, "websites-apps.html?product=website-care#request", "Request Website Care")[:2])}
+        </div>
       </div>
     </section>
 
@@ -2260,6 +2350,10 @@ CASES = [
      "Organisations wanting to use global talent and offshore capability without losing quality, control or pace.",
      "Bridging UK stakeholders and offshore teams with clear requirements, shared ways of working, practical governance and cultural understanding.",
      "Effective delivery across the UK, Pakistan and India, helping organisations make the most of global talent."),
+    ("emptyhands", "Website &amp; app", "EmptyHands: website and member portal", "Karate and wellbeing school, Ilford",
+     "A traditional karate, Tai Chi, yoga and Shiatsu school, run since 2006 by our founder, with notices, homework, timetables and fee collection spread across messages, paper and cash.",
+     "A new website (<a href=\"https://emptyhands.co.uk/\" rel=\"noopener\">emptyhands.co.uk</a>) and the EmptyHands Portal: an app students install on their phone for the dojo calendar, notices and messages from Sensei, homework, and fees by card or PayPal.",
+     "Students and parents have the calendar, notices, homework and fees in one place, and the school takes payments online. This is our founder's own school, so it is where we test every feature first."),
     ("property-recovery", "Business recovery", "Property business recovery", "Rental property business, Lahore",
      "A rental property business in Lahore with declining performance and operations that needed restoring and modernising.",
      "A practical turnaround: reviewing the business end to end, improving operations and tenant management, and modernising how it was run.",
@@ -2441,7 +2535,9 @@ TOPICS = [
     ("cyber-ba", "Cyber Security Business Analysis"),
     ("training", "Training and workshops"),
     ("wellbeing", "Calm Under Pressure workshop"),
-    ("dojoos", "DojoOS founding list"),
+    ("portal", "Member Portal for a club or school"),
+    ("website", "Business website"),
+    ("content", "Content creation"),
     ("other", "Something else"),
 ]
 topic_opts = "\n".join(f'                <option value="{v}">{l}</option>' for v, l in TOPICS)
@@ -3174,7 +3270,7 @@ virtual = f"""    <section class="hero home-hero">
             <div class="field"><label for="vc-phone">Phone</label><input id="vc-phone" name="phone" type="tel" autocomplete="tel"></div>
           </div>
           <div class="form-row">
-            <div class="field"><label for="vc-plan">Trial or plan *</label><select id="vc-plan" name="plan" required>{vc_plan_opts}</select></div>
+            <div class="field"><label for="vc-plan">Trial or plan *</label><select id="vc-plan" name="plan" data-param="plan" required>{vc_plan_opts}</select></div>
             <div class="field"><label for="vc-start">Preferred start</label><select id="vc-start" name="start"><option>As soon as possible</option><option>In 2 to 4 weeks</option><option>Next month or later</option></select></div>
           </div>
           <div class="field"><label for="vc-message">The work package *</label><textarea id="vc-message" name="message" required placeholder="What needs to happen, by when, who is involved on your side, and what's getting in the way."></textarea></div>
@@ -3207,6 +3303,143 @@ page("virtual-consultancy.html", "Virtual Consultancy",
                         + [{"@type": "Offer", "name": f"Virtual Consultancy {t[0]}", "price": t[2].replace("£", "").replace(",", ""), "priceCurrency": "GBP",
                             "priceSpecification": {"@type": "UnitPriceSpecification", "price": t[2].replace("£", "").replace(",", ""), "priceCurrency": "GBP", "unitText": "MONTH"}} for t in VIRTUAL[4]]},
              {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": re.sub(r"<[^>]+>", "", a)}} for q, a in VC_FAQ]}])
+
+# ============================================================== WEBSITES, APPS AND CONTENT
+WA_FAQ = [
+    ("Is the Member Portal a finished product?", "The features listed are running today at EmptyHands. We set the portal up for each club with its own name, classes and fees. Features we haven't built yet aren't listed."),
+    ("Why is EmptyHands your example?", "EmptyHands is the karate and wellbeing school our founder has run in Ilford since 2006. It's our own school, which is why we can show it openly and test every change there first."),
+    ("Who pays the card and PayPal fees?", "You do, at the rates set by those providers. Payments go to your own account, not through us."),
+    ("Can we move our existing website?", "Usually, yes. We review it first and quote the move as part of the Business Website price."),
+    ("Do you use AI to write content?", "We use AI to help with drafting and ideas. A person edits every piece, and nothing is published without your approval."),
+    ("What's the minimum term?", "Member Portal and Content Creation: one month, then 30 days' notice. Business Website is a fixed-price project."),
+    ("Can we buy online?", "Where you see a Subscribe button, yes. Otherwise send a request and we'll confirm the set-up and send a payment link, usually within one working day."),
+]
+wa_faq = "\n".join(f"          <details><summary>{q}</summary><p>{a}</p></details>" for q, a in WA_FAQ)
+wa_opts = "".join(f'<option value="{v}">{l}</option>' for v, l in [
+    ("portal", "Member Portal (£99/month)"), ("portal-website", "Portal + Website (£179/month)"), ("portal-website-content", "Portal + Website + Content (£299/month)"),
+    ("website", "Business Website (from £1,495)"), ("website-care", "Website Care (£49/month)"),
+    ("content-starter", "Content Creation: Starter (£295/month)"), ("content-growth", "Content Creation: Growth (£595/month)"),
+    ("content-leader", "Content Creation: Leader (£995/month)"), ("not-sure", "Not sure yet: please advise")])
+portal_href = lambda t: f"websites-apps.html?product={t.lower().replace(' + ', '-').replace(' ', '-')}#request"
+
+wa = f"""    <section class="hero home-hero">
+      <div class="container hero-grid">
+        <div>
+          {label("Websites, apps and content · from £99 a month")}
+          <h1>Your website, your members' app, <em class="ember">your content. Done for you.</em></h1>
+          <p class="lead">Practical digital tools for clubs, schools, studios and small businesses: a member app, a clear website and content every month. Proven first at EmptyHands, our founder's own school.</p>
+          <div class="hero-actions">
+            {btn("See the Member Portal", "#portal", "btn-ember")}
+            {btn("See the EmptyHands Case Study", "#emptyhands", "btn-line", arrow=False)}
+          </div>
+          <p class="tagline-strong">Simple monthly plans. No long contracts.</p>
+        </div>
+        <div class="hero-art">
+          {horizon(["WEBSITE", "APP", "CONTENT", "GROWTH"], "A sun rising over a horizon, marking website, app, content and growth")}
+        </div>
+      </div>
+    </section>
+
+    <section class="sec sec-white" id="emptyhands" style="scroll-margin-top:100px">
+      <div class="container split">
+        <div class="reveal">
+          {label("Case study · real, not illustrative")}
+          <h2>EmptyHands, <em class="ember">Ilford.</em></h2>
+          <p>EmptyHands is the karate, Tai Chi, yoga and Shiatsu school our founder, Azeem Mushtaq, has run since 2006. We built its website and the EmptyHands Portal, the app its students and parents use every week.</p>
+          <p class="small muted">It's our own school, so it's where we test every feature before offering it to anyone else.</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px">
+            <a class="btn btn-primary" href="{EMPTYHANDS_URL}" target="_blank" rel="noopener">Visit emptyhands.co.uk {ARR}</a>
+            <a class="btn btn-line" href="{EMPTYHANDS_APP_URL}" target="_blank" rel="noopener">See the EmptyHands Portal</a>
+          </div>
+        </div>
+        <ul class="ticks reveal">
+          <li><strong>Dojo calendar</strong>: training dates, days off and gradings, with a countdown to the next class</li>
+          <li><strong>Messages from Sensei</strong>: notices, group chat, training journal and private messages</li>
+          <li><strong>Homework</strong>: set by the instructor, ticked off by students</li>
+          <li><strong>Fees</strong>: pay per lesson or per month by card or PayPal, with payment history</li>
+          <li><strong>On every phone</strong>: installs to the home screen on Android and iPhone</li>
+          <li><strong>Controlled sign-up</strong>: new students request an account and the instructor approves it</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="container">
+{product_block(PORTAL, extra='<p style="margin-top:10px" class="small">' + PORTAL_SETUP + '</p>', cta=lambda t: pay_cta("Member Portal", t, portal_href(t)))}
+      </div>
+    </section>
+
+    <section class="sec sec-white" id="website" style="scroll-margin-top:100px">
+      <div class="container">
+        <div class="head">
+          <div>{label("Websites")}<h2>A website that explains you <em class="ember">in ten seconds.</em></h2></div>
+          <p>Written in plain English, built for phones first, and kept up to date afterwards.</p>
+        </div>
+        <div class="grid g2">
+{offer_card(WEBSITE, "Request a Website Quote", "websites-apps.html?product=website#request", "Fixed price", "featured")}
+{offer_card(WEBSITE_CARE, *pay_cta("Website Care", None, "websites-apps.html?product=website-care#request", "Request Website Care")[:2])}
+        </div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <div class="container">
+{product_block(CONTENT, extra='<p style="margin-top:10px" class="small">' + CONTENT_NOTE + '</p>', cta=lambda t: pay_cta("Content Creation", t, f"websites-apps.html?product=content-{t.lower()}#request"))}
+      </div>
+    </section>
+
+    <section class="sec sec-white" id="request" style="scroll-margin-top:100px">
+      <div class="container contact-grid">
+        <div class="reveal">
+          {label("Request")}
+          <h2>Tell us what <em class="ember">you need.</em></h2>
+          <ol class="next-steps">
+            <li>We reply within one working day, with any questions.</li>
+            <li>We confirm the set-up and price in writing.</li>
+            <li>You pay by secure payment link and we start, usually within five working days.</li>
+          </ol>
+          <p class="small muted">No payment is taken on this page.</p>
+        </div>
+        <form class="form reveal" id="build-form" data-email="{CONTACT_EMAIL}" data-endpoint="" data-event="build_request_submit" data-subject-from="product" novalidate>
+          <input type="hidden" name="topic" value="websites-apps-content">
+          <div class="form-row">
+            <div class="field"><label for="wa-name">Name *</label><input id="wa-name" name="name" type="text" autocomplete="name" required></div>
+            <div class="field"><label for="wa-org">Business, club or school</label><input id="wa-org" name="organisation" type="text" autocomplete="organization"></div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label for="wa-email">Email *</label><input id="wa-email" name="email" type="email" autocomplete="email" required></div>
+            <div class="field"><label for="wa-phone">Phone</label><input id="wa-phone" name="phone" type="tel" autocomplete="tel"></div>
+          </div>
+          <div class="field"><label for="wa-product">What would you like? *</label><select id="wa-product" name="product" data-param="product" required>{wa_opts}</select></div>
+          <div class="field"><label for="wa-message">Tell us a little more *</label><textarea id="wa-message" name="message" required placeholder="What you do, roughly how many members or customers you have, your current website (if any) and when you'd like to start."></textarea></div>
+          <button class="btn btn-primary" type="submit">Send Request {ARR}</button>
+          <p class="form-mode small"></p>
+          <p class="form-note">We use your details only to respond to your request. See our <a href="privacy.html">privacy notice</a>.</p>
+          <div class="form-status" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="sec" id="faq">
+      <div class="container split">
+        <div>{label("FAQs")}<h2>Websites, apps and content questions.</h2></div>
+        <div class="faq">
+{wa_faq}
+        </div>
+      </div>
+    </section>
+
+{cta("Want what EmptyHands has?", "Send a request and we'll confirm the set-up, price and start date within one working day.", ("Request the Member Portal", portal_href("Portal")), ("Visit emptyhands.co.uk", EMPTYHANDS_URL))}"""
+
+page("websites-apps.html", "Websites, Apps and Content",
+     "Member Portal app for clubs and schools, business websites and monthly content creation from Bespoke Vista. Proven at EmptyHands, Ilford. From £99 a month.",
+     wa, full_title="Websites, Member Apps and Content Creation | Bespoke Vista",
+     schema=[{"@type": "Service", "name": n, "provider": {"@id": BASE_URL + "#org"}, "areaServed": "GB", "description": d,
+              "offers": {"@type": "Offer", "price": pr, "priceCurrency": "GBP"}}
+             for n, d, pr in [("Member Portal", "Member app for clubs and schools: calendar, notices, homework and online fees.", "99"),
+                              ("Business Website", "Fixed-price small business website.", "1495"),
+                              ("Content Creation", "Monthly social posts, articles and newsletters.", "295")]]
+            + [{"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in WA_FAQ]}])
 
 # ============================================================== PRIVACY NOTICE
 # Draft privacy notice. Have it reviewed (e.g. by a solicitor or data-protection adviser) before relying on it.

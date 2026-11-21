@@ -61,3 +61,26 @@ New page `virtual-consultancy.html`, in the main navigation (replacing Samples, 
 - Also linked from: a fourth homepage "Where to start" choice, the pricing page (new section), the services page, the footer and two new contact topics.
 
 **Owner to confirm:** the trial price and credit, the plan prices and allowances, the one-month minimum term (other managed services have three months), the response times, and that a named Lahore coordinator can be assigned to each client.
+
+## Websites, Apps and Content (added 21 November 2026)
+
+New page `websites-apps.html`, in the main navigation. "Logistics" and "Delivery Model" moved from the top menu to the footer so the menu fits and stays simple: Services · Virtual Consultancy · Websites & Apps · Pricing · About.
+
+- **EmptyHands case study (real):** the website and the EmptyHands Portal, built by Bespoke Vista for the Ilford school Azeem has run since 2006. Disclosed as the founder's own school. Also added to `case-studies.html` and to a homepage band.
+- **Member Portal** replaces the "DojoOS: coming soon" block, listing only features live at EmptyHands: £99 / £179 / £299 a month, set-up from £495.
+- **Business Website** from £1,495 fixed; **Website Care** £49/month.
+- **Content Creation** £295 / £595 / £995 a month.
+- **Instant purchase:** `PAY_LINKS` in `build.py`. Create a Stripe Payment Link per plan, paste it in, rebuild, and that plan's button becomes "Subscribe to …". Blank plans keep the request form.
+
+**Owner to confirm:** all prices above; whether the portal can be set up for other clubs as a separate copy (multi-tenant or per-club install); member limits; who produces content (UK or Lahore) and capacity; card/PayPal payments going to each club's own account.
+
+## Is the offer simple enough? (review)
+
+Not yet. The site lists around 30 priced products. Recommended next step: present everything as four doors, and cut or hide anything that hasn't sold within six months.
+
+1. **Lead the change:** discovery call, then Transformation Discovery.
+2. **Keep it running:** £495 assessment, then managed PMO, BA and documentation.
+3. **Virtual Consultancy:** £950 trial, then monthly plans.
+4. **Websites, apps and content:** Member Portal, website, content.
+
+Candidates to remove or hide from public pages: Executive AI Intelligence and AI Advisory (overlap with Virtual Consultancy and the Fractional Adviser), the secondary managed services, the Transformation Health Check, and some training.

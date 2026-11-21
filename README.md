@@ -17,6 +17,7 @@ subscriptions, UK-led managed teams in Lahore, training, and the DojoOS product.
 | `samples.html` | Illustrative sample deliverables |
 | `logistics.html` | Landing page for UK logistics, warehousing and 3PL businesses (for LinkedIn and paid campaigns) |
 | `pmo-in-a-box.html` | Landing page for the PMO-in-a-Box service |
+| `websites-apps.html` | Websites, Apps and Content: Member Portal (the app built for EmptyHands, £99–£299/month), Business Website (from £1,495), Website Care (£49/month), Content Creation (£295–£995/month), EmptyHands case study and request form |
 | `virtual-consultancy.html` | Virtual Consultancy: £950 two-week work-package trial and monthly plans (Essentials £1,450, Professional £2,950, Partner £5,450), with a trial/plan request form |
 | `privacy.html` | Privacy notice (draft: have it reviewed); updates itself when analytics or a form endpoint are configured |
 | `services.html`, `managed-teams.html` (Delivery Model), `contact.html`, `ai-scorecard.html` | Supporting pages |
@@ -30,7 +31,7 @@ See `docs/REVIEW-AND-CHANGELOG.md` for the full review, commercial assessment, Q
 
 `BASE_URL`, `CONTACT_EMAIL`, `BOOKING_URL` (Microsoft Bookings), `FORM_ENDPOINT` (Power Automate HTTP trigger or Formspree),
 `GA4_ID`, `CLARITY_ID`, `COMPANY_NUMBER`, `REGISTERED_OFFICE`, `LAHORE_ADDRESS`, `LINKEDIN_URL`, and
-`TRIAL_BOOKING_URL` and `SUBSCRIBE_URLS` (optional Bookings or Stripe Payment Links for Virtual Consultancy; blank uses the on-page request form),
+`PAY_LINKS` (Stripe Payment Links per plan: a filled-in link turns that plan's button into "Subscribe"), `TRIAL_BOOKING_URL` and `SUBSCRIBE_URLS` (optional Bookings or Stripe Payment Links for Virtual Consultancy; blank uses the on-page request form),
 `SHOW_OWNER_PLACEHOLDERS` (off by default; switch on to see every missing item marked), `VAT_REGISTERED`, `FOUNDING_PLACES` and `PRIVACY_UPDATED`.
 
 ## Scorecards
@@ -81,6 +82,6 @@ assets/img/             logo, favicon
   should run. Make sure they match what you can contractually commit to.
 - **Lahore working hours**: the clocks and timeline assume 09:00–18:00 Pakistan time, Monday to Friday.
   Change these in `assets/js/main.js` if needed.
-- **DojoOS**: shown as "coming soon" with a founding-schools list.
+- **Member Portal**: lists only features live in the EmptyHands Portal. Add new features in `build.py` (`PORTAL`) only once they work.
 - **Executive AI Intelligence**: the site offers a sample briefing, so have one ready.
 - **Company details, LinkedIn, founder photo**: add when available.
