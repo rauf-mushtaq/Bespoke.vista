@@ -84,3 +84,28 @@ Not yet. The site lists around 30 priced products. Recommended next step: presen
 4. **Websites, apps and content:** Member Portal, website, content.
 
 Candidates to remove or hide from public pages: Executive AI Intelligence and AI Advisory (overlap with Virtual Consultancy and the Fractional Adviser), the secondary managed services, the Transformation Health Check, and some training.
+
+## Homepage refactor (22 November 2026)
+
+The homepage now follows one narrative, about half its previous length:
+
+1. Hero
+2. Why change stalls, plus four urgent triggers
+3. Two entry paths and a scorecard callout
+4. UK + Lahore trust and governance block
+5. Compact comparison
+6. Three illustrative mid-market scenarios
+7. Final CTA
+
+- **Four urgent triggers:** audit and cyber readiness (ISO 27001, Cyber Essentials Plus, client vendor audits); stalled ERP or WMS rollouts (NetSuite, Dynamics 365, SAP); margin and headcount pressure (employer National Insurance); M&A integration and exit readiness. Each links to a pre-selected contact topic.
+- **Two paths:** A, Lead and deliver change; B, Keep operations and projects running.
+- **Moved off the homepage:** the founder section (moved to the About page), the full FAQ and security sections (now on `managed-teams.html#faq` and `#security`), the assessment and pilot cards (now `pricing.html#assessment` and `#pilot`), samples, AI rules, and the Virtual Consultancy and Websites & Apps promos (now a one-line link and the footer).
+- **Stalled System Rescue Review (£4,950, 2 weeks)** replaces the Transformation Health Check, at the same price.
+- **Discovery call:** now 20 minutes site-wide.
+- **Demand-led copy:** PMO-in-a-Box, Managed BA, Documentation Factory, automation, cyber and migration descriptions are rewritten around the triggers.
+
+**Owner to confirm:**
+- The three scenarios are composites and labelled illustrative. Replace them with verified case studies when available.
+- That Azeem is comfortable leading ERP and WMS rescues alongside implementation partners. Configuration stays with the partner.
+- The employer National Insurance framing.
+- That 20 minutes is the right discovery-call length.
