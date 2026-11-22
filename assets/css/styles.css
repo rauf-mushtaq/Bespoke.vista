@@ -1034,3 +1034,33 @@ span.owner-ph { display: inline-block; margin: 4px 0; padding: 4px 10px; }
 .home-hero h1 { max-width: 18ch; text-wrap: balance; }
 .editorial .band-statement, .head h2 { text-wrap: balance; }
 @media (max-width: 900px) { .home-hero h1 { max-width: none; } .editorial .band-statement { max-width: none; } }
+
+/* ============ v11: the four core services ============ */
+.four { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.four-card { background: var(--paper-2); border: 1px solid var(--line); border-top: 3px solid var(--accent); border-radius: var(--radius); padding: 24px; display: flex; flex-direction: column; min-width: 0; }
+.four-n { font-family: var(--mono); font-size: .76rem; color: var(--accent); }
+.four-card h3 { font-family: var(--display); font-size: 1.35rem; font-weight: 600; margin: 8px 0 8px; }
+.four-card h3 a { color: var(--ink); }
+.four-card > p { margin: 0 0 10px; font-size: .95rem; }
+.four-card .four-who { color: var(--muted); font-size: .88rem; }
+.four-price { margin: 6px 0 20px; padding: 0; }
+.four-price > div { border-top: 1px solid var(--line); padding: 10px 0; }
+.four-price dt { font-family: var(--mono); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.four-price dd { margin: 2px 0 0; display: flex; justify-content: space-between; gap: 10px; align-items: baseline; font-size: .9rem; color: var(--ink); }
+.four-price b, .mini-price b { font-family: var(--mono); font-size: .8rem; font-weight: 500; color: var(--accent); white-space: nowrap; text-align: right; }
+.four-card .btn { margin-top: auto; align-self: flex-start; }
+@media (max-width: 1080px) { .four { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .four { grid-template-columns: 1fr; } }
+.minis { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; }
+.mini { background: var(--paper-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 28px; min-width: 0; display: flex; flex-direction: column; }
+.mini h3 { font-family: var(--display); font-size: 1.35rem; font-weight: 600; margin: 8px 0 6px; }
+.mini > p { margin: 0 0 12px; color: var(--muted); }
+.mini .mini-price { display: flex; justify-content: space-between; gap: 12px; margin: 0; padding: 8px 0; border-top: 1px solid var(--line); font-size: .92rem; color: var(--ink); }
+.mini .text-link { margin-top: 14px; }
+@media (max-width: 900px) { .minis { grid-template-columns: 1fr; } }
+.supporting-head { margin: 24px 0 8px; padding-top: 48px; border-top: 1px solid var(--line); }
+.founder-line { margin: 28px 0 0; color: var(--slate-light); font-size: .98rem; }
+.founder-line a { color: var(--accent-light); }
+.four-price dd { display: block; }
+.four-price dd span { display: block; }
+.four-price dd b { display: block; text-align: left; margin-top: 2px; }

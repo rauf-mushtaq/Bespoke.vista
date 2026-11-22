@@ -32,6 +32,7 @@ See `docs/REVIEW-AND-CHANGELOG.md` for the full review, commercial assessment, Q
 `BASE_URL`, `CONTACT_EMAIL`, `BOOKING_URL` (Microsoft Bookings), `FORM_ENDPOINT` (Power Automate HTTP trigger or Formspree),
 `GA4_ID`, `CLARITY_ID`, `COMPANY_NUMBER`, `REGISTERED_OFFICE`, `LAHORE_ADDRESS`, `LINKEDIN_URL`, and
 `PAY_LINKS` (Stripe Payment Links per plan: a filled-in link turns that plan's button into "Subscribe"), `TRIAL_BOOKING_URL` and `SUBSCRIBE_URLS` (optional Bookings or Stripe Payment Links for Virtual Consultancy; blank uses the on-page request form),
+`SHOW_EXTRA_OFFERS` (off: hides Executive AI Intelligence, AI Advisory, the Fractional Adviser and further managed services),
 `SHOW_OWNER_PLACEHOLDERS` (off by default; switch on to see every missing item marked), `VAT_REGISTERED`, `FOUNDING_PLACES` and `PRIVACY_UPDATED`.
 
 ## Scorecards

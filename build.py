@@ -73,6 +73,11 @@ PAY_LINKS = {
 EMPTYHANDS_URL = "https://emptyhands.co.uk/"
 EMPTYHANDS_APP_URL = "https://emptyhands.co.uk/our-app.html"
 
+# Offers that overlap with the four core services are hidden from public pages.
+# Switch to True to show Executive AI Intelligence, AI Advisory, the Fractional Transformation Adviser
+# and the "further managed services" list again.
+SHOW_EXTRA_OFFERS = False
+
 # The core proposition, used across the site.
 USP = "We lead the change. Our team keeps it running."
 ARR = '<span class="arr" aria-hidden="true">→</span>'
@@ -171,8 +176,7 @@ FOOTER = f"""  <footer class="site-footer">
       <div class="footer-grid">
         <div>
           <div class="footer-brand">{LOGO_LAZY}<span>{SITE}</span></div>
-          <p><strong style="color:var(--paper)">{USP}</strong> Senior UK transformation leadership, with a managed delivery team in Lahore.</p>
-          <p class="clocks" style="margin-top:8px"><span><span class="dot"></span><span data-status="lahore">Lahore office</span></span><span><b>LDN</b><span data-clock="london">--:--</span></span><span><b>LHE</b><span data-clock="lahore">--:--</span></span></p>
+          <p><strong style="color:var(--paper)">{USP}</strong> Senior UK transformation leadership, with a managed delivery team, under one UK contract.</p>
         </div>
         <div>
           <h4>Managed services</h4>
@@ -307,7 +311,7 @@ def page(filename, title, description, body, schema=None, full_title=None):
 
 
 def cta(title="Tell us what needs to change.",
-        text="A free 20-minute discovery call with Azeem. We'll talk through your priorities and suggest the right first step: a fixed-price Transformation Discovery, a £495 Managed Operations Assessment, or neither if we're not the right fit.",
+        text="A free 20-minute discovery call with a senior consultant. We'll talk through your priorities and suggest the right first step: a fixed-price Transformation Discovery, a £495 Managed Operations Assessment, or neither if we're not the right fit.",
         primary=("Book a Discovery Call", DISCOVERY_HREF),
         secondary=("Take the Free Readiness Scorecard", "scorecard.html")):
     return f"""    <section class="sec-tight">
@@ -383,7 +387,7 @@ SUBSCRIPTIONS = [
       ("Professional", "For leaders actively planning AI.", 99,
        ["Everything in Briefing", "Monthly live Q&amp;A session", "Sector playbooks: logistics, professional services, property", "Policy and template updates"]),
       ("Boardroom", "For the whole leadership team.", 199,
-       ["Everything in Professional", "Up to 5 team seats", "Quarterly 30-minute 1:1 with Azeem", "Board-ready AI update slides each quarter"])], 1),
+       ["Everything in Professional", "Up to 5 team seats", "Quarterly 30-minute 1:1 with a senior consultant", "Board-ready AI update slides each quarter"])], 1),
     ("advisory", "Bespoke Vista AI Advisory", "For SMEs and mid-market firms adopting AI",
      "A standing senior AI adviser who keeps your AI plans on track, safe and paying back.",
      [("Starter", "Light-touch guidance as you begin.", 495,
@@ -459,23 +463,23 @@ AI_WORKFLOW = ("AI Workflow Implementation", "£5,000–£15,000", "fixed price 
 
 # Virtual Consultancy: a two-week trial on one work package, then a monthly subscription.
 VC_TRIAL = ("Two-Week Work Package Trial", "£950", "fixed price · ex VAT",
-            ["60-minute virtual kick-off with Azeem", "Work-package plan: scope, milestones, owners and dates",
+            ["60-minute virtual kick-off with your senior consultant", "Work-package plan: scope, milestones, owners and dates",
              "RAID and action log set up in your Microsoft 365", "Actions followed up with your team for two weeks",
              "Two 30-minute weekly check-ins", "Two weekly status reports", "End-of-trial review: continue, change or stop"],
             "The £950 is credited in full against your first month if you subscribe within 30 days of the trial ending.")
 VIRTUAL = ("virtual", "Virtual Consultancy", "For leaders with more work packages than people to run them",
-           "A senior UK consultant and a named coordinator in Lahore, working with you online each month to plan, track and report on defined work packages.",
+           "A senior UK consultant and a named delivery coordinator, working with you online each month to plan, track and report on defined work packages.",
            [("Essentials", "One work package, kept moving.", "£1,450",
-             ["1 active work package", "Up to 4 hours a month with Azeem", "Up to 3 coordinator days a month",
+             ["1 active work package", "Up to 4 hours a month of senior consultant time", "Up to 3 coordinator days a month",
               "Fortnightly 30-minute check-in", "RAID and action log maintained", "Fortnightly status report",
               "Shared Teams channel, next-working-day response"], "1 work package · 4 senior hours"),
             ("Professional", "Several work packages, one rhythm.", "£2,950",
-             ["Up to 3 active work packages", "Up to 8 hours a month with Azeem", "Up to 6 coordinator days a month",
+             ["Up to 3 active work packages", "Up to 8 hours a month of senior consultant time", "Up to 6 coordinator days a month",
               "Weekly 30-minute check-in", "Weekly status report and a monthly leadership summary",
               "One governance meeting attended each month", "Plans, briefs and process notes drafted for you",
               "Same-working-day response (UK hours)"], "3 work packages · 8 senior hours"),
             ("Partner", "A virtual change office.", "£5,450",
-             ["Up to 6 active work packages", "Up to 16 hours a month with Azeem", "Up to 12 coordinator days a month",
+             ["Up to 6 active work packages", "Up to 16 hours a month of senior consultant time", "Up to 12 coordinator days a month",
               "Weekly check-in and fortnightly steering", "Monthly leadership reporting pack", "Dependency and benefits tracking",
               "Quarterly priorities review", "Same-working-day response (UK hours)"], "6 work packages · 16 senior hours")], 1)
 
@@ -602,7 +606,7 @@ CONTENT = ("content", "Content Creation", "For businesses and founders who need 
               "Monthly performance summary"]),
             ("Leader", "Founder-led thought leadership.", "£995",
              ["Everything in Growth", "8 LinkedIn posts a month in the founder's voice", "2 thought-leadership articles a month",
-              "Quarterly content strategy session with Azeem", "Campaign landing-page copy each quarter"])], 1)
+              "Quarterly content strategy session", "Campaign landing-page copy each quarter"])], 1)
 CONTENT_NOTE = "Photography and video are not included: we use your photos or properly licensed images. One-month minimum, then 30 days' notice."
 
 
@@ -698,6 +702,40 @@ def offer_card(o, cta_text, cta_href, flag=None, cls=""):
             <p class="small" style="margin:0 0 20px">{note}</p>
             {btn(cta_text, cta_href, 'btn-ember' if 'featured' in cls else 'btn-primary')}
           </div>"""
+
+
+# ============================================================== THE FOUR CORE SERVICES
+# (id, title, what it is, who it's for, start with, then, (cta text, cta href), details href, pricing anchor)
+FOUR = [
+    ("lead", "Lead the change", "Senior UK leadership for system rollouts, audit readiness, automation and operating-model change.",
+     "Leadership teams facing change they can't lead alone.", ("Transformation Discovery", "£1,500–£3,000"), ("Change Delivery Leadership", "from £7,500/month"),
+     ("Book a Discovery Call", DISCOVERY_HREF), "services.html#lead", "pricing.html#transformation"),
+    ("run", "Keep it running", "Managed PMO, business analysis and documentation, delivered to agreed outputs and service levels.",
+     "Organisations whose work has outgrown internal capacity.", ("Managed Operations Assessment", "£495"), ("PMO-in-a-Box", "from £1,950/month"),
+     ("Book an Assessment", ASSESS_HREF), "services.html#run", "pricing.html#start"),
+    ("virtual", "Virtual Consultancy", "A senior consultant and a delivery coordinator manage your work packages online.",
+     "Leaders with defined work and nobody free to run it.", ("Two-Week Work Package Trial", "£950"), ("Monthly plans", "from £1,450/month"),
+     ("Book a Two-Week Trial", TRIAL_HREF), "virtual-consultancy.html", "pricing.html#virtual"),
+    ("build", "Websites, apps and content", "A member app, a clear website and monthly content, done for you.",
+     "Clubs, schools, studios and small businesses.", ("Business Website", "from £1,495"), ("Member Portal", "from £99/month"),
+     ("See Websites and Apps", "websites-apps.html"), "websites-apps.html", "pricing.html#portal"),
+]
+
+
+def four_grid(link="details"):
+    """The four core services as one scannable row. link='details' points to service pages, 'pricing' to price anchors."""
+    out = []
+    for i, (fid, t, what, who, start, then, c, det, pr) in enumerate(FOUR):
+        href = det if link == "details" else pr
+        out.append(f"""          <article class="four-card reveal">
+            <span class="four-n">{i+1:02d}</span>
+            <h3><a href="{href}">{t}</a></h3>
+            <p>{what}</p>
+            <p class="four-who">For {who[0].lower() + who[1:]}</p>
+            <dl class="four-price"><div><dt>Start with</dt><dd><span>{start[0]}</span><b>{start[1]}</b></dd></div><div><dt>Then</dt><dd><span>{then[0]}</span><b>{then[1]}</b></dd></div></dl>
+            {btn(c[0], c[1], "btn-line btn-sm")}
+          </article>""")
+    return '<div class="four">\n' + "\n".join(out) + "\n        </div>"
 
 
 # ============================================================== TRANSFORMATION CATALOGUE
@@ -828,13 +866,15 @@ def lt_package(i, p):
           </div>"""
 
 
+if not SHOW_EXTRA_OFFERS:
+    LT_PACKAGES = [p for p in LT_PACKAGES if not p[0].startswith("Fractional")]
 lt_packages = "\n".join(lt_package(i, p) for i, p in enumerate(LT_PACKAGES))
 
 
 # ============================================================== HOME
 FAQ = [
     ("Where is the work delivered?", "Delivery takes place in our office in Lahore, Pakistan. Commercial ownership, service management and senior oversight remain in the UK with Bespoke Vista Ltd. Workshops and governance meetings can be led by our UK lead."),
-    ("Who is accountable for delivery?", "Bespoke Vista Ltd is contractually accountable for every service. Azeem Mushtaq, our founder, is the senior UK lead and your escalation point."),
+    ("Who is accountable for delivery?", "Bespoke Vista Ltd is contractually accountable for every service. A named senior UK lead owns your engagement and is your escalation point."),
     ("Will we communicate directly with the Lahore team?", "Yes. Day-to-day work runs through a named delivery lead using channels you agree, typically Microsoft Teams and email. Scope, priorities, quality and escalation stay with your UK lead."),
     ("What UK working-hours overlap is available?", "Our Lahore office normally works 09:00 to 18:00 Pakistan time. That gives a live overlap with UK mornings of about four hours in winter and five hours in summer. Later cover can be agreed for higher service levels."),
     ("How quickly can a delivery team be established?", "A standard delivery pod can normally be mobilised within two to four weeks following contract signature, role confirmation, security approval and access provisioning. Specialist roles, dedicated recruitment, client security checks, complex systems or regulated data can extend this. We confirm a mobilisation plan before you commit."),
@@ -856,7 +896,7 @@ faq_html = "\n".join(f"          <details><summary>{q}</summary><p>{a}</p></deta
 
 MODEL_POINTS = [
     ("UK commercial ownership", "Your contract, invoicing and liability sit with Bespoke Vista Ltd, a UK company."),
-    ("Senior UK oversight", "Azeem Mushtaq scopes every service, reviews quality and chairs service reviews."),
+    ("Senior UK oversight", "A senior UK lead scopes every service, reviews quality and chairs service reviews."),
     ("Office-based delivery in Lahore", "Work is carried out by our managed team in a controlled office environment, not by remote freelancers."),
     ("One point of accountability", "A named UK lead for the service, and a named delivery lead for day-to-day coordination."),
     ("Documented tasks and service levels", "Scope, outputs, service levels and SOPs are written down and agreed before work starts."),
@@ -950,7 +990,7 @@ path_rows = lambda rows: "".join(f'<li><span><strong>{n}</strong><small>{d}</sma
 
 TRUST = [
     ("One UK contract", "You contract with Bespoke Vista Ltd, a UK company. Liability, invoicing and escalation sit here, not offshore."),
-    ("Senior UK oversight", "Azeem Mushtaq scopes every engagement, reviews quality before work reaches you and chairs every service review."),
+    ("Senior UK oversight", "A senior UK lead scopes every engagement, reviews quality before work reaches you and chairs every service review."),
     ("UK GDPR and data security", "A Data Processing Agreement, confidentiality agreements, MFA and role-based access. We prefer to work inside your Microsoft 365 tenant, so data stays under your controls."),
     ("Time-zone overlap", "Our Lahore office works 09:00–18:00 Pakistan time: about four to five hours of live overlap with UK mornings, and work finished before your day starts."),
     ("Quality assurance", "Work is done to documented SOPs, checked by a second person before release, sampled weekly and reported against agreed measures."),
@@ -997,7 +1037,7 @@ home = f"""    <section class="hero home-hero">
         <div>
           {label("For UK organisations of 50 to 500 people")}
           <h1>We lead the change. <em class="ember">Our team keeps it running.</em></h1>
-          <p class="lead">Senior UK transformation leadership from Azeem Mushtaq, plus a managed delivery team in Lahore for the PMO, analysis, documentation and automation upkeep that makes change stick, under one UK contract and one accountable lead.</p>
+          <p class="lead">Senior UK transformation leadership, plus a managed delivery team for the PMO, analysis, documentation and automation upkeep that makes change stick, under one UK contract and one accountable lead.</p>
           <div class="hero-actions">
             {btn("Book a Discovery Call", DISCOVERY_HREF, "btn-ember")}
             {btn("Take the Free Readiness Scorecard", "scorecard.html", "btn-line", arrow=False)}
@@ -1036,13 +1076,13 @@ home = f"""    <section class="hero home-hero">
     <section class="sec" id="paths">
       <div class="container">
         <div class="head">
-          <div>{label("Two ways to start")}<h2>Lead the change, <em class="ember">or keep it running.</em> Most clients need both.</h2></div>
-          <p>Every first step is fixed-price, and you can stop after any step. All prices exclude VAT.</p>
+          <div>{label("Our four services")}<h2>Four services. <em class="ember">Each with a fixed-price start.</em></h2></div>
+          <p>Most mid-market clients need the first two together. You can stop after any step. All prices exclude VAT.</p>
         </div>
         <div class="paths">
           <article class="path reveal">
-            <span class="lr-tag">Path A · Senior UK leadership</span>
-            <h3>Lead and deliver change</h3>
+            <span class="lr-tag">01 · Senior UK leadership</span>
+            <h3>Lead the change</h3>
             <p class="muted">For system rollouts, audit readiness, automation and operating-model change that needs a senior lead.</p>
             <ul class="path-list">{path_rows(PATH_A)}</ul>
             <div class="path-actions">
@@ -1051,8 +1091,8 @@ home = f"""    <section class="hero home-hero">
             </div>
           </article>
           <article class="path path-run reveal">
-            <span class="lr-tag">Path B · Managed team, UK-led</span>
-            <h3>Keep operations and projects running</h3>
+            <span class="lr-tag">02 · Managed team, UK-led</span>
+            <h3>Keep it running</h3>
             <p>For PMO, analysis and documentation capacity, delivered to agreed outputs and service levels.</p>
             <ul class="path-list">{path_rows(PATH_B)}</ul>
             <div class="path-actions">
@@ -1061,25 +1101,35 @@ home = f"""    <section class="hero home-hero">
             </div>
           </article>
         </div>
+        <div class="minis">
+{chr(10).join(f"""          <article class="mini reveal">
+            <span class="lr-tag">{n:02d} · {tag}</span>
+            <h3>{f[1]}</h3>
+            <p>{f[2]}</p>
+            <p class="mini-price"><span>{f[4][0]}</span><b>{f[4][1]}</b></p>
+            <p class="mini-price"><span>{f[5][0]}</span><b>{f[5][1]}</b></p>
+            <a class="text-link" href="{f[7]}">{"See Virtual Consultancy" if f[0] == "virtual" else "See Websites, Apps and Content"} →</a>
+          </article>""" for n, tag, f in [(3, "For smaller pieces of work", FOUR[2]), (4, "For smaller organisations", FOUR[3])])}
+        </div>
         <a class="unsure reveal" href="scorecard.html" data-track="scorecard_cta">
-          <span><strong>Not sure which path fits?</strong> Thirteen questions, an instant score and a recommended next step. No email needed.</span>
+          <span><strong>Not sure which service fits?</strong> Thirteen questions, an instant score and a recommended next step. No email needed.</span>
           <span class="unsure-cta">Take the 5-minute Free Readiness Scorecard →</span>
         </a>
-        <p class="small muted" style="margin-top:14px">Need one work package managed? See <a href="virtual-consultancy.html">Virtual Consultancy</a>, from a £950 two-week trial.</p>
+
       </div>
     </section>
 
     <section class="sec sec-dark" id="trust">
       <div class="container">
         <div class="head">
-          <div>{label("How the UK + Lahore model works")}<h2>One accountable lead. <em class="ember">One managed team.</em> One contract.</h2></div>
+          <div>{label("How the model works")}<h2>One accountable lead. <em class="ember">One managed team.</em> One contract.</h2></div>
           <p>Senior judgement where it matters, managed capacity where volume matters, and no hand-offs between suppliers.</p>
         </div>
         <figure class="model-flow reveal" aria-labelledby="model-cap">
           <div class="mf-node">
             <span class="mf-where">United Kingdom</span>
             <h3>Senior UK lead</h3>
-            <p class="mf-who">Azeem Mushtaq</p>
+            <p class="mf-who">Your accountable lead</p>
             <ul><li>Designs the change</li><li>Governs delivery and quality</li><li>Owns accountability to you</li></ul>
           </div>
           <div class="mf-link" aria-hidden="true"><span></span></div>
@@ -1097,6 +1147,7 @@ home = f"""    <section class="hero home-hero">
           </div>
           <figcaption id="model-cap" class="mf-cap"><span>Stage 1 · We lead the change</span><span>Stage 2 · Our team keeps it running</span></figcaption>
         </figure>
+        <p class="founder-line reveal">Bespoke Vista was founded by Azeem Mushtaq, who has spent more than 25 years bridging business, technology and complex change. <a href="about.html">About us →</a></p>
         <div class="points points3" style="margin-top:56px">
 {trust_html}
         </div>
@@ -1140,7 +1191,7 @@ home = f"""    <section class="hero home-hero">
       </div>
     </section>
 
-{cta("Tell us what's stalled, or what's coming.", "A free 20-minute discovery call with Azeem. You'll leave with a clear first step, whether that's a fixed-price discovery, a £495 assessment, or a referral elsewhere if we're not the right fit.")}"""
+{cta("Tell us what's stalled, or what's coming.", "A free 20-minute discovery call with a senior consultant. You'll leave with a clear first step, whether that's a fixed-price discovery, a £495 assessment, or a referral elsewhere if we're not the right fit.")}"""
 
 ORG = {"@type": "Organization", "@id": BASE_URL + "#org", "name": "Bespoke Vista Ltd", "alternateName": "Bespoke Vista",
        "url": BASE_URL, "logo": BASE_URL + "assets/img/logo@2x.png", "email": CONTACT_EMAIL,
@@ -1193,11 +1244,9 @@ RUN = [
      "Transformation and change teams short of analysts.", "Process mapping, requirements, user stories, traceability, options analysis and business cases, with senior UK quality review.", "ba"),
     ("Documentation Factory", "Processes, maps and SOPs documented properly, at a fixed price.", "£2,950–£9,500+",
      "Organisations with undocumented or inconsistent processes.", "Process maps, SOPs, roles and responsibilities, controls, KPIs and a controlled document library.", "documentation"),
-] + [(n, d, "Priced after assessment", "Clients with an established first service.", note, "managed") for n, d, note in SECONDARY]
+] + ([(n, d, "Priced after assessment", "Clients with an established first service.", note, "managed") for n, d, note in SECONDARY] if SHOW_EXTRA_OFFERS else [])
 
 ADVISE = [
-    ("Virtual Consultancy", "A senior consultant and a coordinator, online, managing your work packages.", "Trial £950 · then £1,450–£5,450/month",
-     "Leaders with defined pieces of work and nobody free to run them.", "Work-package plans, RAID and action logs, follow-up with your team, check-ins and status reports. Start with a two-week trial.", "virtual"),
     ("Managed Operations Assessment", "Find out what could be handed over safely, and how.", "£495 · 1 to 2 weeks",
      "Any organisation considering managed delivery.", "Discovery workshop, readiness review, process prioritisation, capacity and cost model, recommended pilot and written findings.", "assessment"),
     ("Stalled System Rescue Review", "An independent view of a NetSuite, Dynamics 365, SAP or WMS rollout that's late, over budget or unstable after go-live.", "£4,950 · 2 weeks",
@@ -1232,6 +1281,17 @@ LEARN = [
      "Leadership and high-pressure teams.", "Practical techniques for focus, composure and recovery.", "wellbeing"),
 ]
 
+
+if not SHOW_EXTRA_OFFERS:
+    ADVISE = [r for r in ADVISE if not r[0].startswith("Fractional")]
+    LEARN = [r for r in LEARN if r[0] != "Executive AI Intelligence"]
+
+VIRTUAL_ROWS = [
+    ("Two-Week Work Package Trial", "One defined work package, planned, followed up and reported on for two weeks.", "£950 fixed",
+     "Anyone who wants to see how we work before subscribing.", "Kick-off, work-package plan, RAID and action log, two check-ins, two status reports and an end-of-trial recommendation. Credited against your first month.", "virtual-trial"),
+    ("Monthly plans", "Essentials, Professional or Partner: one to six work packages at a time.", "£1,450–£5,450/month",
+     "Leaders with a steady flow of work packages and nobody free to run them.", "Senior consultant hours, coordinator days, check-ins, status reports and governance support. One-month minimum.", "virtual"),
+]
 
 BUILD = [
     ("Member Portal", "The member app we built for EmptyHands, set up for your club or school.", "£99–£299/month + set-up",
@@ -1276,18 +1336,28 @@ services = f"""    <section class="page-hero">
       <div class="container">
         {label("Services")}
         <h1>We lead the change. <em class="ember">Our team keeps it running.</em></h1>
-        <p class="lead">Transformation services led by Azeem Mushtaq in the UK, and managed PMO, analysis and documentation services delivered by our team in Lahore. Use one, or combine them under one contract. Tap any service for details.</p>
+        <p class="lead">Four services, each with a fixed-price way to start. Use one, or combine them under one UK contract with one accountable lead.</p>
       </div>
     </section>
-{subnav([("lead", "Lead the change"), ("run", "Keep it running"), ("advise", "Assess and advise"), ("ai", "AI services"), ("learn", "Training"), ("industries", "Sectors")])}
+{subnav([("lead", "1 · Lead the change"), ("run", "2 · Keep it running"), ("virtual", "3 · Virtual Consultancy"), ("build", "4 · Websites, apps, content"), ("supporting", "Supporting services")])}
+    <section class="sec-tight">
+      <div class="container">
+{four_grid()}
+      </div>
+    </section>
     <section class="sec">
       <div class="container">
 {svc_block("lead", "01", "Lead the change", "Business and technology transformation, designed and led by a senior UK practitioner with 25+ years between business and technology teams.", LEAD, btn("Book a Discovery Call", DISCOVERY_HREF, "btn-ember btn-sm"))}
-{svc_block("run", "02", "Keep it running", "Managed services delivered by our Lahore team under a UK lead, to defined capacity, outputs and service levels.", RUN, btn("Book a Managed Operations Assessment", ASSESS_HREF, "btn-primary btn-sm"))}
-{svc_block("advise", "03", "Assess and advise", "Fixed-scope consulting wherever possible, so you know the cost before we start.", ADVISE)}
-{svc_block("ai", "04", "AI services", "Practical AI using Microsoft Copilot, SharePoint, Power Automate, ChatGPT and Claude, starting from a measurable business problem.", AI, '<a class="btn btn-line btn-sm" href="ai-scorecard.html">Take the AI Readiness Scorecard ' + ARR + '</a>')}
-{svc_block("learn", "05", "Training and briefings", "Capability building for leaders and teams.", LEARN)}
-{svc_block("build", "06", "Websites, apps and content", "Practical digital tools for smaller organisations, proven first at EmptyHands, our founder's own school.", BUILD, '<a class="btn btn-line btn-sm" href="websites-apps.html">See Websites, Apps and Content ' + ARR + '</a>')}
+{svc_block("run", "02", "Keep it running", "Managed services delivered by our office-based team under a UK lead, to defined capacity, outputs and service levels.", RUN, btn("Book a Managed Operations Assessment", ASSESS_HREF, "btn-primary btn-sm"))}
+{svc_block("virtual", "03", "Virtual Consultancy", "A senior UK consultant and a named delivery coordinator manage defined work packages online. Try it for two weeks, then subscribe monthly.", VIRTUAL_ROWS, btn("Book a Two-Week Trial", TRIAL_HREF, "btn-ember btn-sm"))}
+{svc_block("build", "04", "Websites, apps and content", "Practical digital tools for smaller organisations, proven first at EmptyHands, our founder's own school.", BUILD, '<a class="btn btn-line btn-sm" href="websites-apps.html">See Websites, Apps and Content ' + ARR + '</a>')}
+        <div class="supporting-head" id="supporting">
+          {label("Supporting services")}
+          <h2>Also available, <em class="ember">usually alongside a core service.</em></h2>
+        </div>
+{svc_block("advise", "+", "Assess and advise", "Fixed-scope consulting wherever possible, so you know the cost before we start.", ADVISE)}
+{svc_block("ai", "+", "AI services", "Practical AI using Microsoft Copilot, SharePoint, Power Automate, ChatGPT and Claude, starting from a measurable business problem.", AI, '<a class="btn btn-line btn-sm" href="ai-scorecard.html">Take the AI Readiness Scorecard ' + ARR + '</a>')}
+{svc_block("learn", "+", "Training and briefings", "Capability building for leaders and teams.", LEARN)}
         <div class="pillar-block" id="industries">
           <div class="side reveal">
             <span class="big-n">✦</span>
@@ -1327,7 +1397,7 @@ sla_rows = "\n".join(f"<tr><th scope=\"row\">{a}</th><td>{b}</td><td>{c}</td><td
 managed = f"""    <section class="page-hero">
       <div class="container">
         {label("Delivery model")}
-        <h1>UK-managed. Lahore-delivered. <em class="ember">AI-enabled.</em></h1>
+        <h1>UK-managed. Office-based delivery. <em class="ember">One contract.</em></h1>
         <p class="lead">This is the "keeps it running" half of what we do. You contract with a UK company, a senior UK lead owns the outcome, and office-based professionals in our Lahore delivery centre do the work to documented processes and service levels.</p>
         <div style="margin-top:28px">{CLOCKS}</div>
       </div>
@@ -1378,11 +1448,11 @@ managed = f"""    <section class="page-hero">
         <div class="grid g3">
 {primary_offers}
         </div>
-        <h3 style="margin-top:56px">Further managed services</h3>
+{f"""        <h3 style="margin-top:56px">Further managed services</h3>
         <p class="muted">Available once a first service is running, or where an assessment shows a clear fit. Priced after assessment.</p>
         <div class="pricelist">
 {secondary_offers}
-        </div>
+        </div>""" if SHOW_EXTRA_OFFERS else ""}
       </div>
     </section>
 
@@ -1451,11 +1521,25 @@ page("managed-teams.html", "Delivery Model",
      managed, schema=[{"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in FAQ]}])
 
 # ============================================================== PRICING
-SUBNAV_PRICING = [("transformation", "Transformation packages"), ("virtual", "Virtual Consultancy"), ("start", "Assessment and pilot"), ("pmo", "PMO-in-a-Box"), ("ba", "Managed BA"), ("documentation", "Documentation Factory"),
-                  ("terms", "Commercial terms"), ("projects", "AI and fixed-price projects"), ("intelligence", "Subscriptions"),
-                  ("training", "Training"), ("portal", "Websites, apps and content"), ("faq", "FAQs")]
+SUBNAV_PRICING = [("transformation", "1 · Lead the change"), ("start", "2 · Keep it running"), ("virtual", "3 · Virtual Consultancy"),
+                  ("portal", "4 · Websites, apps, content"), ("terms", "Terms"), ("projects", "AI projects")] + ([("intelligence", "Subscriptions")] if SHOW_EXTRA_OFFERS else []) + [
+                  ("training", "Training"), ("faq", "FAQs")]
 
+SUBS_SECTION = ""
 subs_html = "\n".join(product_block(s, annual=True, cta=(lambda t, s=s: pay_cta(s[1], t, f"contact.html?topic={s[0]}", f"Discuss {t}"))) for s in SUBSCRIPTIONS)
+if SHOW_EXTRA_OFFERS:
+    SUBS_SECTION = f"""    <section class="sec sec-white">
+      <div class="container">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:56px">
+          <div>{label("Subscriptions")}<h2 style="margin:0">Advisory and briefings</h2></div>
+          <div class="billing" role="group" aria-label="Billing period">
+            <button type="button" data-billing="monthly" aria-pressed="true">Monthly</button>
+            <button type="button" data-billing="annual" aria-pressed="false">Annual<span class="save">2 months free</span></button>
+          </div>
+        </div>
+{subs_html}
+      </div>
+    </section>"""
 terms_html = "\n".join(f"<tr><th scope=\"row\">{a}</th><td>{b}</td></tr>" for a, b in TERMS)
 pricing_faq = "\n".join(f"          <details><summary>{q}</summary><p>{a}</p></details>" for q, a in [FAQ[12], FAQ[11], FAQ[16], FAQ[17], FAQ[13], FAQ[10]])
 
@@ -1467,34 +1551,27 @@ pricing = f"""    <section class="page-hero">
       </div>
     </section>
 {subnav(SUBNAV_PRICING)}
+    <section class="sec-tight" id="overview">
+      <div class="container">
+        <div class="head"><div>{label("Our four services")}<h2>Four services. <em class="ember">A fixed-price way into each.</em></h2></div><p>Prices below are grouped in the same order.</p></div>
+{four_grid("pricing")}
+      </div>
+    </section>
     <section class="sec" id="transformation" style="scroll-margin-top:140px">
       <div class="container">
         <div class="head">
-          <div>{label("Lead the change")}<h2>Transformation packages, <em class="ember">indicative prices.</em></h2></div>
-          <p>Led by Azeem Mushtaq. Final pricing depends on organisational scale, the number of functions involved, stakeholder availability and the detail required, and is confirmed in a written proposal.</p>
+          <div>{label("01 · Lead the change")}<h2>Transformation packages, <em class="ember">indicative prices.</em></h2></div>
+          <p>Led by a senior UK consultant. Final pricing depends on organisational scale, the number of functions involved, stakeholder availability and the detail required, and is confirmed in a written proposal.</p>
         </div>
         <div class="grid g3">
 {lt_packages}
         </div>
       </div>
     </section>
-    <section class="sec sec-white" id="virtual-sec" style="scroll-margin-top:140px">
-      <div class="container">
-{product_block(VIRTUAL, cta=vc_cta)}
-        <div class="grid g2" style="margin-top:28px;align-items:center">
-{offer_card(VC_TRIAL, "Book a Two-Week Trial", TRIAL_HREF, "Try it first", "featured")}
-          <div class="reveal">
-            <h3>Not sure yet? Try it on one work package.</h3>
-            <p class="muted">Two weeks, fixed price, one defined piece of work. At the end you get a review and a recommendation: continue on a plan, change the approach, or stop.</p>
-          </div>
-        </div>
-        <p class="small muted" style="margin-top:16px">One-month minimum term, then monthly with 30 days' notice. Unused hours and days don't roll over. <a href="virtual-consultancy.html">How Virtual Consultancy works →</a></p>
-      </div>
-    </section>
     <section class="sec" id="start" style="scroll-margin-top:140px">
       <div class="container">
         <div class="head">
-          <div>{label("Keep it running")}<h2>Assess first. <em class="ember">Pilot before you commit.</em></h2></div>
+          <div>{label("02 · Keep it running")}<h2>Assess first. <em class="ember">Pilot before you commit.</em></h2></div>
           <p>The assessment fee is credited against a qualifying pilot commissioned within 30 days.</p>
         </div>
         <div class="grid g2">
@@ -1526,6 +1603,34 @@ pricing = f"""    <section class="page-hero">
       </div>
     </section>
 
+    <section class="sec sec-white" id="virtual-sec" style="scroll-margin-top:140px">
+      <div class="container">
+{product_block(VIRTUAL, cta=vc_cta)}
+        <div class="grid g2" style="margin-top:28px;align-items:center">
+{offer_card(VC_TRIAL, "Book a Two-Week Trial", TRIAL_HREF, "Try it first", "featured")}
+          <div class="reveal">
+            <h3>Not sure yet? Try it on one work package.</h3>
+            <p class="muted">Two weeks, fixed price, one defined piece of work. At the end you get a review and a recommendation: continue on a plan, change the approach, or stop.</p>
+          </div>
+        </div>
+        <p class="small muted" style="margin-top:16px">One-month minimum term, then monthly with 30 days' notice. Unused hours and days don't roll over. <a href="virtual-consultancy.html">How Virtual Consultancy works →</a></p>
+      </div>
+    </section>
+    <section class="sec">
+      <div class="container">
+{product_block(PORTAL, extra='<p style="margin-top:10px" class="small">' + PORTAL_SETUP + ' <a href="websites-apps.html#emptyhands">See it running at EmptyHands →</a></p>', cta=lambda t: pay_cta("Member Portal", t, f"websites-apps.html?product={t.lower().replace(' + ', '-').replace(' ', '-')}#request"))}
+      </div>
+    </section>
+    <section class="sec sec-white">
+      <div class="container">
+{product_block(CONTENT, extra='<p style="margin-top:10px" class="small">' + CONTENT_NOTE + '</p>', cta=lambda t: pay_cta("Content Creation", t, f"websites-apps.html?product=content-{t.lower()}#request"))}
+        <div class="grid g2" style="margin-top:28px">
+{offer_card(WEBSITE, "Request a Website Quote", "websites-apps.html?product=website#request")}
+{offer_card(WEBSITE_CARE, *pay_cta("Website Care", None, "websites-apps.html?product=website-care#request", "Request Website Care")[:2])}
+        </div>
+      </div>
+    </section>
+
     <section class="sec sec-sand" id="terms" style="scroll-margin-top:140px">
       <div class="container split">
         <div>{label("Commercial terms")}<h2>The terms behind <em class="ember">every price.</em></h2><p class="muted">Full terms are set out in your proposal and contract.</p></div>
@@ -1545,19 +1650,7 @@ pricing = f"""    <section class="page-hero">
       </div>
     </section>
 
-    <section class="sec sec-white">
-      <div class="container">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:56px">
-          <div>{label("Subscriptions")}<h2 style="margin:0">Advisory and briefings</h2></div>
-          <div class="billing" role="group" aria-label="Billing period">
-            <button type="button" data-billing="monthly" aria-pressed="true">Monthly</button>
-            <button type="button" data-billing="annual" aria-pressed="false">Annual<span class="save">2 months free</span></button>
-          </div>
-        </div>
-{subs_html}
-      </div>
-    </section>
-
+{SUBS_SECTION}
     <section class="sec sec-sand" id="training" style="scroll-margin-top:140px">
       <div class="container">
         <div class="head">
@@ -1566,21 +1659,6 @@ pricing = f"""    <section class="page-hero">
         </div>
         <div class="pricelist">
 {pricelist(TRAINING)}
-        </div>
-      </div>
-    </section>
-
-    <section class="sec">
-      <div class="container">
-{product_block(PORTAL, extra='<p style="margin-top:10px" class="small">' + PORTAL_SETUP + ' <a href="websites-apps.html#emptyhands">See it running at EmptyHands →</a></p>', cta=lambda t: pay_cta("Member Portal", t, f"websites-apps.html?product={t.lower().replace(' + ', '-').replace(' ', '-')}#request"))}
-      </div>
-    </section>
-    <section class="sec sec-white">
-      <div class="container">
-{product_block(CONTENT, extra='<p style="margin-top:10px" class="small">' + CONTENT_NOTE + '</p>', cta=lambda t: pay_cta("Content Creation", t, f"websites-apps.html?product=content-{t.lower()}#request"))}
-        <div class="grid g2" style="margin-top:28px">
-{offer_card(WEBSITE, "Request a Website Quote", "websites-apps.html?product=website#request")}
-{offer_card(WEBSITE_CARE, *pay_cta("Website Care", None, "websites-apps.html?product=website-care#request", "Request Website Care")[:2])}
         </div>
       </div>
     </section>
@@ -1885,7 +1963,7 @@ scorecard = f"""    <section class="page-hero sc-hero">
             {btn("Start the scorecard", "#scorecard", "btn-ember")}
             {btn("Book a Managed Operations Assessment", ASSESS_HREF, "btn-line", arrow=False)}
           </div>
-          <p class="tagline-strong">UK-managed. Lahore-delivered. AI-enabled.</p>
+          <p class="tagline-strong">UK-managed. One contract. Clear service levels.</p>
         </div>
         <div class="sc-art">
           {horizon(["UK-LED", "MANAGED", "LAHORE", "AI-ENABLED"])}
@@ -1977,7 +2055,7 @@ scorecard = f"""    <section class="page-hero sc-hero">
 {cta()}"""
 
 page("scorecard.html", "Free Readiness Scorecard",
-     "Free 5-minute readiness scorecard for UK SMEs and mid-market organisations. Find out what you could hand over to a UK-managed, Lahore-delivered service, the risks, and your next step.",
+     "Free 5-minute readiness scorecard for UK SMEs and mid-market organisations. Find out what you could hand over to a UK-managed delivery service, the risks, and your next step.",
      scorecard, full_title="Free Managed Delivery Readiness Scorecard | Bespoke Vista",
      schema=[{"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in SC_FAQ]}])
 
@@ -2012,7 +2090,7 @@ about = f"""    <section class="page-hero">
       <div class="container">
         {label("About")}
         <h1>Twenty-five years of change, <em class="ember">delivered.</em></h1>
-        <p class="lead">Bespoke Vista is an independent UK consultancy that combines senior expertise with a delivery team in Lahore, so good strategy actually reaches the front line.</p>
+        <p class="lead">Bespoke Vista is an independent UK consultancy that combines senior expertise with a managed delivery team, so good strategy actually reaches the front line.</p>
       </div>
     </section>
 
@@ -2166,7 +2244,7 @@ ARTICLES = [
           <p>Documented processes are what make a remote team effective, and they mean the knowledge belongs to you, not to whoever happens to be doing the work.</p>
           <h3>Put AI in the loop</h3>
           <p>AI handles the repetitive first pass; people review, correct and improve it. Costs fall over time instead of creeping up.</p>
-          <p>That's the model behind our <a href="managed-teams.html">managed teams</a>: UK-led, Lahore-delivered and priced on outcomes.</p>"""),
+          <p>That's the model behind our <a href="managed-teams.html">managed teams</a>: UK-led, delivered by our managed team and priced on outcomes.</p>"""),
     ("cyber-is-business", "Cyber security", "4 min read", "Cyber security is a business change programme",
      "Security programmes run purely as technology projects struggle to land. The ones that succeed treat people and process as seriously as tools.",
      """<p>New controls, new tooling and new policies all change how people work. Yet security programmes are often scoped and resourced as if they were infrastructure upgrades.</p>
@@ -2205,6 +2283,19 @@ SUBSCRIBE = f"""        <div class="subscribe reveal">
             <small>We'll send a sample briefing and plan details. No spam, unsubscribe any time. <a href="privacy.html">Privacy notice</a></small>
             <div class="form-status" role="status" aria-live="polite"></div>
           </form>
+        </div>"""
+
+if not SHOW_EXTRA_OFFERS:
+    SUBSCRIBE = f"""        <div class="subscribe reveal">
+          <div>
+            {label("Next step")}
+            <h2>Something here sound <em class="ember">familiar?</em></h2>
+            <p>Take the free 5-minute Readiness Scorecard for a score and a recommended next step, or talk it through on a free 20-minute discovery call.</p>
+          </div>
+          <div class="hero-actions" style="margin:0">
+            {btn("Take the Free Readiness Scorecard", "scorecard.html", "btn-ember")}
+            {btn("Book a Discovery Call", DISCOVERY_HREF, "btn-line-light", arrow=False)}
+          </div>
         </div>"""
 
 insights = f"""    <section class="page-hero">
@@ -2285,6 +2376,8 @@ TOPICS = [
     ("content", "Content creation"),
     ("other", "Something else"),
 ]
+if not SHOW_EXTRA_OFFERS:
+    TOPICS = [t for t in TOPICS if t[0] not in ("intelligence", "advisory", "fractional-adviser")]
 topic_opts = "\n".join(f'                <option value="{v}">{l}</option>' for v, l in TOPICS)
 
 booking_block = (f'<li><strong>Book directly</strong><a href="{BOOKING_URL}" target="_blank" rel="noopener" data-track="booking_start">Choose a time in our booking calendar →</a></li>'
@@ -2311,7 +2404,6 @@ contact = f"""    <section class="page-hero">
             {booking_block}
             <li><strong>Email</strong><a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a></li>
             <li><strong>Where we are</strong>United Kingdom, with a delivery centre in Lahore, Pakistan</li>
-            <li><strong>Right now</strong>{CLOCKS}</li>
             <li><strong>Not ready to talk yet?</strong><a href="scorecard.html" data-track="scorecard_cta">Take the Free Readiness Scorecard →</a></li>
           </ul>
         </div>
@@ -2534,7 +2626,7 @@ LT_FAQ = [
     ("Do you provide cybersecurity testing?", "No. We lead cybersecurity change programmes and control implementation. Penetration testing, security monitoring and managed detection are provided by specialist partners or your internal teams."),
     ("Can you support remote and hybrid working?", "Yes, covering technology, ways of working, processes, information access, security, onboarding and adoption, not just collaboration tools."),
     ("How do you measure cost reduction?", "We establish a baseline at the start, covering cycle time, cost per transaction, manual touches, error and rework rates and staff capacity, agree how progress will be evaluated, and report against it. We don't promise a percentage saving before an assessment."),
-    ("Can you work on a fractional basis?", "Yes. The Fractional Transformation Adviser runs from £1,950 to £4,500 a month, with two to four advisory sessions and written recommendations each month."),
+    ("Can you work on a fractional basis?", "Yes. Change Delivery Leadership provides senior leadership for a defined number of days each month, and Virtual Consultancy offers monthly plans from £1,450 for smaller pieces of work."),
     ("How quickly can an assessment begin?", "A Transformation Discovery can usually begin within one to two weeks of agreement, subject to stakeholder availability and access."),
     ("What information is required to produce a proposal?", "Your objectives, the scope and scale of the change (functions, sites, systems and users), key stakeholders, known constraints and timescales, and any existing plans or supplier arrangements. A discovery call is usually enough to produce an outline proposal."),
 ]
@@ -2600,7 +2692,7 @@ logistics = f"""    <section class="hero home-hero">
         <div class="reveal">
           {label("After go-live")}
           <h2>We lead the change. <em class="ember">Our team keeps it running.</em></h2>
-          <p>Most transformation support ends at go-live. Ours doesn't have to. Our managed team in Lahore can take on the PMO reporting, business analysis, process documentation and automation upkeep that keep the new way of working going, under the same UK contract and the same accountable lead.</p>
+          <p>Most transformation support ends at go-live. Ours doesn't have to. Our managed team can take on the PMO reporting, business analysis, process documentation and automation upkeep that keep the new way of working going, under the same UK contract and the same accountable lead.</p>
           <a class="text-link" href="services.html#lead">See Design &amp; Run, Migrate &amp; Run and Automate &amp; Run →</a>
         </div>
         <ul class="ticks reveal"><li>PMO-in-a-Box from £1,950/month</li><li>Managed Business Analysis from £2,250/month</li><li>Documentation Factory from £2,950</li><li>Automation and AI workflow upkeep, scoped after implementation</li></ul>
@@ -2761,7 +2853,7 @@ PMO_NOT = ["It doesn't replace your project managers or their accountability for
 PMO_FAQ = [
     ("What do our project managers need to do?", "Provide updates by an agreed day each week or month, using a short template we set up. We do the chasing, consolidation, RAID upkeep and reporting."),
     ("Which tools do you use?", "Your Microsoft 365 environment by default: SharePoint, Teams, Excel and Planner, with Power BI where you hold licences. Smartsheet, Jira or similar by agreement."),
-    ("Can you attend our governance meetings?", "Your UK lead can attend governance meetings where agreed. The Lahore team prepares packs, logs and dashboards behind them."),
+    ("Can you attend our governance meetings?", "Your UK lead can attend governance meetings where agreed. The delivery team prepares packs, logs and dashboards behind them."),
     ("What if we have more than ten projects?", "The Transformation Office package covers multiple workstreams with a dedicated PMO analyst, from £7,500 a month, scoped in a proposal."),
     ("How do we start?", "With a £495 Managed Operations Assessment, then a 30-day pilot covering a few projects, then a Foundation or Managed package with a three-month initial term."),
 ]
@@ -2772,13 +2864,13 @@ pmo_page = f"""    <section class="hero home-hero">
         <div>
           {label("PMO-in-a-Box · from £1,950 a month")}
           <h1>A working PMO for 3 to 15 projects, <em class="ember">without hiring one.</em></h1>
-          <p class="lead">Governance, RAID management and portfolio reporting, run for you as a managed service by a UK-led team with office-based delivery in Lahore.</p>
+          <p class="lead">Governance, RAID management and portfolio reporting, run for you as a managed service by a UK-led, office-based team.</p>
           <p class="support">Defined monthly capacity. Weekly or monthly reporting. A UK-led service review every month.</p>
           <div class="hero-actions">
             {btn("Discuss Your Project Portfolio", "contact.html?topic=pmo", "btn-ember")}
             {btn("Book a Managed Operations Assessment", ASSESS_HREF, "btn-line", arrow=False)}
           </div>
-          <p class="tagline-strong">UK-managed. Lahore-delivered. AI-enabled.</p>
+          <p class="tagline-strong">UK-managed. One contract. Clear service levels.</p>
         </div>
         <div class="hero-art">
           {horizon(["RAID", "REPORT", "GOVERN", "REVIEW"])}
@@ -2854,7 +2946,7 @@ pmo_page = f"""    <section class="hero home-hero">
 {cta("Start with a £495 assessment of your project portfolio.", "We review your projects, reporting and governance, recommend the right package, and scope a 30-day pilot. The fee is credited against a qualifying pilot commissioned within 30 days.", ("Book a Managed Operations Assessment", ASSESS_HREF), ("Discuss Your Project Portfolio", "contact.html?topic=pmo"))}"""
 
 page("pmo-in-a-box.html", "PMO-in-a-Box",
-     "PMO-in-a-Box: a managed PMO for UK organisations running 3 to 15 projects. RAID, reporting and governance from £1,950 a month, UK-led and delivered from Lahore.",
+     "PMO-in-a-Box: a managed PMO for UK organisations running 3 to 15 projects. RAID, reporting and governance from £1,950 a month, as a UK-led managed service.",
      pmo_page, full_title="PMO-in-a-Box: Managed and Outsourced PMO Service UK | Bespoke Vista",
      schema=[svc_schema("PMO-in-a-Box", PMO[3], "1950"),
              {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in PMO_FAQ]}])
@@ -2869,9 +2961,9 @@ VC_EXAMPLES = [
     ("A project without a project manager", "A small, important piece of work that keeps slipping behind the day job."),
 ]
 VC_TRIAL_STEPS = [
-    ("Day 1", "Kick-off", "A 60-minute Teams call with Azeem: the outcome you need, the people involved, deadlines and constraints."),
+    ("Day 1", "Kick-off", "A 60-minute Teams call with your senior consultant: the outcome you need, the people involved, deadlines and constraints."),
     ("Days 2–3", "Plan agreed", "A one-page work-package plan with milestones, owners and dates, plus a RAID and action log in your Microsoft 365."),
-    ("Days 4–9", "Run", "Your coordinator follows up actions with your team, keeps the log current and flags anything at risk to Azeem."),
+    ("Days 4–9", "Run", "Your coordinator follows up actions with your team, keeps the log current and flags anything at risk to your senior consultant."),
     ("Day 10", "Review", "Status report, lessons and a recommendation: continue on a plan, change the approach, or stop. No obligation."),
 ]
 VC_NOT = ["It isn't a virtual-assistant or admin service: every plan is led by a senior consultant",
@@ -2881,8 +2973,8 @@ VC_NOT = ["It isn't a virtual-assistant or admin service: every plan is led by a
           "It doesn't include specialist technical build, penetration testing or legal and financial advice"]
 VC_FAQ = [
     ("What counts as a work package?", "A defined piece of work with an outcome, an owner on your side and an end date, such as one phase of a system roll-out, a process change across teams or an audit action plan. If it's bigger than that, we'll suggest splitting it, or a Transformation Discovery."),
-    ("Who will we work with?", "Azeem Mushtaq, the senior UK consultant who leads the plan, attends key meetings and reviews every report, and a named coordinator in our Lahore office who keeps the logs, follows up actions and prepares reports."),
-    ("Is it all online?", "Yes. We work through Microsoft Teams, with documents in your SharePoint or a workspace we set up for you. Azeem works UK hours. Lahore office hours overlap with the UK morning, so updates are ready when your day starts."),
+    ("Who will we work with?", "A senior UK consultant who leads the plan, attends key meetings and reviews every report, and a named delivery coordinator from our office-based team in Lahore who keeps the logs, follows up actions and prepares reports."),
+    ("Is it all online?", "Yes. We work through Microsoft Teams, with documents in your SharePoint or a workspace we set up for you. Your senior consultant works UK hours. Your coordinator's day starts before the UK's, so updates are ready when your day starts."),
     ("What happens at the end of the trial?", "You receive a status report and a recommendation. If you subscribe within 30 days, the £950 is credited in full against your first month. If not, there's nothing further to pay."),
     ("Can we change plan or cancel?", "Yes. You can move up or down a plan from the next month. After the one-month minimum term, give 30 days' notice to cancel."),
     ("Do unused hours roll over?", "No. Each plan includes a set amount of senior and coordinator time each month. Extra time can be agreed in advance at a quoted price."),
@@ -2903,7 +2995,7 @@ virtual = f"""    <section class="hero home-hero">
         <div>
           {label("Virtual Consultancy · trial £950 · plans from £1,450/month")}
           <h1>Your work package, managed. <em class="ember">Senior-led and fully online.</em></h1>
-          <p class="lead">Give us a defined piece of work: a system roll-out phase, a process change, an audit action plan. We plan it, follow up the actions and report on it through your Microsoft Teams, led by a senior UK consultant with a coordinator in our Lahore office.</p>
+          <p class="lead">Give us a defined piece of work: a system roll-out phase, a process change, an audit action plan. We plan it, follow up the actions and report on it through your Microsoft Teams, led by a senior UK consultant with a named delivery coordinator.</p>
           <p class="support">Try it on one work package for two weeks at a fixed price. Or subscribe for a standing virtual consultancy, by the month.</p>
           <div class="hero-actions">
             {btn("Book a Two-Week Trial", TRIAL_HREF, "btn-ember")}
@@ -2937,18 +3029,17 @@ virtual = f"""    <section class="hero home-hero">
         </div>
         <div class="leadrun">
           <div class="lr-panel reveal">
-            <span class="lr-tag">UK · Azeem Mushtaq</span>
+            <span class="lr-tag">UK · Senior consultant</span>
             <h3>Your senior consultant</h3>
             <ul class="ticks compact"><li>Shapes the plan and agrees it with you</li><li>Makes the judgement calls and raises the hard questions</li><li>Joins check-ins and key meetings</li><li>Reviews every report before you see it</li></ul>
           </div>
           <div class="lr-join" aria-hidden="true"><span>One plan<br>One channel<br>One monthly fee</span></div>
           <div class="lr-panel lr-run reveal">
-            <span class="lr-tag">Coordinator · Lahore office</span>
+            <span class="lr-tag">Coordinator · Managed team</span>
             <h3>Your named coordinator</h3>
             <ul class="ticks compact"><li>Keeps the RAID and action log current</li><li>Follows up actions with your team, by agreement</li><li>Prepares status reports and meeting packs</li><li>Keeps documents organised in your SharePoint</li></ul>
           </div>
         </div>
-        {CLOCKS}
       </div>
     </section>
 
@@ -3090,7 +3181,7 @@ wa = f"""    <section class="hero home-hero">
         <div class="reveal">
           {label("Case study · real, not illustrative")}
           <h2>EmptyHands, <em class="ember">Ilford.</em></h2>
-          <p>EmptyHands is the karate, Tai Chi, yoga and Shiatsu school our founder, Azeem Mushtaq, has run since 2006. We built its website and the EmptyHands Portal, the app its students and parents use every week.</p>
+          <p>EmptyHands is the karate, Tai Chi, yoga and Shiatsu school our founder has run since 2006. We built its website and the EmptyHands Portal, the app its students and parents use every week.</p>
           <p class="small muted">It's our own school, so it's where we test every feature before offering it to anyone else.</p>
           <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px">
             <a class="btn btn-primary" href="{EMPTYHANDS_URL}" target="_blank" rel="noopener">Visit emptyhands.co.uk {ARR}</a>

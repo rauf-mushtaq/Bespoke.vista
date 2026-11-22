@@ -109,3 +109,22 @@ The homepage now follows one narrative, about half its previous length:
 - That Azeem is comfortable leading ERP and WMS rescues alongside implementation partners. Configuration stays with the partner.
 - The employer National Insurance framing.
 - That 20 minutes is the right discovery-call length.
+
+## Four core services, fewer names, less Lahore (22 November 2026)
+
+**Four core services**, defined once in `build.py` (`FOUR`) and shown in the same order on the homepage, Services and Pricing:
+
+| # | Service | Start with | Then |
+|---|---|---|---|
+| 01 | Lead the change | Transformation Discovery £1,500–£3,000 | Change Delivery Leadership from £7,500/month |
+| 02 | Keep it running | Managed Operations Assessment £495 | PMO-in-a-Box from £1,950/month |
+| 03 | Virtual Consultancy | Two-Week Work Package Trial £950 | Monthly plans from £1,450/month |
+| 04 | Websites, apps and content | Business Website from £1,495 | Member Portal from £99/month |
+
+The Services and Pricing pages also follow this order. Supporting services (assessments, AI projects, training) follow as "Supporting services".
+
+**Hidden** (switch `SHOW_EXTRA_OFFERS = True` to restore): Executive AI Intelligence, AI Advisory, the Fractional Transformation Adviser, and further managed services. Insights now ends with the scorecard and discovery-call CTA.
+
+**Founder mentions:** these now describe the role ("a senior UK consultant", "your accountable lead"). Azeem is named on the About page, the logistics founder section, one founder line under the homepage model diagram, and in structured data.
+
+**Lahore mentions:** removed from headlines, taglines, price cards, footer tagline and clocks, and the Virtual Consultancy and contact pages. Kept where it explains the model: the homepage diagram and time-zone point, the Delivery Model page and FAQs, the About page's delivery-hub section, privacy, and the footer contact line.
