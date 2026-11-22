@@ -85,7 +85,7 @@ NAV = [
     ("about.html", "About"),
 ]
 LOGO = ('<img src="assets/img/logo.png" srcset="assets/img/logo.png 1x, assets/img/logo@2x.png 2x" '
-        'alt="" width="55" height="38">')
+        'alt="Bespoke Vista" width="55" height="38">')
 LOGO_LAZY = LOGO.replace('<img ', '<img loading="lazy" ')
 
 
@@ -140,16 +140,18 @@ def header(active):
         {LOGO}
         <span><span class="brand-name">{SITE}</span></span>
       </a>
+      <ul class="nav-links" id="nav-links">
+{items}
+        <li class="drawer-only"><a href="scorecard.html"{cur("scorecard.html")} data-track="scorecard_cta">Free Readiness Scorecard</a></li>
+        <li class="drawer-only drawer-cta"><a class="btn btn-ember" href="{DISCOVERY_HREF}" data-track="{track_for(DISCOVERY_HREF)}">Book a Discovery Call</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a class="nav-quiet" href="scorecard.html"{cur("scorecard.html")} data-track="scorecard_cta">Free Scorecard</a>
+        <a class="btn btn-primary btn-sm" href="{DISCOVERY_HREF}" data-track="{track_for(DISCOVERY_HREF)}">Book a Discovery Call</a>
+      </div>
       <button class="nav-toggle" aria-expanded="false" aria-controls="nav-links">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menu
       </button>
-      <ul class="nav-links" id="nav-links">
-{items}
-        <li class="nav-btns">
-          <a class="btn btn-line btn-sm" href="scorecard.html"{cur("scorecard.html")} data-track="scorecard_cta">Free Scorecard</a>
-          <a class="btn btn-primary btn-sm" href="{DISCOVERY_HREF}" data-track="{track_for(DISCOVERY_HREF)}">Book a Discovery Call</a>
-        </li>
-      </ul>
     </nav>
   </header>"""
 
@@ -930,12 +932,11 @@ TRIGGERS = [
     ("M&amp;A integration or exit readiness", "An acquisition, merger, investment or sale is coming, and too much of how the business runs lives in a few people's heads.",
      "Documentation Factory turns tribal knowledge into auditable processes; PMO-in-a-Box gives buyers, investors and integration teams clean, current reporting.", ("Get Due-Diligence Ready", "contact.html?topic=m-and-a")),
 ]
-triggers_html = "\n".join(f"""          <article class="trigger reveal">
-            <h3>{t}</h3>
-            <p>{d}</p>
-            <p class="tr-fix"><span>How we help</span>{h}</p>
-            <a class="text-link" href="{c[1]}">{c[0]} →</a>
-          </article>""" for t, d, h, c in TRIGGERS)
+triggers_html = "\n".join(f"""          <li class="trow reveal">
+            <span class="trow-n">{i+1:02d}</span>
+            <div class="trow-main"><h3>{t}</h3><p>{d}</p></div>
+            <div class="trow-fix"><span>How we help</span><p>{h}</p><a class="text-link" href="{c[1]}">{c[0]} →</a></div>
+          </li>""" for i, (t, d, h, c) in enumerate(TRIGGERS))
 
 PATH_A = [("Transformation Discovery", "Define the problem, options and first step", "£1,500–£3,000"),
           ("Stalled System Rescue Review", "ERP, WMS or system rollout in trouble", "£4,950"),
@@ -964,24 +965,27 @@ COMPARE_SHORT = [
     ("After go-live", "The team rolls off", "The contract ends", "Continues if you manage it", "We keep it running"),
     ("First commitment", "A large programme", "An open-ended day rate", "A headcount contract", "£495 assessment or discovery from £1,500"),
 ]
-compare_short_rows = "\n".join(f'              <tr><th scope="row">{r[0]}</th><td>{r[1]}</td><td>{r[2]}</td><td>{r[3]}</td><td class="us">{r[4]}</td></tr>' for r in COMPARE_SHORT)
+COMPARE_COLS = ["Large consultancy", "Day-rate contractor", "Offshore supplier", "Bespoke Vista"]
+compare_short_rows = "\n".join('              <tr><th scope="row">' + r[0] + '</th>'
+                               + "".join(f'<td data-label="{COMPARE_COLS[k]}"{" class=\"us\"" if k == 3 else ""}>{r[k+1]}</td>' for k in range(4))
+                               + '</tr>' for r in COMPARE_SHORT)
 
 SCENARIOS = [
-    ("Audit readiness", "UK 3PL, around 180 employees",
-     "A major retail client required ISO 27001-aligned controls and Cyber Essentials Plus within six months as a condition of contract renewal. Policies were out of date and warehouse and IT processes were undocumented.",
-     "Transformation Discovery to scope the gap; cybersecurity implementation leadership; Documentation Factory (Operations Manual) for policies and SOPs; PMO-in-a-Box to track every remediation action with owners and dates.",
-     "A controlled policy and SOP library, a remediation tracker the board could follow, and an evidence pack ready for the client's audit and the certification body. The managed team keeps documents and evidence current afterwards."),
-    ("System rescue", "UK distributor, around 300 employees",
-     "A Dynamics 365 and WMS go-live was months late. After a partial launch, the warehouse was relying on spreadsheets and manual workarounds, and confidence in the programme was falling.",
-     "Stalled System Rescue Review to establish root causes; Change Delivery Leadership working alongside the implementation partner; Managed Business Analysis on defects and requirements; PMO-in-a-Box through hypercare.",
+    ("WMS rollout rescue", "UK logistics and distribution business, around 300 employees",
+     "A new warehouse management system went live months late. The warehouse was relying on spreadsheets and manual workarounds, and confidence in the programme was falling.",
+     "Stalled System Rescue Review to establish root causes; Change Delivery Leadership alongside the implementation partner; Managed Business Analysis on defects and requirements; PMO-in-a-Box through hypercare.",
      "One agreed recovery plan, a prioritised defect and decision log, weekly decisions instead of monthly surprises, and a stable hypercare rhythm handed over to the managed PMO."),
-    ("Headcount efficiency", "UK professional services firm, around 120 employees",
-     "Client onboarding, billing and management reporting volumes were rising, and leadership wanted to absorb growth without adding back-office roles.",
-     "Automation and AI Opportunity Assessment across finance, onboarding and reporting, with baseline hours measured; AI Workflow Implementation in Microsoft 365 and Power Automate; managed upkeep by our team.",
-     "Prioritised workflows automated with human approval points, and a monthly report of hours saved against the baseline, so the business case is measured rather than assumed."),
+    ("ISO and Cyber audit readiness", "UK 3PL, around 180 employees",
+     "A major retail client required ISO 27001-aligned controls and Cyber Essentials Plus within six months as a condition of renewal. Policies were out of date and key processes were undocumented.",
+     "Transformation Discovery to scope the gap; cybersecurity implementation leadership; Documentation Factory for policies and SOPs; PMO-in-a-Box to track every remediation action with owners and dates.",
+     "A controlled policy and SOP library, a remediation tracker the board could follow, and an evidence pack ready for the client audit and the certification body, kept current by the managed team."),
+    ("Finance and operations automation", "UK professional services firm, around 120 employees",
+     "Billing, client onboarding and management reporting volumes were rising, and leadership wanted to absorb the growth without adding back-office roles.",
+     "Automation and AI Opportunity Assessment with baseline hours measured; workflow automation in Microsoft 365 and Power Automate with human approval points; managed upkeep by our team.",
+     "Prioritised workflows automated, and a monthly report of hours saved against the baseline, so the business case is measured rather than assumed."),
 ]
 scenarios_html = "\n".join(f"""          <article class="scn reveal">
-            <span class="status s-future">Illustrative scenario · {t}</span>
+            <span class="scn-tag">{t}</span>
             <p class="scn-org">{o}</p>
             <h3>Challenge</h3><p>{c}</p>
             <h3>Approach</h3><p>{a}</p>
@@ -1006,19 +1010,26 @@ home = f"""    <section class="hero home-hero">
       </div>
     </section>
 
-    <section class="sec sec-white" id="problem">
+    <section class="sec sec-white editorial" id="problem">
+      <div class="container">
+        {label("Why change stalls")}
+        <h2 class="band-statement">Mid-market change rarely fails in the design. <em class="ember">It stalls in the follow-through.</em></h2>
+        <p class="band-lead">Your best people are running the business. The usual options each leave a gap.</p>
+        <ol class="stall">
+{chr(10).join(f'          <li class="reveal"><h3>{t}</h3><p>{d}</p></li>' for t, d in STALL_REASONS)}
+        </ol>
+      </div>
+    </section>
+
+    <section class="sec sec-sand" id="triggers">
       <div class="container">
         <div class="head">
-          <div>{label("Why change stalls")}<h2>Mid-market change rarely fails in the design. <em class="ember">It stalls in the follow-through.</em></h2></div>
-          <p>Your best people are running the business. The usual options each leave a gap.</p>
+          <div>{label("What's forcing the decision")}<h2>Four reasons UK firms <em class="ember">act now.</em></h2></div>
+          <p>Each has a deadline someone else has set: an auditor, a client, a board or a buyer.</p>
         </div>
-        <div class="grid g3 stall">
-{chr(10).join(f'          <div class="reveal"><h3>{t}</h3><p class="muted">{d}</p></div>' for t, d in STALL_REASONS)}
-        </div>
-        <h3 class="triggers-title">What's forcing the decision now</h3>
-        <div class="grid g2 triggers">
+        <ol class="trows">
 {triggers_html}
-        </div>
+        </ol>
       </div>
     </section>
 
@@ -1061,19 +1072,37 @@ home = f"""    <section class="hero home-hero">
     <section class="sec sec-dark" id="trust">
       <div class="container">
         <div class="head">
-          <div>{label("How the UK + Lahore model works")}<h2>UK accountability. Managed delivery. <em class="ember">No surprises.</em></h2></div>
-          <p>Cautious buyers ask the right questions. Here are our answers, in writing before you commit.</p>
+          <div>{label("How the UK + Lahore model works")}<h2>One accountable lead. <em class="ember">One managed team.</em> One contract.</h2></div>
+          <p>Senior judgement where it matters, managed capacity where volume matters, and no hand-offs between suppliers.</p>
         </div>
-        <div class="points points3">
+        <figure class="model-flow reveal" aria-labelledby="model-cap">
+          <div class="mf-node">
+            <span class="mf-where">United Kingdom</span>
+            <h3>Senior UK lead</h3>
+            <p class="mf-who">Azeem Mushtaq</p>
+            <ul><li>Designs the change</li><li>Governs delivery and quality</li><li>Owns accountability to you</li></ul>
+          </div>
+          <div class="mf-link" aria-hidden="true"><span></span></div>
+          <div class="mf-seal">
+            <span class="mf-seal-k">One</span>
+            <strong>UK contract</strong>
+            <span class="mf-seal-s">Bespoke Vista Ltd</span>
+          </div>
+          <div class="mf-link" aria-hidden="true"><span></span></div>
+          <div class="mf-node mf-node-run">
+            <span class="mf-where">Lahore office</span>
+            <h3>Managed delivery team</h3>
+            <p class="mf-who">Run by us, not by you</p>
+            <ul><li>PMO and reporting</li><li>Business analysis</li><li>Documentation</li><li>Ongoing upkeep</li></ul>
+          </div>
+          <figcaption id="model-cap" class="mf-cap"><span>Stage 1 · We lead the change</span><span>Stage 2 · Our team keeps it running</span></figcaption>
+        </figure>
+        <div class="points points3" style="margin-top:56px">
 {trust_html}
         </div>
-        <div class="split" style="margin-top:56px;align-items:center">
-          {TIMELINE}
-          <div class="reveal">
-            <p>Bespoke Vista doesn't yet hold ISO 27001 or Cyber Essentials certification, and we say so plainly. Our controls are being built against both standards.</p>
-            {CLOCKS}
-            <a class="text-link" href="managed-teams.html#security" style="color:var(--paper);display:inline-block;margin-top:16px">Security, service levels and full FAQs →</a>
-          </div>
+        <div class="trust-foot reveal">
+          {CLOCKS}
+          <p>Bespoke Vista doesn't yet hold ISO 27001 or Cyber Essentials certification; our controls are being built against both. <a href="managed-teams.html#security">Security, service levels and FAQs →</a></p>
         </div>
       </div>
     </section>
@@ -1085,8 +1114,8 @@ home = f"""    <section class="hero home-hero">
           <p>A general comparison of typical options, not of any specific firm.</p>
         </div>
         <div class="table-wrap table-light reveal">
-          <table class="compare compare-light compare4">
-            <thead><tr><th scope="col"><span class="sr-only">Factor</span></th><th scope="col">Large consultancy</th><th scope="col">Day-rate contractor</th><th scope="col">Offshore supplier</th><th scope="col" class="us">Bespoke Vista</th></tr></thead>
+          <table class="compare compare-light compare4 compare-stack">
+            <thead><tr><th scope="col">Factor</th><th scope="col">Large consultancy</th><th scope="col">Day-rate contractor</th><th scope="col">Offshore supplier</th><th scope="col" class="us">Bespoke Vista</th></tr></thead>
             <tbody>
 {compare_short_rows}
             </tbody>
@@ -1098,8 +1127,8 @@ home = f"""    <section class="hero home-hero">
     <section class="sec" id="scenarios">
       <div class="container">
         <div class="head">
-          <div>{label("Illustrative mid-market scenarios")}<h2>What this looks like <em class="ember">in practice.</em></h2></div>
-          <p><strong>Illustrative mid-market scenarios:</strong> composite examples showing how our services combine. They are not client case studies, and no client results are claimed.</p>
+          <div><span class="ill-flag">Illustrative mid-market scenarios</span><h2>What this looks like <em class="ember">in practice.</em></h2></div>
+          <p>Composite examples showing how our services combine. They are not client case studies, and no client results are claimed.</p>
         </div>
         <div class="grid g3 scns">
 {scenarios_html}
