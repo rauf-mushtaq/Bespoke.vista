@@ -11,7 +11,7 @@ subscriptions, UK-led managed teams in Lahore, training, and the DojoOS product.
 
 | Page | Purpose |
 |---|---|
-| `index.html` | Homepage, 7 sections: hero, why change stalls + urgent triggers, two entry paths + scorecard callout, UK + Lahore trust block, comparison, three illustrative scenarios, final CTA |
+| `index.html` | Homepage: value proposition, six services in three tiers + trust strip, urgent triggers, operating-model diagram, comparison, illustrative scenarios, final CTA |
 | `scorecard.html` | Free Managed Delivery Readiness Scorecard (main lead magnet) |
 | `pricing.html` | All prices, package boundaries and commercial terms |
 | `samples.html` | Illustrative sample deliverables |

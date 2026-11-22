@@ -128,3 +128,38 @@ The Services and Pricing pages also follow this order. Supporting services (asse
 **Founder mentions:** these now describe the role ("a senior UK consultant", "your accountable lead"). Azeem is named on the About page, the logistics founder section, one founder line under the homepage model diagram, and in structured data.
 
 **Lahore mentions:** removed from headlines, taglines, price cards, footer tagline and clocks, and the Virtual Consultancy and contact pages. Kept where it explains the model: the homepage diagram and time-zone point, the Delivery Model page and FAQs, the About page's delivery-hub section, privacy, and the footer contact line.
+
+## Six offerings in three tiers (22 November 2026)
+
+The catalogue is now six offerings, defined once in `build.py` (`OFFERS`, `TIERS`, `TRUST_STRIP`) and rendered on the homepage, Services, Pricing and the logistics page.
+
+| Tier | Offering | Format | Price (proposal) |
+|---|---|---|---|
+| 1 · Entry diagnostics | Operational and SaaS Cost-Leakage Audit | 2 weeks, fixed | £2,500, credited if you proceed within 30 days |
+| 1 · Entry diagnostics | Offshoring Readiness Blueprint | 3 weeks, fixed | £2,950, credited against the first pod month |
+| 2 · Core execution | Managed Delivery Pods (PMO, BA, documentation, back office and finance admin) | 60-day onboarding, then 30 days' notice | From £1,950/pod/month |
+| 2 · Core execution | Specialist Sprints (rescue, compliance, automation, migration/integration, operating model) | 30–90 days, fixed outcome | From £4,950 |
+| 3 · Self-serve and fractional | Lean Operations and Automation Toolkit | Licence + optional workshop | Early access; workshop £1,450 |
+| 3 · Self-serve and fractional | Fractional Operations and Transformation Lead | 1 or 2 days a week | From £4,500 / £8,500 a month |
+
+**Value proposition:** "Cut operating overhead without slowing delivery." The proposition "We lead the change. Our team keeps it running." stays as the supporting line.
+
+**Replaced or retired:**
+
+| Old offer | Now |
+|---|---|
+| £495 Managed Operations Assessment | Offshoring Readiness Blueprint |
+| 30-day pilot | The pods' 60-day onboarding |
+| Transformation Discovery, Target Operating-Model Sprint, Stalled System Rescue Review, AI Workflow Implementation, Change Delivery Leadership | Specialist Sprints |
+| Fractional Transformation Adviser | Fractional Operations and Transformation Lead |
+| Training and AI project price lists | Removed from public pages |
+
+Virtual Consultancy and Websites & Apps remain as "Also from Bespoke Vista". Virtual Consultancy is no longer in the top menu.
+
+**Deliberate departures from the brief, for the owner to review:**
+- **"30–50%" removed from the headline.** Under the UK CAP Code, numerical claims need documentary evidence. Add it back only with evidence from real engagements.
+- **The "3× the audit fee" guarantee is included**, but it's a contractual promise. Define the terms (how savings are measured, and the remedy if not met) and have them reviewed before launch.
+- **The toolkit doesn't exist yet**, so it's offered as an early-access list rather than a purchase.
+- **Pod wording:** "pre-vetted offshore specialists" and "full replacement guarantee" became "a managed team in our Lahore office" and "continuity cover: we replace and retrain at our cost". This keeps it a managed service rather than staff supply, and is honest about location.
+- **"Zero lock-in" became "No long lock-ins"**, because pods have a 60-day onboarding commitment.
+- **Pod scope:** customer operations and technical support were not added to pod types. Confirm whether the Lahore team can provide them.

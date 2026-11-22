@@ -1064,3 +1064,49 @@ span.owner-ph { display: inline-block; margin: 4px 0; padding: 4px 10px; }
 .four-price dd { display: block; }
 .four-price dd span { display: block; }
 .four-price dd b { display: block; text-align: left; margin-top: 2px; }
+
+/* ============ v12: six offerings in three tiers ============ */
+.tier { display: grid; grid-template-columns: 240px 1fr; gap: 32px; padding: 40px 0; border-top: 1px solid var(--line); }
+.tier:first-of-type { border-top: 2px solid var(--ink); }
+.tier-head { position: sticky; top: 100px; align-self: start; }
+.tier-n { display: inline-block; font-family: var(--mono); font-size: .74rem; letter-spacing: .1em; text-transform: uppercase; color: var(--paper); background: var(--ink); border-radius: 999px; padding: 5px 12px; }
+.tier-head h3 { font-family: var(--display); font-size: 1.7rem; font-weight: 600; margin: 14px 0 8px; line-height: 1.1; }
+.tier-head p { color: var(--muted); margin: 0; font-size: .95rem; }
+.tier-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.tier-cards-2 { grid-template-columns: 1fr 1fr; }
+.ocard { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; display: flex; flex-direction: column; min-width: 0; box-shadow: var(--shadow); scroll-margin-top: 150px; }
+.ocard-format { font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0 0 10px; }
+.ocard h3 { font-family: var(--display); font-size: 1.45rem; font-weight: 600; margin: 0 0 8px; line-height: 1.15; }
+.ocard-tag { color: var(--text); margin: 0 0 16px; }
+.ideal { margin: 0 0 16px; padding: 12px 14px; background: var(--paper); border-radius: var(--radius-sm); font-size: .9rem; color: var(--text); }
+.ideal span { display: inline-block; font-family: var(--mono); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; color: var(--paper); background: var(--accent-dark); border-radius: 999px; padding: 3px 9px; margin-right: 8px; vertical-align: 1px; }
+.ocard .ticks { margin: 0 0 16px; }
+.ocard-hook { font-size: .88rem; color: var(--muted); margin: 0 0 20px; padding-left: 12px; border-left: 3px solid var(--ember-1); }
+.ocard-foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-top: 18px; border-top: 1px solid var(--line); }
+.ocard-price b { display: block; font-family: var(--display); font-size: 1.6rem; font-weight: 600; color: var(--ink); line-height: 1; }
+.ocard-price small { display: block; font-size: .78rem; color: var(--muted); margin-top: 4px; }
+.ocard .btn-ember { box-shadow: 0 6px 16px rgba(238, 42, 36, .18); }
+@media (max-width: 1080px) { .tier { grid-template-columns: 1fr; gap: 20px; } .tier-head { position: static; } }
+@media (max-width: 760px) { .tier-cards, .tier-cards-2 { grid-template-columns: 1fr; } .ocard { padding: 22px; } .ocard-foot .btn { width: 100%; justify-content: center; } }
+
+.trust-strip { list-style: none; margin: 32px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); background: var(--ink); border-radius: var(--radius); overflow: hidden; }
+.trust-strip li { padding: 24px 26px; color: var(--slate-light); font-size: .93rem; border-left: 1px solid var(--line-dark); }
+.trust-strip li:first-child { border-left: 0; }
+.trust-strip strong { display: block; color: var(--paper); font-size: 1.05rem; margin-bottom: 4px; }
+.trust-strip strong::before { content: "✓"; color: var(--ember-1); margin-right: 8px; }
+@media (max-width: 860px) { .trust-strip { grid-template-columns: 1fr; } .trust-strip li { border-left: 0; border-top: 1px solid var(--line-dark); } .trust-strip li:first-child { border-top: 0; } }
+
+.glance { min-width: 0; }
+.glance th a { color: var(--ink); }
+.glance .glance-price b { display: block; font-family: var(--mono); font-size: .9rem; font-weight: 500; color: var(--accent); white-space: nowrap; }
+.glance .glance-price small { display: block; font-size: .78rem; color: var(--muted); }
+.glance td:first-child { font-family: var(--mono); font-size: .76rem; white-space: nowrap; }
+@media (max-width: 760px) {
+  .glance.compare-stack tbody th { padding-top: 6px; }
+  .glance.compare-stack td:first-child { display: block; padding: 16px 18px 0; border: 0; }
+  .glance.compare-stack td:first-child::before { content: none; }
+  .glance.compare-stack td[data-label=""]::before { content: none; }
+  .glance.compare-stack td[data-label=""] { display: block; }
+  .glance.compare-stack tbody th { order: 0; }
+}
+@media (max-width: 760px) { .glance.compare-stack td.glance-price small { grid-column: 2; margin-top: -8px; } }
